@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<content-type
+    xmlns="urn:enonic:xp:model:1.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="urn:enonic:xp:model:1.0 https://raw.githubusercontent.com/enonic/xp/master/modules/core/core-api/src/main/resources/META-INF/xsd/model.xsd">
+  <!-- XSD reference above provides auto-completion in most editors -->
+  <display-name>Movie</display-name>
+  <description>Cinematic films</description>
+  <super-type>base:structured</super-type>
+  <form>
+    <input type="TextLine" name="subtitle">
+      <label>Subtitle</label>
+       <occurrences minimum="0" maximum="1"/>
+    </input>
+    <input type="ContentSelector" name="director">
+      <label>Director</label>
+      <occurrences minimum="0" maximum="1"/>
+      <config>
+        <allowContentType>person</allowContentType>
+      </config>
+    </input>
+    <input type="ImageSelector" name="photos">
+      <label>Photos</label>
+      <occurrences minimum="0" maximum="0"/>
+    </input>
+    <input type="TextLine" name="trailer">
+      <label>Youtube Trailer</label>
+      <help-text>Use a valid Youtube link or video ID</help-text>
+      <occurrences minimum="0" maximum="1"/>
+      <config>
+        <regexp>^http(?:s?):\/\/(?:www\.)?youtu(?:be\.com\/watch\?v=|\.be\/)([\w\-\_]*)(&amp;(amp;)?[\w\?‌​=]*)?$</regexp>
+      </config>
+    </input>
+    <input type="TextArea" name="abstract">
+      <label>Abstract</label>
+       <occurrences minimum="1" maximum="1"/>
+    </input>
+    <input type="Date" name="release">
+      <label>Release Date</label>
+       <occurrences minimum="0" maximum="1"/>
+    </input>
+    <item-set name="cast">
+      <label>Cast</label>
+      <occurrences minimum="0" maximum="0"/>
+      <items>
+        <input type="ContentSelector" name="actor">
+          <label>Actor</label>
+          <occurrences minimum="1" maximum="1"/>
+          <config>
+            <allowContentType>person</allowContentType>
+          </config>
+        </input>
+        <input type="TextLine" name="character">
+          <label>Character</label>
+          <occurrences minimum="1" maximum="1"/>
+        </input>
+      </items>
+    </item-set>
+    <input type="TextLine" name="website">
+      <label>Official Website</label>
+      <occurrences minimum="0" maximum="1"/>
+      <config>
+        <regexp>^(https?)://[^\s/$.?#].[^\s]*$</regexp>
+      </config>
+    </input>
+  </form>
+</content-type>

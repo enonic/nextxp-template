@@ -1,0 +1,34 @@
+plugins {
+    id 'maven-publish'
+    id 'com.enonic.xp.app' version '3.0.0'
+    id 'com.enonic.defaults' version '2.0.1'
+}
+
+app {
+    group = "com.enonic.app"
+    name = "${appName}"
+    displayName = "${appDisplayName}"
+    vendorName = "${vendorName}"
+    vendorUrl = "${vendorUrl}"
+    systemVersion = "${xpVersion}"
+}
+
+dependencies {
+    compile "com.enonic.xp:core-api:${xpVersion}"
+    compile "com.enonic.xp:portal-api:${xpVersion}"
+    include "com.enonic.xp:lib-websocket:${xpVersion}"
+    include "com.enonic.xp:lib-auth:${xpVersion}"
+    include "com.enonic.xp:lib-project:${xpVersion}"
+    include "com.enonic.xp:lib-portal:${xpVersion}"
+    include "com.enonic.xp:lib-cluster:${xpVersion}"
+    include "com.enonic.xp:lib-context:${xpVersion}"
+    include "com.enonic.lib:lib-guillotine:5.1.0"
+    include "com.enonic.lib:lib-graphql-playground:0.0.1"
+    include "com.enonic.lib:lib-thymeleaf:2.0.1"
+}
+
+repositories {
+    mavenLocal()
+    jcenter()
+    xp.enonicRepo( 'dev' )
+}

@@ -1,0 +1,17 @@
+
+body {
+    text-align: center;
+    color: grey;
+    padding: 100px 10px 0 10px;
+    margin: 0px;
+    font-family: roboto, arial;
+    width: 100%;
+    box-sizing: border-box;
+   }
+   
+img {
+  max-width: 500px;
+  display: block;
+  width: 100%;
+  margin: 0 auto;
+}

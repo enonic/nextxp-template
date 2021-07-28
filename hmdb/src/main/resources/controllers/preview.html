@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title data-th-text="*{displayName}?: 'Preview of content without display name'">What a title!</title>
+        <link rel="stylesheet" type="text/css" data-th-href="${cssUrl}"/>
+    </head>
+    <body>
+        <h1 data-th-text="*{displayName}?: 'Display name missing'">Mickey mouse</h1>
+        <img data-th-if="${imageUrl}" data-th-src="${imageUrl}"/>
+        <h3>This is a sample preview</h3>
+        Use live integrations with your front-end, or just a mockup - like this  :-)
+    </body>
+</html>

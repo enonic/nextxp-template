@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<content-type xmlns="urn:enonic:xp:model:1.0">
+  <display-name>Person</display-name>
+  <description>Historical or living human</description>
+  <super-type>base:structured</super-type>
+  <form>
+    <input type="ImageSelector" name="photos">
+      <label>Photos</label>
+      <occurrences minimum="0" maximum="0"/>
+    </input>
+    <input type="TextArea" name="bio">
+      <label>Bio</label>
+       <occurrences minimum="1" maximum="1"/>
+    </input>
+    <input type="Date" name="dateofbirth">
+      <label>Birth Date</label>
+       <occurrences minimum="0" maximum="1"/>
+    </input>
+    <input type="HtmlArea" name="document">
+      <label>Document</label>
+       <occurrences minimum="0" maximum="1"/>
+    </input>    
+  </form>
+</content-type>

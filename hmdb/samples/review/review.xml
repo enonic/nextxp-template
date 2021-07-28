@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<content-type>
+  <display-name>Review</display-name>
+  <super-type>base:structured</super-type>
+  <form>
+    <input type="ContentSelector" name="movie">
+      <label>Movie</label>
+      <occurrences minimum="1" maximum="1"/>
+      <config>
+        <allowContentType>${app}:movie</allowContentType>
+      </config>
+    </input>
+    <input type="TextArea" name="teaser">
+      <label>Teaser</label>
+      <occurrences minimum="1" maximum="1"/>
+    </input>
+    <input type="HtmlArea" name="review">
+      <label>Review</label>
+      <occurrences minimum="1" maximum="1"/>
+    </input>
+    <input name="rating" type="ComboBox">
+      <label>Rating</label>
+      <occurrences minimum="1" maximum="1"/>
+      <config>
+        <option value="1">1 (One)</option>
+        <option value="2">2 (Two)</option>
+        <option value="3">3 (Three)</option>
+        <option value="4">4 (Four)</option>
+        <option value="5">5 (Five)</option>
+        <option value="6">6 (Six)</option>
+      </config>
+    </input>
+    <input type="TextLine" name="author">
+      <label>Author(s)</label>
+      <occurrences minimum="1" maximum="0"/>
+    </input>
+  </form>
+</content-type>

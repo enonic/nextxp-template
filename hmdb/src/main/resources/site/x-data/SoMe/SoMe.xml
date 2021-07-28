@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x-data>
+  <display-name>Social Media</display-name>
+  <form>
+    <input type="TextLine" name="imdb">
+      <help-text>URL to IMDB</help-text>
+      <label>Internet Movie Database Url</label>
+      <occurrences minimum="0" maximum="1"/>
+    </input>
+    <input type="TextLine" name="twitter">
+      <help-text>Twitter Handle - i.e. @enonicHQ</help-text>
+      <label>Twitter</label>
+      <occurrences minimum="0" maximum="1"/>
+      <config>
+        <regexp>^@?(\w){1,15}$</regexp>
+      </config>
+    </input>
+    <input type="TextLine" name="instagram">
+      <help-text>Instagram Handle - i.e. @username</help-text>
+      <label>Instagram</label>
+      <occurrences minimum="0" maximum="1"/>
+      <config>
+        <regexp>^@?(\w){1,28}$</regexp>
+      </config>
+    </input>
+  </form>
+</x-data>

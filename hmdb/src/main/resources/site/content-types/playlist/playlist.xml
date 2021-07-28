@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<content-type xmlns="urn:enonic:xp:model:1.0">
+  <display-name>Playlist</display-name>
+  <description>Selection of movies</description>
+  <super-type>base:structured</super-type>
+  <form>
+    <input type="TextArea" name="description">
+      <label>Description</label>
+       <occurrences minimum="0" maximum="1"/>
+    </input>
+    <input type="ContentSelector" name="list">
+      <label>Movie List</label>
+      <occurrences minimum="3" maximum="10"/>
+      <config>
+        <allowContentType>movie</allowContentType>
+      </config>
+    </input>
+  </form>
+</content-type>
