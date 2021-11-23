@@ -43,33 +43,39 @@ export type TypeSelector = {
 }
 
 
+import getList, {getListVariables} from "./queries/getList";
+import processList from "./props/processList";
+import ListPage from "../components/pagetypes/List";
+
+import getPerson from "./queries/getPerson";
+import processPerson from "./props/processPerson";
+import PersonPage from "../components/pagetypes/Person";
+
+import getMovie from "./queries/getMovie";
+import processMovie from "./props/processMovie";
+import MoviePage from "../components/pagetypes/Movie";
+
 /////////////////////////////////////////////////////////////////////////  TypeSelector:
 
 const typeSelector: TypeSelector = {
 
-
-    /* EXAMPLES:
-
     'base:folder': {
-        query: 'Guillotine query string specialized in fetching data for XP folder items'
+        query: [getList, getListVariables],
+        props: processList,
+        page: ListPage,
     },
 
-    'my.app:my-content-type': {
-        query: {
-            query: 'Guillotine query for my-content-type in my.app',
-            variables: (xpContentPath, contextFromNext) => guillotineVariables
-        }
-        page: PageReactComponentForDisplayingThisContentTypeWithRawGuillotineProps
+    [`${APP_NAME}:person`]: {
+        query: getPerson,
+        props: processPerson,
+        page: PersonPage,
     },
 
-    [`${APP_NAME}:anotherContentType`]: {
-        query: [ 'anotherContentType query, app name imported from .env', getVariablesFunction ],
-        props: (rawPropsFromGuillotine, contextFromNext) => processedPropsReadyForPageComponent,
-        page: PageReactComponentForProcessedProps
-    },
-
-    // ...ETC
-    */
+    [`${APP_NAME}:movie`]: {
+        query: getMovie,
+        props: processMovie,
+        page: MoviePage,
+    }
 };
 
 
