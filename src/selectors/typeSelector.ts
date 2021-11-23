@@ -1,10 +1,7 @@
 import {Context} from "../pages/[[...contentPath]]";
 
-// APP_NAME is used to fully qualify content type strings in the connected XP app:
-import enonicConnectionConfig from "../enonic-connection-config";
-const {APP_NAME} = enonicConnectionConfig;
-
-
+// APP_NAME helps to fully qualify content type strings in the connected XP app:
+import {APP_NAME} from "../enonic-connection-config";
 
 ////////////////////////////////////////////////////////////////////////  Types:
 
