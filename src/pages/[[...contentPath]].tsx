@@ -3,6 +3,7 @@ import React from 'react';
 import { fetchContent } from "../guillotine/fetchContent";
 
 import BasePage from "../components/BasePage";
+import {getCommonProps} from "../shared/commonProps";
 
 export type Context = {
     params: {
@@ -40,6 +41,7 @@ export const getServerSideProps = async (context: Context) => {
             content,
             meta,
             error,
+            common: getCommonProps(content, context)
         }
     }
 };

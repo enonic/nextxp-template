@@ -1,15 +1,38 @@
 import type {AppProps} from 'next/app'
 
+import Head from "next/head";
+
+import '../styles/globals.css'
+
+import Seo from '../components/blocks/Seo'
+import Layout from '../components/blocks/Layout'
+
+const mainHeading = "Next.xp"
+
 /**
- * Main Next.js component wrapper. Use to add elements that should be present on all pages (headers, footers, etc).
  *
- * @param Component Usually BasePage.tsx
- * @param pageProps {{content, meta, error}} pageProps will be whatever is sent in as `props` from top-level getServerSideProps etc., usually from [[...contentPath]].tsx
+ * @param Component Usually triggering [[...contentPath]].tsx, this component is BasePage.tsx
+ * @param pageProps {{content, common, meta, error}}
  */
 function MyApp({Component, pageProps}: AppProps) {
+    const subHeading = pageProps.common?.header?.title || "PoC";
+    const layoutProps = {
+        title: mainHeading + ": " + subHeading,
+        logoUrl: pageProps.common?.header?.logoUrl
+    }
     return (
-        <Component {...pageProps} />
+        <>
+            {
+                pageProps.meta?.baseUrl &&
+                <Head>
+                    <base href={pageProps.meta.baseUrl} />
+                </Head>
+            }
+            <Layout {...layoutProps}>
+                <Seo title={subHeading} siteTitle={mainHeading} />
+                <Component {...pageProps} />
+            </Layout>
+        </>
     );
 }
-
 export default MyApp
