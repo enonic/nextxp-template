@@ -35,6 +35,7 @@ export type ContentResult = Result & {
     content: any,
     meta: ResultMeta,
     page?: any,
+    components?: any,
 };
 
 
@@ -403,7 +404,7 @@ export const buildContentFetcher = <T extends EnonicConnectionConfigRequiredFiel
                 };
             }
 
-            const {type, pageAsJson, pageTemplate} = metaResult.meta || {};
+            const {type, pageAsJson, pageTemplate, components} = metaResult.meta || {};
 
             if (!type) {
                 // @ts-ignore
@@ -465,6 +466,9 @@ export const buildContentFetcher = <T extends EnonicConnectionConfigRequiredFiel
             }
             if (pageTemplate) {
                 response.page = {...response.page, pageTemplate};
+            }
+            if (components) {
+                response.page = {...response.page, components}
             }
             response.meta!.renderMode = renderMode;
 

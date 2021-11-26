@@ -1,4 +1,29 @@
-export const PAGE_FRAGMENT = ` 
+export const PAGE_FRAGMENT = `
+      components {
+        type
+        path
+        page {
+          descriptor
+          template {
+            _path
+          }
+        }
+        text {
+          value {
+            processedHtml
+          }
+        }
+        part {
+          descriptor
+          configAsJson
+        }
+        image {
+          caption
+          image {
+            imageUrl (scale: "width-768")
+          }
+        }
+      }
     pageAsJson(resolveTemplate: true)
     pageTemplate {
         _path

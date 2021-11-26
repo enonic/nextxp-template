@@ -19,6 +19,7 @@ type Props = {
     pageAsJson: {
         regions: { [key: string]: Region };
     };
+    components: [Record<string, any>];
 }
 
 const EditModeFullPage = (props: Props) => {
@@ -27,6 +28,11 @@ const EditModeFullPage = (props: Props) => {
     console.dir(props, {depth: null});
 
     const regions = props.pageAsJson?.regions || {};
+    const components = props.components;
+
+    function getComponentData(path: string): Record<string, any> | undefined {
+        return components.find((cmp) => cmp.path === path);
+    }
 
     return (
         <>
@@ -44,9 +50,10 @@ const EditModeFullPage = (props: Props) => {
                                         [PORTAL_COMPONENT_ATTRIBUTE]: component.type
                                     };
                                     const ComponentView = componentSelector[component.type];
+                                    const cmpData = getComponentData(component.path);
                                     return (
                                         <div key={regionAttrs.id + "-" + i} {...cmpAttrs}>
-                                            <ComponentView {...component}/>
+                                            <ComponentView {...cmpData || component}/>
                                         </div>
                                     )
                                 })
