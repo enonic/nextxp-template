@@ -31,16 +31,19 @@ export const XP_PREVIEW_ORIGIN: string = (process.env.XP_PREVIEW_ORIGIN || proce
 //////////////////////////////////////////////////////////////////////////  Hardcode-able constants
 
 // URI parameter marking that a request is for a preview for CS. MUST MATCH THE VALUE OF 'FROM_XP_PARAM' on XP side.
-const FROM_XP_PARAM = '__fromxp__';
+export const FROM_XP_PARAM = '__fromxp__';
+
 const XP_RENDER_MODE_HEADER = 'content-studio-mode';
 
+export const PORTAL_COMPONENT_ATTRIBUTE = "data-portal-component-type";
+export const PORTAL_REGION_ATTRIBUTE = "data-portal-region";
 
 // ------------------------------- Exports and auxillary functions derived from values above ------------------------------------
 
 /** Returns true if the context object (from next.js in [[...contentPath]].jsx ) stems from a request that comes from XP in a CS-preview, i.e. has the URI param FROM_XP_PARAM (defined as '__fromXp__' above).
  *  False if no context, query or FROM_XP_PARAM param */
-export const requestIsFromXp = (context?: Context): boolean => (
-    !!((context?.query || {})[FROM_XP_PARAM]) || !!((context?.req?.headers || {})[FROM_XP_PARAM])
+export const fromXpRequestType = (context?: Context): string|boolean => (
+    !!((context?.query || {})[FROM_XP_PARAM]) || ((context?.req?.headers || {})[FROM_XP_PARAM])
 );
 
 export enum XP_RENDER_MODE {
@@ -68,14 +71,14 @@ export const getXpPath = (pageUrl: string): string => `/${SITE}/${pageUrl}`;
 
 /** Takes an XP _path string and returns a Next.js-server-ready URL for the corresponding content for that _path */
 export const getPageUrlFromXpPath = (xpPath: string, context: Context): string => (
-    requestIsFromXp(context)
+    fromXpRequestType(context)
     ? xpPath.replace(siteNamePattern, `${NEXT_DOMAIN}/`)     // proxy-relative: should be absolute when served through the proxy
     : xpPath.replace(siteNamePattern, '/')                   // site relative: should just start with slash when served directly
 );
 
 /** Special-case (for <a href link values in props that target XP content pages - for when links too should work in CS) version of getPageUrlFromXpPath, depending on whether or not the request stems from the XP proxy used for content studio preview, or not */
 export const getContentLinkUrlFromXpPath = (xpPath: string, context: Context): string => (
-    requestIsFromXp(context)
+    fromXpRequestType(context)
     ? xpPath.replace(siteNamePattern, '')           // proxy-relative: should not start with a slash when served through the proxy
     : xpPath.replace(siteNamePattern, '/')          // site relative: should start with slash when served directly
 );
@@ -87,7 +90,7 @@ export const getContentLinkUrlFromXpPath = (xpPath: string, context: Context): s
  * @returns {string}
  */
 export const getPublicAssetUrl = (serverRelativeAssetPath: string, context: Context): string => (
-    requestIsFromXp(context)
+    fromXpRequestType(context)
     ? serverRelativeAssetPath.replace(publicPattern, `${NEXT_DOMAIN}/`)
     : serverRelativeAssetPath.replace(publicPattern, `/`)
 );
@@ -108,11 +111,15 @@ const enonicConnectionConfig = {
     APP_NAME_UNDERSCORED,
     APP_NAME_DASHED,
 
+    FROM_XP_PARAM,
+    PORTAL_COMPONENT_ATTRIBUTE,
+    PORTAL_REGION_ATTRIBUTE,
+
     getXpPath,
     getPageUrlFromXpPath,
     getContentLinkUrlFromXpPath,
     getPublicAssetUrl,
-    requestIsFromXp
+    fromXpRequestType
 };
 
 // Verify required values

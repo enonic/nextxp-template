@@ -4,19 +4,19 @@ import {LOW_PERFORMING_DEFAULT_QUERY} from "../selectors/queries/_getDefaultData
 import {Context} from "../pages/[[...contentPath]]";
 
 import typeSelector, {SelectedQueryMaybeVariablesFunc, TypeSelector, VariablesGetter} from "../selectors/typeSelector";
-import enonicConnectionConfig, {getRenderMode, XP_RENDER_MODE} from "../enonic-connection-config";
+import enonicConnectionConfig, {fromXpRequestType, getRenderMode, XP_RENDER_MODE} from "../enonic-connection-config";
 
 
 export type EnonicConnectionConfigRequiredFields = {
     CONTENT_API_URL: string,
     getXpPath: (siteRelativeContentPath: string) => string,
-    requestIsFromXp: (context?: Context) => boolean
+    fromXpRequestType: (context?: Context) => string|boolean
 };
 
 
 export type ResultMeta = Meta & {
     path: string,
-    requestIsFromXp?: boolean,
+    xpRequestType?: string|boolean,
     renderMode: XP_RENDER_MODE,
 }
 
@@ -244,9 +244,9 @@ const NO_PROPS_PROCESSOR = (props: any) => props;
 
 ///////////////////////////////////////////////////////////////////////////////// Specific fetch wrappers:
 
-const fetchMetaData = async (contentApiUrl: string, xpContentPath: string, renderMode: XP_RENDER_MODE): Promise<MetaResult> => {
+const fetchMetaData = async (contentApiUrl: string, xpContentPath: string, xpRequestType: string|boolean): Promise<MetaResult> => {
     const body: ContentApiBaseBody = {
-        query: getMetaQuery(renderMode == XP_RENDER_MODE.EDIT ? PAGE_FRAGMENT : undefined),
+        query: getMetaQuery( /* xpRequestType == "page" ? */ PAGE_FRAGMENT /* : undefined */ ),
         variables: {
             path: xpContentPath
         }
@@ -302,7 +302,7 @@ const getCleanContentPathArrayOrThrow400 = (contentPath: string | string[] | und
 
 /**
  * Configures, builds and returns a general fetchContent function.
- * @param enonicConnectionConfig Object containing attributes imported from enonic-connecion-config.js: the methods getXpPath and requestIsFromXp, and the string CONTENT_API_URL. Easiest: caller imports enonic-connection-config and just passes that entire object here as enonicConnectionConfig.
+ * @param enonicConnectionConfig Object containing attributes imported from enonic-connecion-config.js: the methods getXpPath and fromXpRequestType, and the string CONTENT_API_URL. Easiest: caller imports enonic-connection-config and just passes that entire object here as enonicConnectionConfig.
  * @param typeSelector Object, usually the typeSelector from typeSelector.ts, where keys are full XP content type strings (eg. 'my.app:content-type') and values are optional type-specific objects of config for how to handle that function. All attributes in these objecs are optional (see typeSelector.ts for examples):
  *          - 'query' can be a guillotine query string to use to fetch data for that content type, OR also have a get-guillotine-variables function - by an object with 'query' and 'variables' attributes, or an array where the query string is first and the get-variables function is second.
  *          - 'props' is a function for processing props: converting directly-from-guillotine props to props adapted for displaying the selected page component
@@ -319,7 +319,7 @@ export const buildContentFetcher = <T extends EnonicConnectionConfigRequiredFiel
     }: FetcherConfig<T>
 ): ContentFetcher => {
 
-    const {CONTENT_API_URL, getXpPath, requestIsFromXp} = enonicConnectionConfig;
+    const {CONTENT_API_URL, getXpPath, fromXpRequestType} = enonicConnectionConfig;
 
     const defaultGetVariables: VariablesGetter = (path) => ({path});
 
@@ -386,13 +386,13 @@ export const buildContentFetcher = <T extends EnonicConnectionConfigRequiredFiel
             const siteRelativeContentPath = getCleanContentPathArrayOrThrow400(contentPath);
             const xpContentPath = getXpPath(siteRelativeContentPath);
 
-            const isRequestFromXp = requestIsFromXp(context);
+            const xpRequestType = fromXpRequestType(context);
             const renderMode = getRenderMode(context);
 
-            console.info(`fetchContent: fromXp = ${isRequestFromXp}; renderMode = ${renderMode}`);
+            console.info(`fetchContent: fromXp = ${xpRequestType}; renderMode = ${renderMode}`);
 
             ////////////////////////////////////////////// FIRST GUILLOTINE CALL FOR METADATA - MAINLY XP CONTENT TYPE:
-            const metaResult = await fetchMetaData(CONTENT_API_URL, xpContentPath, renderMode);
+            const metaResult = await fetchMetaData(CONTENT_API_URL, xpContentPath, xpRequestType);
             //////////////////////////////////////////////
 
 
@@ -456,9 +456,9 @@ export const buildContentFetcher = <T extends EnonicConnectionConfigRequiredFiel
                 }
             } as ContentResult;
 
-            // .meta will be visible in final rendered inline props. Only adding .requestIsFromXp here if the page is actually viewed through content studio, in which case this is true (instead if always adding it and letting it be visible as false)
-            if (isRequestFromXp) {
-                response.meta!.requestIsFromXp = true
+            // .meta will be visible in final rendered inline props. Only adding .fromXpRequestType here if the page is actually viewed through content studio, in which case this is true (instead if always adding it and letting it be visible as false)
+            if (xpRequestType) {
+                response.meta!.xpRequestType = xpRequestType
             }
             if (pageAsJson) {
                 response.page = {...response.page, pageAsJson};

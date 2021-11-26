@@ -4,7 +4,7 @@ type Props = {
     image: string,
 }
 
-const ImageComponent = (props: Props) => (
+const _Image = (props: Props) => (
     <>
         <figure>
             <img alt="" src={props.image}/>
@@ -12,4 +12,4 @@ const ImageComponent = (props: Props) => (
     </>
 )
 
-export default ImageComponent;
+export default _Image;

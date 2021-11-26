@@ -1,5 +1,5 @@
 import Document, {DocumentContext, Head, Html, Main, NextScript} from 'next/document'
-import {PORTAL_COMPONENT_ATTRIBUTE} from './_app';
+import {PORTAL_COMPONENT_ATTRIBUTE} from '../enonic-connection-config';
 
 class MyDocument
     extends Document {

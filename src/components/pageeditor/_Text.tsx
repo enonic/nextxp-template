@@ -4,10 +4,10 @@ type Props = {
     text: string,
 }
 
-const TextComponent = (props: Props) => (
+const _Text = (props: Props) => (
     <>
         <section dangerouslySetInnerHTML={{__html: props.text}}/>
     </>
 )
 
-export default TextComponent;
+export default _Text;

@@ -37,7 +37,6 @@ export type TypeSelection = {
     query?: SelectedQueryMaybeVariablesFunc,
     props?: PropsProcessor,
     page?: PageComponent
-
 }
 
 /**
