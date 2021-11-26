@@ -32,16 +32,30 @@ export const XP_PREVIEW_ORIGIN: string = (process.env.XP_PREVIEW_ORIGIN || proce
 
 // URI parameter marking that a request is for a preview for CS. MUST MATCH THE VALUE OF 'FROM_XP_PARAM' on XP side.
 const FROM_XP_PARAM = '__fromxp__';
+const XP_RENDER_MODE_HEADER = 'content-studio-mode';
 
 
 // ------------------------------- Exports and auxillary functions derived from values above ------------------------------------
 
 /** Returns true if the context object (from next.js in [[...contentPath]].jsx ) stems from a request that comes from XP in a CS-preview, i.e. has the URI param FROM_XP_PARAM (defined as '__fromXp__' above).
  *  False if no context, query or FROM_XP_PARAM param */
-export const requestIsFromXp = (context: Context): boolean => (
+export const requestIsFromXp = (context?: Context): boolean => (
     !!((context?.query || {})[FROM_XP_PARAM]) || !!((context?.req?.headers || {})[FROM_XP_PARAM])
 );
 
+export enum XP_RENDER_MODE {
+    INLINE = "inline",
+    EDIT = "edit",
+    PREVIEW = "preview",
+    LIVE = "live",
+    ADMIN = "admin",
+}
+
+export const getRenderMode = (context?: Context): XP_RENDER_MODE => {
+    const value = (context?.req?.headers || {})[XP_RENDER_MODE_HEADER];
+    const enumValue = XP_RENDER_MODE[<keyof typeof XP_RENDER_MODE>value?.toUpperCase()];
+    return enumValue || XP_RENDER_MODE.PREVIEW;
+};
 
 const siteNamePattern = new RegExp('^/' + SITE + "/");
 const publicPattern = new RegExp('^/*');
@@ -55,15 +69,15 @@ export const getXpPath = (pageUrl: string): string => `/${SITE}/${pageUrl}`;
 /** Takes an XP _path string and returns a Next.js-server-ready URL for the corresponding content for that _path */
 export const getPageUrlFromXpPath = (xpPath: string, context: Context): string => (
     requestIsFromXp(context)
-        ? xpPath.replace(siteNamePattern, `${NEXT_DOMAIN}/`)     // proxy-relative: should be absolute when served through the proxy
-        : xpPath.replace(siteNamePattern, '/')                   // site relative: should just start with slash when served directly
+    ? xpPath.replace(siteNamePattern, `${NEXT_DOMAIN}/`)     // proxy-relative: should be absolute when served through the proxy
+    : xpPath.replace(siteNamePattern, '/')                   // site relative: should just start with slash when served directly
 );
 
 /** Special-case (for <a href link values in props that target XP content pages - for when links too should work in CS) version of getPageUrlFromXpPath, depending on whether or not the request stems from the XP proxy used for content studio preview, or not */
 export const getContentLinkUrlFromXpPath = (xpPath: string, context: Context): string => (
     requestIsFromXp(context)
-        ? xpPath.replace(siteNamePattern, '')           // proxy-relative: should not start with a slash when served through the proxy
-        : xpPath.replace(siteNamePattern, '/')          // site relative: should start with slash when served directly
+    ? xpPath.replace(siteNamePattern, '')           // proxy-relative: should not start with a slash when served through the proxy
+    : xpPath.replace(siteNamePattern, '/')          // site relative: should start with slash when served directly
 );
 
 /**
@@ -74,8 +88,8 @@ export const getContentLinkUrlFromXpPath = (xpPath: string, context: Context): s
  */
 export const getPublicAssetUrl = (serverRelativeAssetPath: string, context: Context): string => (
     requestIsFromXp(context)
-        ? serverRelativeAssetPath.replace(publicPattern, `${NEXT_DOMAIN}/`)
-        : serverRelativeAssetPath.replace(publicPattern, `/`)
+    ? serverRelativeAssetPath.replace(publicPattern, `${NEXT_DOMAIN}/`)
+    : serverRelativeAssetPath.replace(publicPattern, `/`)
 );
 
 // ---------------------------------------------------------------------------------------------------------------- Export

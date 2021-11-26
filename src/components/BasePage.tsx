@@ -8,6 +8,8 @@ import DefaultPage from "../components/pagetypes/_Default";
 import selector, {TypeSelection} from "../selectors/typeSelector";
 
 import {ContentResult} from "../guillotine/fetchContent";
+import EditModeFullPage from './pagetypes/_EditModeFullPage';
+import {XP_RENDER_MODE} from '../enonic-connection-config';
 
 
 const errorPageSelector = {
@@ -15,7 +17,7 @@ const errorPageSelector = {
     '500': Custom500
 }
 
-const BasePage = ({content, meta, error}: ContentResult) => {
+const BasePage = ({content, meta, page, error}: ContentResult) => {
     if (error) {
         // @ts-ignore
         const ErrorPage = errorPageSelector[error.code] || CustomError;
@@ -33,9 +35,9 @@ const BasePage = ({content, meta, error}: ContentResult) => {
 
     // @ts-ignore
     const typeSelection: TypeSelection = (selector || {})[meta.type]
-    const SelectedPage = typeSelection?.page || DefaultPage;
+    const SelectedPage = meta?.renderMode == XP_RENDER_MODE.EDIT ? EditModeFullPage : typeSelection?.page || DefaultPage;
 
-    return <SelectedPage {...content} />;
+    return <SelectedPage {...Object.assign({}, content, page)} />;
 };
 
 export default BasePage;

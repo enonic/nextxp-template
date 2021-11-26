@@ -6,8 +6,13 @@ import '../styles/globals.css'
 
 import Seo from '../components/blocks/Seo'
 import Layout from '../components/blocks/Layout'
+import React from 'react';
+import {XP_RENDER_MODE} from '../enonic-connection-config';
 
 const mainHeading = "Next.xp"
+
+export const PORTAL_COMPONENT_ATTRIBUTE = "data-portal-component-type";
+export const PORTAL_REGION_ATTRIBUTE = "data-portal-region";
 
 /**
  *
@@ -20,19 +25,29 @@ function MyApp({Component, pageProps}: AppProps) {
         title: mainHeading + ": " + subHeading,
         logoUrl: pageProps.common?.header?.logoUrl
     }
+
+    const renderMode = pageProps.meta.renderMode;
+    console.info(`Rendering mode: ${renderMode}`);
+    if (renderMode == XP_RENDER_MODE.EDIT) {
+        return (
+            <Component {...pageProps}/>
+        )
+    }
+
     return (
         <>
             {
                 pageProps.meta?.baseUrl &&
                 <Head>
-                    <base href={pageProps.meta.baseUrl} />
+                    <base href={pageProps.meta.baseUrl}/>
                 </Head>
             }
             <Layout {...layoutProps}>
-                <Seo title={subHeading} siteTitle={mainHeading} />
+                <Seo title={subHeading} siteTitle={mainHeading}/>
                 <Component {...pageProps} />
             </Layout>
         </>
     );
 }
+
 export default MyApp
