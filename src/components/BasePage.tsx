@@ -33,9 +33,8 @@ const BasePage = ({content, meta, page, error}: ContentResult) => {
         console.warn("BasePage props are missing 'meta.type'. Falling back to _Default page type.");
     }
 
-    // @ts-ignore
     const typeSelection: TypeSelection = (selector || {})[meta.type]
-    const SelectedPage = meta?.renderMode == XP_RENDER_MODE.EDIT ? EditModeFullPage : typeSelection?.page || DefaultPage;
+    const SelectedPage = meta.renderMode == XP_RENDER_MODE.EDIT ? EditModeFullPage : typeSelection?.page || DefaultPage;
 
     return <SelectedPage {...Object.assign({}, content, page)} />;
 };

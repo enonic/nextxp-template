@@ -1,5 +1,6 @@
 import React from "react"
 import {PORTAL_COMPONENT_ATTRIBUTE, PORTAL_REGION_ATTRIBUTE} from '../../pages/_app';
+import componentSelector from '../pageeditor/componentSelector';
 
 interface Component {
     type: string;
@@ -42,9 +43,10 @@ const EditModeFullPage = (props: Props) => {
                                     const cmpAttrs: { [key: string]: string } = {
                                         [PORTAL_COMPONENT_ATTRIBUTE]: component.type
                                     };
+                                    const ComponentView = componentSelector[component.type];
                                     return (
                                         <div key={regionAttrs.id + "-" + i} {...cmpAttrs}>
-                                            {component.text ? <section dangerouslySetInnerHTML={{__html: component.text}}/> : ''}
+                                            <ComponentView {...component}/>
                                         </div>
                                     )
                                 })

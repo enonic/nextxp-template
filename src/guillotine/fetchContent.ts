@@ -32,8 +32,8 @@ type MetaResult = Result & {
 };
 
 export type ContentResult = Result & {
-    content?: any,
-    meta?: ResultMeta,
+    content: any,
+    meta: ResultMeta,
     page?: any,
 };
 

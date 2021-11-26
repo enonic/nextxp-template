@@ -7,7 +7,6 @@ import '../styles/globals.css'
 import Seo from '../components/blocks/Seo'
 import Layout from '../components/blocks/Layout'
 import React from 'react';
-import {XP_RENDER_MODE} from '../enonic-connection-config';
 
 const mainHeading = "Next.xp"
 
@@ -28,11 +27,11 @@ function MyApp({Component, pageProps}: AppProps) {
 
     const renderMode = pageProps.meta.renderMode;
     console.info(`Rendering mode: ${renderMode}`);
-    if (renderMode == XP_RENDER_MODE.EDIT) {
-        return (
-            <Component {...pageProps}/>
-        )
-    }
+    // if (renderMode == XP_RENDER_MODE.EDIT) {
+    //     return (
+    //         <Component {...pageProps}/>
+    //     )
+    // }
 
     return (
         <>
