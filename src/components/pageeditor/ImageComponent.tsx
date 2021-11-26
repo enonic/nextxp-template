@@ -12,7 +12,7 @@ type Props = {
 const ImageComponent = (props: Props) => (
     <>
         <figure>
-            <img alt={props.image.caption} src={props.image.image?.imageUrl}/>
+            <img alt={props.image?.caption} src={props.image?.image?.imageUrl}/>
         </figure>
     </>
 )
