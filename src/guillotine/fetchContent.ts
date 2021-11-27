@@ -1,4 +1,4 @@
-import {getMetaQuery, Meta, PAGE_FRAGMENT} from "../selectors/queries/_getMetaData";
+import {getMetaQuery, Meta, PAGE_FRAGMENT, PageComponent} from "../selectors/queries/_getMetaData";
 import {LOW_PERFORMING_DEFAULT_QUERY} from "../selectors/queries/_getDefaultData";
 
 import {Context} from "../pages/[[...contentPath]]";
@@ -31,10 +31,14 @@ type MetaResult = Result & {
     meta?: Meta
 };
 
+export type PageData = {
+    regions?: RegionTree
+}
+
 export type ContentResult = Result & {
     content: any,
     meta: ResultMeta,
-    page?: any,
+    page?: PageData,
     components?: any,
 };
 
@@ -298,6 +302,52 @@ const getCleanContentPathArrayOrThrow400 = (contentPath: string | string[] | und
 }
 
 
+
+
+//------------------------------------------------------------- XP page component data handling
+
+
+interface PageRegion {
+    name: string;
+    components: PageComponent[];
+}
+
+export type RegionTree = { [key: string]: PageRegion }
+
+function getInfo(cmp: PageComponent): { region: string, index: number } | undefined {
+    const match = cmp.path.match(/\/(\w+)\/(\d+)/);
+    if (match) {
+        return {
+            region: match[1],
+            index: +match[2],
+        }
+    }
+    return;
+}
+
+function buildRegionTree(comps: PageComponent[]): RegionTree {
+    const regions: RegionTree = {};
+    comps.forEach(cmp => {
+        const info = getInfo(cmp);
+        if (info) {
+            let region = regions[info.region];
+            if (!region) {
+                region = {
+                    name: info.region,
+                    components: [],
+                };
+                regions[info.region] = region;
+            }
+            region.components.push(cmp);
+        } else {
+            // this is page component
+            // TODO: something here later, if we're making a pageSelector too
+        }
+    });
+    return regions;
+}
+
+
 ///////////////////////////////////////////////////////////////////////////////// ENTRY 1 - THE BUILDER:
 
 
@@ -460,7 +510,10 @@ export const buildContentFetcher = <T extends EnonicConnectionConfigRequiredFiel
                 response.meta!.xpRequestType = xpRequestType
             }
             if (components) {
-                response.page = {...(response.page || {}), components}
+                response.page = {
+                    ...response.page || {},
+                    regions: buildRegionTree(components)
+                }
             }
             response.meta!.renderMode = renderMode;
 
@@ -498,4 +551,3 @@ export const fetchContent: ContentFetcher = buildContentFetcher<EnonicConnection
     typeSelector,
     firstMethodKey: true
 });
-

@@ -2,18 +2,7 @@ import React from "react"
 import { PORTAL_REGION_ATTRIBUTE } from '../../enonic-connection-config';
 
 import Component, {BaseComponentI} from "./_BaseComponent";
-
-interface ComponentI {
-    type: string;
-    path: string;
-}
-
-interface RegionI {
-    name: string;
-    components: ComponentI[];
-}
-
-type RegionTree = { [key: string]: RegionI }
+import {PageData} from "../../guillotine/fetchContent";
 
 interface RegionProps {
     name: string;
@@ -22,50 +11,11 @@ interface RegionProps {
     content?: any;                  // Content is passed down for optional consumption in componentviews. TODO: Use a react contextprovider instead?
 }
 
-export type PageProps = {
-    components?: ComponentI[]
-}
-
 type Props = {
-    page: PageProps;
+    page: PageData;
     selected?: string;
 
     content?: any;                  // Content is passed down for optional consumption in componentviews. TODO: Use a react contextprovider instead?
-}
-
-//-------------------------------------------------------------
-
-function getInfo(cmp: ComponentI): { region: string, index: number } | undefined {
-    const match = cmp.path.match(/\/(\w+)\/(\d+)/);
-    if (match) {
-        return {
-            region: match[1],
-            index: +match[2],
-        }
-    }
-    return;
-}
-
-function buildRegionTree(comps: ComponentI[]): RegionTree {
-    const regions: RegionTree = {};
-    comps.forEach(cmp => {
-        const info = getInfo(cmp);
-        if (info) {
-            let region = regions[info.region];
-            if (!region) {
-                region = {
-                    name: info.region,
-                    components: [],
-                };
-                regions[info.region] = region;
-            }
-            region.components.push(cmp);
-        } else {
-            // this is page component
-            // TODO: something here later, if we're making a pageSelector too
-        }
-    });
-    return regions;
 }
 
 
@@ -93,13 +43,11 @@ const SingleRegion = ({name, components, content}: RegionProps) => {
 /** Multiple XP regions, or only one if named in props.selected */
 const Region = (props: Props) => {
     const {page, selected, content} = props;
-    if (!page?.components || !page!.components!.length) {
+    if (!page?.regions || !Object.keys(page.regions)) {
         return null;
     }
 
-    console.log("page?.components:", page?.components);
-
-    const regions = buildRegionTree(page?.components!);
+    const regions = page.regions;
 
     console.log("--> regions:", JSON.stringify(regions, null, 2));
 

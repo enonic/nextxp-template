@@ -2,13 +2,13 @@ import React from "react"
 
 import componentSelector from '../../selectors/componentSelector';
 
-export type PartI = {
+export type PartData = {
     descriptor: string,
     [custKeysFromQuety:string]: any
 }
 
 type Props = {
-    component: PartI,
+    component: PartData,
 
     content?: any;                  // Content is passed down for optional consumption in componentviews. TODO: Use a react contextprovider instead?
 }
@@ -23,11 +23,11 @@ const DefaultPart = ({component}: Props) => (
 );
 
 
-const _Part = (props: Props) => {
+const BasePart = (props: Props) => {
     const {component} = props;
     const componentSelection = componentSelector[component.descriptor];
     const SelectedPart = componentSelection?.page || DefaultPart;
     return <SelectedPart {...props} />;
 }
 
-export default _Part;
+export default BasePart;

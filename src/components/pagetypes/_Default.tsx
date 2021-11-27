@@ -1,6 +1,6 @@
 import React from "react"
 
-import Region, {PageProps} from "../pageeditor/_Region";
+import Region  from "../pageeditor/_Region";
 
 type ContentProps = {
     displayName: string,
@@ -8,7 +8,6 @@ type ContentProps = {
 
 type Props = {
     content: ContentProps,
-    page?: PageProps
 }
 
 
@@ -18,7 +17,7 @@ const DefaultPage = (props: Props) => {
         <div style={{padding: "10px"}}>
             <h2>{content.displayName}</h2>
             <h5>content:</h5>
-            <pre style={{width:"100%", whiteSpace:"pre-wrap", wordWrap: "break-word"}}>{JSON.stringify(content, null, 2)}</pre>
+            <pre style={{fontSize: ".8em", width:"100%", whiteSpace:"pre-wrap", wordWrap: "break-word"}}>{JSON.stringify(content, null, 2)}</pre>
             <br />
             <Region {...props} />
             <br />

@@ -36,7 +36,11 @@ export function getMetaQuery(pageFragment?: string): string {
             }`;
 }
 
+export interface PageComponent {
+    type: string;
+    path: string;
+}
 export type Meta = {
     type: string,
-    components?: Record<string, any>[],
+    components?: PageComponent[],
 };

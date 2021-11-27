@@ -3,12 +3,12 @@ import React from "react";
 import { PORTAL_COMPONENT_ATTRIBUTE } from "../../enonic-connection-config";
 
 import _Text from "./_Text";
-import _Part, {PartI} from "./_Part";
+import _BasePart, {PartData} from "../parts/_BasePart";
 import _Image from "./_Image";
 
 const componentTypeSelector = {
     'text': _Text,
-    'part': _Part,
+    'part': _BasePart,
     'image': _Image
 };
 
@@ -19,7 +19,7 @@ export interface BaseComponentI {
     path: string;
     text?: string;
     image?: string;
-    part?: PartI
+    part?: PartData
 }
 
 type Props = {
