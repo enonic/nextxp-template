@@ -1,9 +1,9 @@
 import React from "react"
 
 type Props = {
-    image: {
+    image?: {
         caption: string,
-        image: {
+        image?: {
             imageUrl: string,
         }
     },

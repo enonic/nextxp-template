@@ -5,9 +5,6 @@ import componentSelector from '../pageeditor/componentSelector';
 interface Component {
     type: string;
     path: string;
-    text?: string;
-    image?: string;
-    config?: Record<string, any>;
 }
 
 interface Region {
@@ -16,23 +13,18 @@ interface Region {
 }
 
 type Props = {
-    pageAsJson: {
-        regions: { [key: string]: Region };
-    };
-    components: [Record<string, any>];
+    components: Component[];
 }
 
 const EditModeFullPage = (props: Props) => {
+    /*    console.info(`EditModeFullPage: props`)
+        console.dir(props, {depth: null});*/
 
-    console.info(`EditModeFullPage`)
-    console.dir(props, {depth: null});
+    const components = props.components || [];
+    const regions = buildRegionTree(components);
 
-    const regions = props.pageAsJson?.regions || {};
-    const components = props.components;
-
-    function getComponentData(path: string): Record<string, any> | undefined {
-        return components.find((cmp) => cmp.path === path);
-    }
+    console.info(`EditModeFullPage: component tree`)
+    console.dir(regions, {depth: null});
 
     return (
         <>
@@ -50,10 +42,9 @@ const EditModeFullPage = (props: Props) => {
                                         [PORTAL_COMPONENT_ATTRIBUTE]: component.type
                                     };
                                     const ComponentView = componentSelector[component.type];
-                                    const cmpData = getComponentData(component.path);
                                     return (
                                         <div key={regionAttrs.id + "-" + i} {...cmpAttrs}>
-                                            <ComponentView {...cmpData || component}/>
+                                            <ComponentView {...component}/>
                                         </div>
                                     )
                                 })
@@ -67,3 +58,35 @@ const EditModeFullPage = (props: Props) => {
 }
 
 export default EditModeFullPage;
+
+function getInfo(cmp: Component): { region: string, index: number } | undefined {
+    const match = cmp.path.match(/\/(\w+)\/(\d+)/);
+    if (match) {
+        return {
+            region: match[1],
+            index: +match[2],
+        }
+    }
+    return;
+}
+
+function buildRegionTree(cmps: Component[]): { [key: string]: Region } {
+    const regions: { [key: string]: Region } = {};
+    cmps.forEach(cmp => {
+        const info = getInfo(cmp);
+        if (info) {
+            let region = regions[info.region];
+            if (!region) {
+                region = {
+                    name: info.region,
+                    components: [],
+                };
+                regions[info.region] = region;
+            }
+            region.components.push(cmp);
+        } else {
+            // this is page component
+        }
+    });
+    return regions;
+}

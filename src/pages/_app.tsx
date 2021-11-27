@@ -25,8 +25,7 @@ function MyApp({Component, pageProps}: AppProps) {
         logoUrl: pageProps.common?.header?.logoUrl
     }
 
-    const renderMode = pageProps.meta.renderMode;
-    console.info(`Rendering mode: ${renderMode}`);
+    // const renderMode = pageProps.meta.renderMode;
     // if (renderMode == XP_RENDER_MODE.EDIT) {
     //     return (
     //         <Component {...pageProps}/>

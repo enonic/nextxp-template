@@ -67,7 +67,7 @@ type ContentApiBaseBody = {
 };
 
 /** Generic fetch */
-const fetchFromApi = async (
+export const fetchFromApi = async (
     apiUrl: string,
     body: {},
     method = "POST"
@@ -404,7 +404,7 @@ export const buildContentFetcher = <T extends EnonicConnectionConfigRequiredFiel
                 };
             }
 
-            const {type, pageAsJson, pageTemplate, components} = metaResult.meta || {};
+            const {type, components} = metaResult.meta || {};
 
             if (!type) {
                 // @ts-ignore
@@ -437,8 +437,6 @@ export const buildContentFetcher = <T extends EnonicConnectionConfigRequiredFiel
                                        : undefined;
 
 
-            console.info(`fetchContent query:\n${query}`)
-
             ////////////////////////////////////////////// SECOND GUILLOTINE CALL FOR DATA:
             const guillotineResponse = await fetchContentData(CONTENT_API_URL, xpContentPath, query, methodKeyFromQuery, variables);
             //////////////////////////////////////////////////////////////////////////////
@@ -460,12 +458,6 @@ export const buildContentFetcher = <T extends EnonicConnectionConfigRequiredFiel
             // .meta will be visible in final rendered inline props. Only adding .requestIsFromXp here if the page is actually viewed through content studio, in which case this is true (instead if always adding it and letting it be visible as false)
             if (isRequestFromXp) {
                 response.meta!.requestIsFromXp = true
-            }
-            if (pageAsJson) {
-                response.page = {...response.page, pageAsJson};
-            }
-            if (pageTemplate) {
-                response.page = {...response.page, pageTemplate};
             }
             if (components) {
                 response.page = {...response.page, components}
