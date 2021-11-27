@@ -32,7 +32,7 @@ export const XP_PREVIEW_ORIGIN: string = (process.env.XP_PREVIEW_ORIGIN || proce
 
 // URI parameter marking that a request is for a preview for CS. MUST MATCH THE VALUE OF 'FROM_XP_PARAM' on XP side.
 export const FROM_XP_PARAM = '__fromxp__';
-
+export const COMPONENT_SUBPATH_HEADER = "xp-component-path";
 const XP_RENDER_MODE_HEADER = 'content-studio-mode';
 
 export const PORTAL_COMPONENT_ATTRIBUTE = "data-portal-component-type";
@@ -59,6 +59,10 @@ export const getRenderMode = (context?: Context): XP_RENDER_MODE => {
     const enumValue = XP_RENDER_MODE[<keyof typeof XP_RENDER_MODE>value?.toUpperCase()];
     return enumValue || XP_RENDER_MODE.PREVIEW;
 };
+
+export const getSingleCompRequest = (context:Context): string|undefined => (
+    (context?.req?.headers || {})[COMPONENT_SUBPATH_HEADER]
+);
 
 const siteNamePattern = new RegExp('^/' + SITE + "/");
 const publicPattern = new RegExp('^/*');
@@ -112,6 +116,7 @@ const enonicConnectionConfig = {
     APP_NAME_DASHED,
 
     FROM_XP_PARAM,
+    COMPONENT_SUBPATH_HEADER,
     PORTAL_COMPONENT_ATTRIBUTE,
     PORTAL_REGION_ATTRIBUTE,
 
