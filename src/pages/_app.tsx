@@ -1,5 +1,6 @@
 import type {AppProps} from 'next/app'
 
+
 import '../styles/globals.css'
 
 import Seo from '../components/blocks/Seo'
@@ -14,9 +15,17 @@ const mainHeading = "Next.xp"
  * @param pageProps {{content, common, meta, error}}
  */
 function MyApp({Component, pageProps}: AppProps) {
-    // In single-component rendering mode, don't wrap the output, only render the component
+    // In single-component rendering mode, only render the component. This is problematic to do dynamically in Next.js, so we leave that to post-processing in the proxy.
     if (pageProps.meta?.xpRequestType === 'component') {
-        return <Component {...pageProps} />;
+
+        // TODO: PLACEHOLDER - actually render updated single component
+        return (
+            <>
+                <details data-remove-above="true"></details>
+                <Component {...pageProps} />
+                <details data-remove-below="true"></details>
+            </>
+        );
     }
 
 
