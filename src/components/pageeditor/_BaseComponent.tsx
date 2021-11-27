@@ -1,16 +1,8 @@
 import React from "react";
 
 import { PORTAL_COMPONENT_ATTRIBUTE } from "../../enonic-connection-config";
-
-import _Text from "./_Text";
-import _BasePart, {PartData} from "../parts/_BasePart";
-import _Image from "./_Image";
-
-const componentTypeSelector = {
-    'text': _Text,
-    'part': _BasePart,
-    'image': _Image
-};
+import {PartData} from "./parts/_BasePart";
+import componentSelector from "../../selectors/componentSelector";
 
 
 
@@ -34,7 +26,7 @@ const BaseComponent = ({component, content}: Props) => {
         [PORTAL_COMPONENT_ATTRIBUTE]: type
     };
 
-    const ComponentView = componentTypeSelector[type] || <p>I am a {type}</p>;
+    const ComponentView = componentSelector[type]?.page || <p>I am a {type}</p>;
 
     return (
         <div {...cmpAttrs}>

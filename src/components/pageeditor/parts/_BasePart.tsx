@@ -1,10 +1,10 @@
 import React from "react"
 
-import componentSelector from '../../selectors/componentSelector';
+import partSelector from '../../../selectors/partSelector';
 
 export type PartData = {
     descriptor: string,
-    [custKeysFromQuety:string]: any
+    [customKeysFromQuery:string]: any
 }
 
 type Props = {
@@ -25,8 +25,8 @@ const DefaultPart = ({component}: Props) => (
 
 const BasePart = (props: Props) => {
     const {component} = props;
-    const componentSelection = componentSelector[component.descriptor];
-    const SelectedPart = componentSelection?.page || DefaultPart;
+    const partSelection = partSelector[component.descriptor];
+    const SelectedPart = partSelection?.page || DefaultPart;
     return <SelectedPart {...props} />;
 }
 

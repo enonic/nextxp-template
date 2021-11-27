@@ -1,18 +1,18 @@
-// APP_NAME helps to fully qualify XP-component name strings in the connected XP app:
-import {APP_NAME} from "../enonic-connection-config";
 
-import {PageComponent} from "./typeSelector";
+import BasePart from "../components/pageeditor/parts/_BasePart";
+import Image from "../components/pageeditor/_Image";
+import Text from "../components/pageeditor/_Text";
 
-export type ComponentSelector = {
-    [fullContentType:string]: ComponentSelection
-}
-export type ComponentSelection = {
-    page?: PageComponent
-}
-
-const componentSelector: ComponentSelector = {
-
+const componentSelector = {
+    'text': {
+        page: Text
+    },
+    'part': {
+        page: BasePart
+    },
+    'image': {
+        page: Image
+    }
 };
-
 
 export default componentSelector;

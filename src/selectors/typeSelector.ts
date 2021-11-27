@@ -20,7 +20,7 @@ export type VariablesGetter = (path: string, context?: Context) => {
     [variables: string]: any
 };
 
-export type PageComponent = (content:any) => JSX.Element
+export type ReactComp = (props:any) => JSX.Element
 
 export type SelectedQueryMaybeVariablesFunc = string |
     { query:string, variables:VariablesGetter } |
@@ -36,7 +36,7 @@ export type SelectedQueryMaybeVariablesFunc = string |
 export type TypeSelection = {
     query?: SelectedQueryMaybeVariablesFunc,
     props?: PropsProcessor,
-    page?: PageComponent
+    page?: ReactComp
 }
 
 /**
