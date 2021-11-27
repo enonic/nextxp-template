@@ -35,6 +35,8 @@ function MyApp({Component, pageProps}: AppProps) {
         logoUrl: pageProps.common?.header?.logoUrl
     }
 
+    // const renderMode = pageProps.meta.renderMode;
+
     return (
         <>
             <Layout {...layoutProps}>

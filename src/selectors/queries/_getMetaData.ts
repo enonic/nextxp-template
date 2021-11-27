@@ -1,9 +1,29 @@
-export const PAGE_FRAGMENT = ` 
-    pageAsJson(resolveTemplate: true)
-    pageTemplate {
-        _path
-        pageAsJson(resolveTemplate: true)
-    }`;
+export const PAGE_FRAGMENT = `
+      components {
+        type
+        path
+        page {
+          descriptor
+          template {
+            _path
+          }
+        }
+        text {
+          value {
+            processedHtml
+          }
+        }
+        part {
+          descriptor
+          configAsJson
+        }
+        image {
+          caption
+          image {
+            imageUrl (scale: "width-768")
+          }
+        }
+      }`;
 
 export function getMetaQuery(pageFragment?: string): string {
     return `query($path:ID!){
@@ -18,9 +38,5 @@ export function getMetaQuery(pageFragment?: string): string {
 
 export type Meta = {
     type: string,
-    pageAsJson?: Object,
-    pageTemplate?: {
-        _path: string,
-        pageAsJson: Object,
-    }
+    components?: Record<string, any>[],
 };

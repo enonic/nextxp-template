@@ -1,12 +1,16 @@
 import React from "react"
 
 type Props = {
-    text: string,
+    text: {
+        value: {
+            processedHtml: string
+        }
+    }
 }
 
 const _Text = (props: Props) => (
     <>
-        <section dangerouslySetInnerHTML={{__html: props.text}}/>
+        <section dangerouslySetInnerHTML={{__html: props.text.value?.processedHtml}}/>
     </>
 )
 

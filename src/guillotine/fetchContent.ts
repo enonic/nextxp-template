@@ -35,6 +35,7 @@ export type ContentResult = Result & {
     content: any,
     meta: ResultMeta,
     page?: any,
+    components?: any,
 };
 
 
@@ -66,7 +67,7 @@ type ContentApiBaseBody = {
 };
 
 /** Generic fetch */
-const fetchFromApi = async (
+export const fetchFromApi = async (
     apiUrl: string,
     body: {},
     method = "POST"
@@ -403,7 +404,7 @@ export const buildContentFetcher = <T extends EnonicConnectionConfigRequiredFiel
                 };
             }
 
-            const {type, pageAsJson, pageTemplate} = metaResult.meta || {};
+            const {type, components} = metaResult.meta || {};
 
             if (!type) {
                 // @ts-ignore
@@ -436,8 +437,6 @@ export const buildContentFetcher = <T extends EnonicConnectionConfigRequiredFiel
                                        : undefined;
 
 
-            console.info(`fetchContent query:\n${query}`)
-
             ////////////////////////////////////////////// SECOND GUILLOTINE CALL FOR DATA:
             const guillotineResponse = await fetchContentData(CONTENT_API_URL, xpContentPath, query, methodKeyFromQuery, variables);
             //////////////////////////////////////////////////////////////////////////////
@@ -460,11 +459,8 @@ export const buildContentFetcher = <T extends EnonicConnectionConfigRequiredFiel
             if (xpRequestType) {
                 response.meta!.xpRequestType = xpRequestType
             }
-            if (pageAsJson) {
-                response.page = {...response.page, pageAsJson};
-            }
-            if (pageTemplate) {
-                response.page = {...response.page, pageTemplate};
+            if (components) {
+                response.page = {...(response.page || {}), components}
             }
             response.meta!.renderMode = renderMode;
 
