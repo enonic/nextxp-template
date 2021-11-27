@@ -34,7 +34,7 @@ const BasePage = ({content, meta, page, error}: ContentResult) => {
     const typeSelection: TypeSelection = (selector || {})[meta.type]
     const SelectedPage = typeSelection?.page || DefaultPage;
 
-    return <SelectedPage {...Object.assign({}, content, page)} />;
+    return <SelectedPage content={content} page={page} />;
 };
 
 export default BasePage;

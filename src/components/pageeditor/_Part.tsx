@@ -2,12 +2,28 @@ import React from "react"
 
 import componentSelector from '../../selectors/componentSelector';
 
-type Props = {
-    config: Record<string, any>,
+export type PartProps = {
+    path: string,
+    config?: Record<string, any>,
+    descriptor: string,
+
+    content?: any;                  // Content is passed down for optional consumption in componentviews. TODO: Use a react contextprovider instead?
 }
 
-const DefaultPart = (props:Props) => <pre>Part content {JSON.stringify(props)}</pre>;
+const DefaultPart = ({descriptor, config, path, content}:PartProps) => (
+    <div id={`${path}-${descriptor}`} style={{marginTop:"2rem"}}>
+        <h6 style={{marginTop:"0", marginBottom:"0"}}>Part:</h6>
+        <h3 style={{marginTop:"0", marginBottom: "8px"}}>{descriptor}</h3>
+        <h5 style={{marginTop:"0", marginBottom:"0"}}>config:</h5>
+        <pre style={{width:"100%", whiteSpace:"pre-wrap", wordWrap: "break-word"}}>{JSON.stringify(config, null, 2)}</pre>
+    </div>
+);
 
-const _Part = (props: Props) => componentSelector[props.descriptor] || <DefaultPart {...props} />;
+
+const _Part = (props: PartProps) => {
+    const componentSelection = componentSelector[props.descriptor];
+    const SelectedPart = componentSelection?.page || DefaultPart;
+    return <SelectedPart {...props} />;
+}
 
 export default _Part;

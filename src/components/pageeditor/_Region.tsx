@@ -11,32 +11,44 @@ const componentTypeSelector = {
     'image': _Image
 };
 
-interface Component {
+interface ComponentProps {
     type: string;
     path: string;
     text?: string;
     image?: string;
     descriptor?: string;
     config?: Record<string, any>;
+
+    content?: any;                  // Content is passed down for optional consumption in componentviews. TODO: Use a react contextprovider instead?
 }
 
-interface _Region {
+interface RegionProps {
     name: string;
-    components: Component[];
+    components: ComponentProps[];
+
+    content?: any;                  // Content is passed down for optional consumption in componentviews. TODO: Use a react contextprovider instead?
 }
 
-export type RegionProps = {
-    regions: _Region | { [key: string]: _Region } | undefined;    // Accept one selected, or all, regions. Target one particular region by passing in that subobject instead of all regions
+export type PageProps = {
+    pageAsJson?: {
+        regions?: { [key: string]: RegionProps }    // Accept one selected, or all, regions. Target one particular region by passing in that subobject instead of all regions
+    }
 }
 
+type Props = {
+    page: PageProps;
+    selected?: string;
 
-const Component = (component: Component) => {
+    content?: any;                  // Content is passed down for optional consumption in componentviews. TODO: Use a react contextprovider instead?
+}
 
+const Component = (component: ComponentProps) => {
+    const {type} = component;
     const cmpAttrs: { [key: string]: string } = {
-        [PORTAL_COMPONENT_ATTRIBUTE]: component.type
+        [PORTAL_COMPONENT_ATTRIBUTE]: type
     };
 
-    const ComponentView = componentTypeSelector[component.type] || <p>I am a {component.type}</p>;
+    const ComponentView = componentTypeSelector[type] || <p>I am a {type}</p>;
 
     return (
         <div {...cmpAttrs}>
@@ -46,7 +58,7 @@ const Component = (component: Component) => {
 }
 
 
-const SingleRegion = ({name, components}: _Region) => {
+const SingleRegion = ({name, components, content}: RegionProps) => {
     const regionAttrs: { [key: string]: string } = {
         id: name + "Region",
         [PORTAL_REGION_ATTRIBUTE]: name,
@@ -55,8 +67,8 @@ const SingleRegion = ({name, components}: _Region) => {
     return (
         <div id={`${name}Region`} data-portal-region={name}>
             {
-                components?.map((component: Component, i: number) => (
-                    <Component key={regionAttrs.id + "-" + i} {...component} />
+                components?.map((component: ComponentProps, i: number) => (
+                    <Component key={regionAttrs.id + "-" + i} {...component} content={content} />
                 ))
             }
         </div>
@@ -65,27 +77,35 @@ const SingleRegion = ({name, components}: _Region) => {
 
 
 /** One or more XP regions */
-const _Region = ({regions}: RegionProps) => {
+const Region = (props: Props) => {
+    const {page, selected, content} = props;
 
+    const {regions} = page?.pageAsJson || {};
 
-    // Detect if regions is a single, selected region and if so, handle that
-    if (Array.isArray(regions?.components)) {
-        return <SingleRegion {...regions} />;
-
-    } else if (!regions) {
+    if (!regions || !Object.keys(regions)) {
         return null;
+    }
+
+    // Detect if any single region is selected for rendering and if so, handle that
+    if (selected) {
+        const selectedRegion = regions[selected];
+        if (!selectedRegion) {
+            console.warn(`Region name '${selected}' was selected but not found among regions (${JSON.stringify(Object.keys(regions))}). Skipping.`);    // TODO: Throw error instead of this? Return null?
+            return null;
+        }
+        return <SingleRegion {...selectedRegion} content={content} />;
     }
 
     return (
         <>
             {
                 Object.keys(regions).map((name: string, i) => {
-                    const region: _Region = regions![name];
-                    return <SingleRegion key={i} {...region} />;
+                    const region = regions![name];
+                    return <SingleRegion key={i} {...region} content={content} />;
                 })
             }
         </>
     );
 }
 
-export default _Region;
+export default Region;
