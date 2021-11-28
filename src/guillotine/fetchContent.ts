@@ -255,9 +255,9 @@ const NO_PROPS_PROCESSOR = (props: any) => props;
 
 ///////////////////////////////////////////////////////////////////////////////// Specific fetch wrappers:
 
-const fetchMetaData = async (contentApiUrl: string, xpContentPath: string, xpRequestType: string|boolean): Promise<MetaResult> => {
+const fetchMetaData = async (contentApiUrl: string, xpContentPath: string, xpRequestType: string|boolean, isEditMode: boolean): Promise<MetaResult> => {
     const body: ContentApiBaseBody = {
-        query: getMetaQuery( /* xpRequestType == "page" ? */ PAGE_FRAGMENT /* : undefined */ ),
+        query: getMetaQuery(isEditMode, /* xpRequestType == "page" ? */ PAGE_FRAGMENT /* : undefined */),
         variables: {
             path: xpContentPath
         }
@@ -331,8 +331,22 @@ function getInfo(cmp: PageComponent): { region: string, index: number } | undefi
     return;
 }
 
-function buildRegionTree(comps: PageComponent[]): RegionTree {
+type PageAsJson = {
+    regions?: Record<string, any>
+}
+
+function buildRegionTree(comps: PageComponent[], pageAsJson:PageAsJson, isEditMode: boolean): RegionTree {
     const regions: RegionTree = {};
+
+    if (isEditMode) {
+        Object.keys(pageAsJson?.regions || []).forEach(regionName => {
+            regions[regionName] = {
+                name: regionName,
+                components: []
+            };
+        })
+    }
+
     comps.forEach(cmp => {
         const info = getInfo(cmp);
         if (info) {
@@ -445,11 +459,12 @@ export const buildContentFetcher = <T extends EnonicConnectionConfigRequiredFiel
 
             const xpRequestType = fromXpRequestType(context);
             const renderMode = getRenderMode(context);
+            const isEditMode = renderMode === XP_RENDER_MODE.EDIT
 
             console.info(`fetchContent: fromXp = ${xpRequestType}; renderMode = ${renderMode}`);
 
             ////////////////////////////////////////////// FIRST GUILLOTINE CALL FOR METADATA - MAINLY XP CONTENT TYPE:
-            const metaResult = await fetchMetaData(CONTENT_API_URL, xpContentPath, xpRequestType);
+            const metaResult = await fetchMetaData(CONTENT_API_URL, xpContentPath, xpRequestType, isEditMode);
             //////////////////////////////////////////////
 
 
@@ -460,7 +475,7 @@ export const buildContentFetcher = <T extends EnonicConnectionConfigRequiredFiel
                 };
             }
 
-            const {type, components} = metaResult.meta || {};
+            const {type, components, pageAsJson} = metaResult.meta || {};
 
             if (!type) {
                 // @ts-ignore
@@ -518,10 +533,10 @@ export const buildContentFetcher = <T extends EnonicConnectionConfigRequiredFiel
                     response.meta!.requestedComponent = getSingleCompRequest(context);
                 }
             }
-            if (components) {
+            if (components || (pageAsJson && isEditMode)) {
                 response.page = {
                     ...response.page || {},
-                    regions: buildRegionTree(components)
+                    regions: buildRegionTree(components, pageAsJson, isEditMode)
                 }
             }
             response.meta!.renderMode = renderMode;

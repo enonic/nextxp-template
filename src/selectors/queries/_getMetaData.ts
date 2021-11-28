@@ -25,11 +25,12 @@ export const PAGE_FRAGMENT = `
         }
       }`;
 
-export function getMetaQuery(pageFragment?: string): string {
+export function getMetaQuery(isEditMode: boolean, pageFragment?: string): string {
     return `query($path:ID!){
               guillotine {
                 get(key:$path) {
                   type
+                  ${isEditMode ? 'pageAsJson' : ''}
                   ${pageFragment || ''}
                 }
               }
