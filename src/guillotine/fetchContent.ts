@@ -4,7 +4,12 @@ import {LOW_PERFORMING_DEFAULT_QUERY} from "../selectors/queries/_getDefaultData
 import {Context} from "../pages/[[...contentPath]]";
 
 import typeSelector, {SelectedQueryMaybeVariablesFunc, TypeSelector, VariablesGetter} from "../selectors/typeSelector";
-import enonicConnectionConfig, {fromXpRequestType, getRenderMode, XP_RENDER_MODE} from "../enonic-connection-config";
+import enonicConnectionConfig, {
+    fromXpRequestType,
+    getRenderMode,
+    getSingleCompRequest,
+    XP_RENDER_MODE
+} from "../enonic-connection-config";
 
 
 export type EnonicConnectionConfigRequiredFields = {
@@ -17,6 +22,7 @@ export type EnonicConnectionConfigRequiredFields = {
 export type ResultMeta = Meta & {
     path: string,
     xpRequestType?: string|boolean,
+    requestedComponent?: string
     renderMode: XP_RENDER_MODE,
 }
 
@@ -35,7 +41,7 @@ export type PageData = {
     regions?: RegionTree
 }
 
-export type ContentResult = Result & {
+export type FetchContentResult = Result & {
     content: any,
     meta: ResultMeta,
     page?: PageData,
@@ -52,12 +58,12 @@ type FetcherConfig<T extends EnonicConnectionConfigRequiredFields> = {
 /**
  * Sends one query to the guillotine API and asks for content type, then uses the type to select a second query and variables, which is sent to the API and fetches content data.
  * @param contentPath string or string array: pre-split or slash-delimited _path to a content available on the API
- * @returns ContentResult object: {data?: T, error?: {code, message}}
+ * @returns FetchContentResult object: {data?: T, error?: {code, message}}
  */
 export type ContentFetcher = (
     contentPath: string | string[],
     context: Context
-) => Promise<ContentResult>
+) => Promise<FetchContentResult>
 
 
 ///////////////////////////////////////////////////////////////////////////////// Data
@@ -266,13 +272,13 @@ const fetchContentData = async <T>(
     query: string,
     methodKeyFromQuery?: string,
     variables?: {}
-): Promise<ContentResult> => {
+): Promise<FetchContentResult> => {
 
     const body: ContentApiBaseBody = {query};
     if (variables && Object.keys(variables).length > 0) {
         body.variables = variables;
     }
-    return await fetchGuillotine(contentApiUrl, body, 'content', xpContentPath, methodKeyFromQuery) as ContentResult;
+    return await fetchGuillotine(contentApiUrl, body, 'content', xpContentPath, methodKeyFromQuery) as FetchContentResult;
 };
 
 
@@ -426,12 +432,12 @@ export const buildContentFetcher = <T extends EnonicConnectionConfigRequiredFiel
      * Sends one query to the guillotine API and asks for content type, then uses the type to select a second query and variables, which is sent to the API and fetches content data.
      * @param contentPath string or string array: local (site-relative) path to a content available on the API (by XP _path - obtainable by running contentPath through getXpPath). Pre-split into string array, or already a slash-delimited string.
      * @param context Context object from Next, contains .query info
-     * @returns ContentResult object: {data?: T, error?: {code, message}}
+     * @returns FetchContentResult object: {data?: T, error?: {code, message}}
      */
     const fetchContent: ContentFetcher = async (
         contentPath: string | string[],
         context?: Context
-    ): Promise<ContentResult> => {
+    ): Promise<FetchContentResult> => {
 
         try {
             const siteRelativeContentPath = getCleanContentPathArrayOrThrow400(contentPath);
@@ -503,11 +509,14 @@ export const buildContentFetcher = <T extends EnonicConnectionConfigRequiredFiel
                     path: siteRelativeContentPath,
                     type
                 }
-            } as ContentResult;
+            } as FetchContentResult;
 
             // .meta will be visible in final rendered inline props. Only adding .fromXpRequestType here if the page is actually viewed through content studio, in which case this is true (instead if always adding it and letting it be visible as false)
             if (xpRequestType) {
                 response.meta!.xpRequestType = xpRequestType
+                if (xpRequestType === 'component') {
+                    response.meta!.requestedComponent = getSingleCompRequest(context);
+                }
             }
             if (components) {
                 response.page = {

@@ -6,7 +6,7 @@ import componentSelector from "../../selectors/componentSelector";
 
 
 
-export interface BaseComponentI {
+export interface BaseComponentData {
     type: string;
     path: string;
     text?: string;
@@ -15,7 +15,7 @@ export interface BaseComponentI {
 }
 
 type Props = {
-    component: BaseComponentI,
+    component: BaseComponentData,
 
     content?: any;                  // Content is passed down for optional consumption in componentviews. TODO: Use a react contextprovider instead?
 }

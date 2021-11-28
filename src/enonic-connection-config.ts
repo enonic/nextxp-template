@@ -60,7 +60,7 @@ export const getRenderMode = (context?: Context): XP_RENDER_MODE => {
     return enumValue || XP_RENDER_MODE.PREVIEW;
 };
 
-export const getSingleCompRequest = (context:Context): string|undefined => (
+export const getSingleCompRequest = (context?: Context): string|undefined => (
     (context?.req?.headers || {})[COMPONENT_SUBPATH_HEADER]
 );
 

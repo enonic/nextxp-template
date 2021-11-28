@@ -20,11 +20,11 @@ export type VariablesGetter = (path: string, context?: Context) => {
     [variables: string]: any
 };
 
-export type ReactComp = (props:any) => JSX.Element
+export type ReactComp = (props: any) => JSX.Element
 
 export type SelectedQueryMaybeVariablesFunc = string |
-    { query:string, variables:VariablesGetter } |
-    [ string, VariablesGetter ]
+    { query: string, variables: VariablesGetter } |
+    [string, VariablesGetter]
 
 
 /**
@@ -46,7 +46,7 @@ export type TypeSelection = {
  *          - 'page' (used in BasePage.tsx) is a react component: top-level content-type-specific rendering with the props first fetched from guillotine (and then optionally preprocessed with the function in 'props').
  */
 export type TypeSelector = {
-    [fullContentType:string]: TypeSelection
+    [fullContentType: string]: TypeSelection
 }
 
 
