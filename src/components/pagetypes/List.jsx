@@ -1,6 +1,6 @@
 import React from "react"
 
-const ListPage = ({displayName, children}) => {
+const ListPage = (props) => {
     const {displayName, children} = props.content;
 
     return (
