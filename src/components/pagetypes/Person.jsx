@@ -1,6 +1,7 @@
 import React from "react"
 
-const PersonPage = ({displayName, data={}, parent={}}) => {
+const PersonPage = (props) => {
+    const {displayName, data={}, parent={}} = props.content;
     const {bio, photos} = data;
     const {_path} = parent;
 
