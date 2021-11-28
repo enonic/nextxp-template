@@ -49,9 +49,8 @@ const BasePage = (props: FetchContentResult) => {
     const typeSelection: TypeSelection = (selector || {})[meta.type]
     const SelectedPage = typeSelection?.page || DefaultPage;
 
+    // @ts-ignore
     return <SelectedPage content={content} page={page} />;
-
-
 };
 
 export default BasePage;

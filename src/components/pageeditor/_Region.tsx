@@ -1,12 +1,13 @@
 import React from "react"
 import { PORTAL_REGION_ATTRIBUTE } from '../../enonic-connection-config';
 
-import Component, {BaseComponentData} from "./_BaseComponent";
+import Component from "./_BaseComponent";
 import {PageData} from "../../guillotine/fetchContent";
+import {PageComponent} from "../../selectors/queries/_getMetaData";
 
 interface RegionProps {
     name: string;
-    components: BaseComponentData[];
+    components: PageComponent[];
 
     content?: any;                  // Content is passed down for optional consumption in componentviews. TODO: Use a react contextprovider instead?
 }
@@ -31,7 +32,7 @@ const SingleRegion = ({name, components, content}: RegionProps) => {
     return (
         <div id={`${name}Region`} data-portal-region={name}>
             {
-                components?.map((component: BaseComponentData, i: number) => (
+                components?.map((component: PageComponent, i: number) => (
                     <Component key={regionAttrs.id + "-" + i} component={component} content={content} />
                 ))
             }

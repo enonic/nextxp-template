@@ -38,10 +38,20 @@ export function getMetaQuery(isEditMode: boolean, pageFragment?: string): string
 }
 
 export interface PageComponent {
-    type: string;
+    type: 'part'|'text'|'image';
     path: string;
+    part?: PartData,
+    text?: any,
+    image?: any,
 }
+
+export type PartData = {
+    descriptor?: string,
+    [customKeysFromQuery:string]: any
+}
+
 export type Meta = {
     type: string,
+    pageAsJson?: {}
     components?: PageComponent[],
 };

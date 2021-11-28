@@ -1,6 +1,7 @@
 import React from "react"
 
 import Region  from "../pageeditor/_Region";
+import {PageData} from "../../guillotine/fetchContent";
 
 type ContentProps = {
     displayName: string,
@@ -8,6 +9,7 @@ type ContentProps = {
 
 type Props = {
     content: ContentProps,
+    page: PageData
 }
 
 

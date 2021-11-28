@@ -3,6 +3,11 @@ import {Context} from "../pages/[[...contentPath]]";
 // APP_NAME helps to fully qualify content type strings in the connected XP app:
 import {APP_NAME} from "../enonic-connection-config";
 
+
+import getList, {getListVariables} from "./queries/getList";
+import processList from "./props/processList";
+import ListPage from "../components/pagetypes/List";
+
 import getPerson from "./queries/getPerson";
 import processPerson from "./props/processPerson";
 import PersonPage from "../components/pagetypes/Person";
@@ -53,12 +58,14 @@ export type TypeSelector = {
 /////////////////////////////////////////////////////////////////////////  TypeSelector:
 
 const typeSelector: TypeSelector = {
+/*
 
-    /*    'base:folder': {
-            query: [getList, getListVariables],
-            props: processList,
-            page: ListPage,
-        },*/
+    'base:folder': {
+        query: [getList, getListVariables],
+        props: processList,
+        //page: ListPage,
+    },
+*/
 
     [`${APP_NAME}:person`]: {
         query: getPerson,

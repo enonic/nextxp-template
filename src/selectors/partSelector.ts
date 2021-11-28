@@ -14,9 +14,9 @@ export type PartSelection = {
 }
 
 const partSelector: PartSelector = {
-    [`${APP_NAME}:${PERSONS_LIST_PART_NAME}`]: {
+    /*[`${APP_NAME}:${PERSONS_LIST_PART_NAME}`]: {
         page: PersonsList
-    },
+    },*/
 };
 
 

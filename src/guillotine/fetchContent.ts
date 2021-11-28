@@ -5,6 +5,7 @@ import {Context} from "../pages/[[...contentPath]]";
 
 import typeSelector, {SelectedQueryMaybeVariablesFunc, TypeSelector, VariablesGetter} from "../selectors/typeSelector";
 import enonicConnectionConfig, {
+    APP_NAME, APP_NAME_DASHED,
     fromXpRequestType,
     getRenderMode,
     getSingleCompRequest,
@@ -15,13 +16,13 @@ import enonicConnectionConfig, {
 export type EnonicConnectionConfigRequiredFields = {
     CONTENT_API_URL: string,
     getXpPath: (siteRelativeContentPath: string) => string,
-    fromXpRequestType: (context?: Context) => string|boolean
+    fromXpRequestType: (context?: Context) => string | boolean
 };
 
 
 export type ResultMeta = Meta & {
     path: string,
-    xpRequestType?: string|boolean,
+    xpRequestType?: string | boolean,
     requestedComponent?: string
     renderMode: XP_RENDER_MODE,
 }
@@ -195,8 +196,8 @@ const fetchGuillotine = async (
             }
 
             const data = requiredMethodKeyFromQuery
-                         ? json.data.guillotine[requiredMethodKeyFromQuery]
-                         : json.data.guillotine;
+                ? json.data.guillotine[requiredMethodKeyFromQuery]
+                : json.data.guillotine;
 
             return {
                 [key]: data
@@ -255,7 +256,7 @@ const NO_PROPS_PROCESSOR = (props: any) => props;
 
 ///////////////////////////////////////////////////////////////////////////////// Specific fetch wrappers:
 
-const fetchMetaData = async (contentApiUrl: string, xpContentPath: string, xpRequestType: string|boolean, isEditMode: boolean): Promise<MetaResult> => {
+const fetchMetaData = async (contentApiUrl: string, xpContentPath: string, xpRequestType: string | boolean, isEditMode: boolean): Promise<MetaResult> => {
     const body: ContentApiBaseBody = {
         query: getMetaQuery(isEditMode, /* xpRequestType == "page" ? */ PAGE_FRAGMENT /* : undefined */),
         variables: {
@@ -308,8 +309,6 @@ const getCleanContentPathArrayOrThrow400 = (contentPath: string | string[] | und
 }
 
 
-
-
 //------------------------------------------------------------- XP page component data handling
 
 
@@ -335,7 +334,7 @@ type PageAsJson = {
     regions?: Record<string, any>
 }
 
-function buildRegionTree(comps: PageComponent[], pageAsJson:PageAsJson, isEditMode: boolean): RegionTree {
+function buildRegionTree(comps: PageComponent[], pageAsJson?: PageAsJson, isEditMode?: boolean): RegionTree {
     const regions: RegionTree = {};
 
     if (isEditMode) {
@@ -347,7 +346,7 @@ function buildRegionTree(comps: PageComponent[], pageAsJson:PageAsJson, isEditMo
         })
     }
 
-    comps.forEach(cmp => {
+    (comps || []).forEach(cmp => {
         const info = getInfo(cmp);
         if (info) {
             let region = regions[info.region];
@@ -358,12 +357,23 @@ function buildRegionTree(comps: PageComponent[], pageAsJson:PageAsJson, isEditMo
                 };
                 regions[info.region] = region;
             }
+
+            if (cmp.type === 'part' && cmp.part && cmp.part.configAsJson) {
+                const [appName, partName] = (cmp.part.descriptor || "").split(':');
+                if (appName === APP_NAME && cmp.part.configAsJson[APP_NAME_DASHED][partName]) {
+                    cmp.part.__config__ = cmp.part!.configAsJson[APP_NAME_DASHED][partName]
+                }
+            }
+
             region.components.push(cmp);
         } else {
             // this is page component
             // TODO: something here later, if we're making a pageSelector too
         }
     });
+
+    //console.log("Regions: " + JSON.stringify(regions, null, 2));
+
     return regions;
 }
 
@@ -504,8 +514,8 @@ export const buildContentFetcher = <T extends EnonicConnectionConfigRequiredFiel
             }
 
             const methodKeyFromQuery = firstMethodKey
-                                       ? getQueryMethodKey(type, query)
-                                       : undefined;
+                ? getQueryMethodKey(type, query)
+                : undefined;
 
 
             ////////////////////////////////////////////// SECOND GUILLOTINE CALL FOR DATA:
@@ -526,7 +536,7 @@ export const buildContentFetcher = <T extends EnonicConnectionConfigRequiredFiel
                 }
             } as FetchContentResult;
 
-            // .meta will be visible in final rendered inline props. Only adding .fromXpRequestType here if the page is actually viewed through content studio, in which case this is true (instead if always adding it and letting it be visible as false)
+            // .meta will be visible in final rendered inline props. Only adding some .meta attributes here on certain conditions (instead if always adding them and letting them be visible as false/undefined etc)
             if (xpRequestType) {
                 response.meta!.xpRequestType = xpRequestType
                 if (xpRequestType === 'component') {
@@ -536,7 +546,7 @@ export const buildContentFetcher = <T extends EnonicConnectionConfigRequiredFiel
             if (components || (pageAsJson && isEditMode)) {
                 response.page = {
                     ...response.page || {},
-                    regions: buildRegionTree(components, pageAsJson, isEditMode)
+                    regions: buildRegionTree(components!, pageAsJson, isEditMode)
                 }
             }
             response.meta!.renderMode = renderMode;
