@@ -1,20 +1,20 @@
-import {Context} from "../pages/[[...contentPath]]";
+import {Context} from "../../pages/[[...contentPath]]";
 
 // APP_NAME helps to fully qualify content type strings in the connected XP app:
-import {APP_NAME} from "../enonic-connection-config";
+import {APP_NAME} from "../../enonic-connection-config";
 
 
-import getList, {getListVariables} from "./queries/getList";
-import processList from "./props/processList";
-import ListView from "../components/pagetypes/List";
+import getList, {getListVariables} from "./list/getList";
+import processList from "./list/processList";
+import ListView from "./list/List";
 
-import getPerson from "./queries/getPerson";
-import processPerson from "./props/processPerson";
-import PersonView from "../components/pagetypes/Person";
+import getPerson from "./person/getPerson";
+import processPerson from "./person/processPerson";
+import PersonView from "./person/Person";
 
-import getMovie from "./queries/getMovie";
-import processMovie from "./props/processMovie";
-import MovieView from "../components/pagetypes/Movie";
+import getMovie from "./movie/getMovie";
+import processMovie from "./movie/processMovie";
+import MovieView from "./movie/Movie";
 
 ////////////////////////////////////////////////////////////////////////  Types:
 

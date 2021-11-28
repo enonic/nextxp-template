@@ -2,7 +2,7 @@
 
 import BaseComponent from "./_BaseComponent";
 import React from "react";
-import {FetchContentResult} from "../../guillotine/fetchContent";
+import {FetchContentResult} from "../guillotine/fetchContent";
 
 const SingleComponent = ({page, meta, content}: FetchContentResult) => {
     if (!page?.regions || !Object.keys(page.regions)) {

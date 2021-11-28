@@ -1,8 +1,5 @@
-import React from "react"
-
-import partSelector from '../../../selectors/partSelector';
-import {PartData} from "../../../selectors/queries/_getMetaData";
-
+import React from "react";
+import {PartData} from "../queries/_getMetaData";
 
 type Props = {
     part: PartData,
@@ -18,19 +15,4 @@ const DefaultPartView = ({part}: Props) => (
         <pre style={{fontSize:".8em", width:"100%", whiteSpace:"pre-wrap", wordWrap: "break-word"}}>{JSON.stringify(part.config, null, 2)}</pre>
     </div>
 );
-
-type BasePartProps = {
-    component?: PartData,
-    content?: string
-}
-
-const BasePart = (props: BasePartProps) => {
-    const {component, content} = props;
-    const partSelection = partSelector[component?.descriptor || 0];
-    const SelectedPartView = partSelection?.view || DefaultPartView;
-    return <SelectedPartView part={{descriptor: component?.descriptor, config: component?.__config__}}
-                         content={content}
- />;
-}
-
-export default BasePart;
+export default DefaultPartView;

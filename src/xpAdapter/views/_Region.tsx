@@ -2,8 +2,8 @@ import React from "react"
 import { PORTAL_REGION_ATTRIBUTE } from '../../enonic-connection-config';
 
 import Component from "./_BaseComponent";
-import {PageData} from "../../guillotine/fetchContent";
-import {PageComponent} from "../../selectors/queries/_getMetaData";
+import {PageData} from "../guillotine/fetchContent";
+import {PageComponent} from "../../customXp/queries/_getMetaData";
 
 interface RegionProps {
     name: string;

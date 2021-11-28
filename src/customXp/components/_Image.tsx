@@ -11,11 +11,11 @@ type Props = {
     content?: any
 }
 
-const _Image = ({component}: Props) => {
+const DefaultImageView = ({component}: Props) => {
     return <figure>
         <img alt={component.caption}
              src={component.image?.imageUrl}/>
     </figure>
 }
 
-export default _Image;
+export default DefaultImageView;

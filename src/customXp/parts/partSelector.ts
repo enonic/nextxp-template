@@ -1,9 +1,9 @@
 // APP_NAME helps to fully qualify XP-component name strings in the connected XP app:
-import {APP_NAME} from "../enonic-connection-config";
+import {APP_NAME} from "../../enonic-connection-config";
 
-import {ReactView} from "./contentSelector";
+import {ReactView} from "../contentTypes/contentSelector";
 
-import PersonsView, {PERSONS_LIST_PART_NAME} from "../components/pageeditor/parts/PersonsList";
+import PersonsView, {PERSONS_LIST_PART_NAME} from "./PersonsList";
 
 export type PartSelector = {
     [descriptor:string]: PartSelection

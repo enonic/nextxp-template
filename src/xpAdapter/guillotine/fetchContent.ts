@@ -1,16 +1,16 @@
-import {getMetaQuery, Meta, PAGE_FRAGMENT, PageComponent} from "../selectors/queries/_getMetaData";
-import {LOW_PERFORMING_DEFAULT_QUERY} from "../selectors/queries/_getDefaultData";
+import {getMetaQuery, Meta, PAGE_FRAGMENT, PageComponent} from "../../customXp/queries/_getMetaData";
+import {LOW_PERFORMING_DEFAULT_QUERY} from "../../customXp/queries/_getDefaultData";
 
-import {Context} from "../pages/[[...contentPath]]";
+import {Context} from "../../pages/[[...contentPath]]";
 
-import typeSelector, {SelectedQueryMaybeVariablesFunc, ContentSelector, VariablesGetter} from "../selectors/contentSelector";
+import typeSelector, {SelectedQueryMaybeVariablesFunc, ContentSelector, VariablesGetter} from "../../customXp/contentTypes/contentSelector";
 import enonicConnectionConfig, {
     APP_NAME, APP_NAME_DASHED,
     fromXpRequestType,
     getRenderMode,
     getSingleCompRequest,
     XP_RENDER_MODE
-} from "../enonic-connection-config";
+} from "../../enonic-connection-config";
 
 
 export type EnonicConnectionConfigRequiredFields = {

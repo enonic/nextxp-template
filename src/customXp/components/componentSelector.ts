@@ -1,9 +1,9 @@
 
-import BasePart from "../components/pageeditor/parts/_BasePart";
-import ImageView from "../components/pageeditor/_Image";
-import TextView from "../components/pageeditor/_Text";
+import BasePart from "../../xpAdapter/views/_BasePart";
+import ImageView from "../components/_Image";
+import TextView from "./_Text";
 
-import {PropsProcessor, ReactView, SelectedQueryMaybeVariablesFunc} from "./contentSelector";
+import {PropsProcessor, ReactView, SelectedQueryMaybeVariablesFunc} from "../contentTypes/contentSelector";
 
 
 export type ComponentSelection = {

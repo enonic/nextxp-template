@@ -1,4 +1,4 @@
-import { getContentLinkUrlFromXpPath } from '../../enonic-connection-config';
+import { getContentLinkUrlFromXpPath } from '../../../enonic-connection-config';
 
 const processMovie = (props, context) => ({
     ...props,
