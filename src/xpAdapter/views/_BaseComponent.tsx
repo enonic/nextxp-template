@@ -2,8 +2,8 @@ import React from "react";
 
 import { PORTAL_COMPONENT_ATTRIBUTE } from "../../enonic-connection-config";
 
-import componentSelector from "../../selectors/componentSelector";
-import {PageComponent} from "../../selectors/queries/_getMetaData";
+import componentSelector from "../../customXp/components/componentSelector";
+import {PageComponent} from "../../customXp/queries/_getMetaData";
 
 
 
@@ -20,7 +20,7 @@ const BaseComponent = ({component, content}: BaseComponentProps) => {
     };
 
     // @ts-ignore
-    const ComponentView: React = componentSelector[type]?.page || <p>I am a {type}</p>;
+    const ComponentView: React = componentSelector[type]?.view || <p>I am a {type}</p>;
 
     return (
         <div {...cmpAttrs}>

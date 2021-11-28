@@ -8,8 +8,8 @@ type Props = {
     }
 }
 
-const _Text = ({component}: Props) => (
+const DefaultTextView = ({component}: Props) => (
     <section dangerouslySetInnerHTML={{__html: component.value?.processedHtml}}/>
 );
 
-export default _Text;
+export default DefaultTextView;

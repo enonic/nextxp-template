@@ -1,7 +1,7 @@
 import React from "react"
 
-import Region  from "../pageeditor/_Region";
-import {PageData} from "../../guillotine/fetchContent";
+import Region  from "../../xpAdapter/views/_Region";
+import {PageData} from "../../xpAdapter/guillotine/fetchContent";
 
 type ContentProps = {
     displayName: string,
@@ -13,7 +13,7 @@ type Props = {
 }
 
 
-const DefaultPage = (props: Props) => {
+const DefaultContentView = (props: Props) => {
     const { content } = props;
     return (
         <div style={{padding: "10px"}}>
@@ -28,4 +28,4 @@ const DefaultPage = (props: Props) => {
     )
 }
 
-export default DefaultPage;
+export default DefaultContentView;

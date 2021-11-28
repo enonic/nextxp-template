@@ -2,11 +2,11 @@
 
 import BaseComponent from "./_BaseComponent";
 import React from "react";
-import {FetchContentResult} from "../../guillotine/fetchContent";
+import {FetchContentResult} from "../guillotine/fetchContent";
 
 const SingleComponent = ({page, meta, content}: FetchContentResult) => {
     if (!page?.regions || !Object.keys(page.regions)) {
-        // TODO: Fallback when page.regions is missing/empty (throw an error? 404?)
+        // TODO: Fallback when view.regions is missing/empty (throw an error? 404?)
     }
 
     // Pick region name from target, eg. "main" from "/main/0"

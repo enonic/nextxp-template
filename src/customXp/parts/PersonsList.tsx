@@ -1,5 +1,5 @@
 import React from "react"
-import {APP_NAME_DASHED} from '../../../enonic-connection-config';
+import {APP_NAME_DASHED} from '../../enonic-connection-config';
 
 type Props = Record<string, any>;
 

@@ -1,16 +1,16 @@
-import {getMetaQuery, Meta, PAGE_FRAGMENT, PageComponent} from "../selectors/queries/_getMetaData";
-import {LOW_PERFORMING_DEFAULT_QUERY} from "../selectors/queries/_getDefaultData";
+import {getMetaQuery, Meta, PAGE_FRAGMENT, PageComponent} from "../../customXp/queries/_getMetaData";
+import {LOW_PERFORMING_DEFAULT_QUERY} from "../../customXp/queries/_getDefaultData";
 
-import {Context} from "../pages/[[...contentPath]]";
+import {Context} from "../../pages/[[...contentPath]]";
 
-import typeSelector, {SelectedQueryMaybeVariablesFunc, TypeSelector, VariablesGetter} from "../selectors/typeSelector";
+import typeSelector, {SelectedQueryMaybeVariablesFunc, ContentSelector, VariablesGetter} from "../../customXp/contentTypes/contentSelector";
 import enonicConnectionConfig, {
     APP_NAME, APP_NAME_DASHED,
     fromXpRequestType,
     getRenderMode,
     getSingleCompRequest,
     XP_RENDER_MODE
-} from "../enonic-connection-config";
+} from "../../enonic-connection-config";
 
 
 export type EnonicConnectionConfigRequiredFields = {
@@ -52,7 +52,7 @@ export type FetchContentResult = Result & {
 
 type FetcherConfig<T extends EnonicConnectionConfigRequiredFields> = {
     enonicConnectionConfig: T,
-    typeSelector?: TypeSelector,
+    typeSelector?: ContentSelector,
     firstMethodKey?: boolean,
 }
 
@@ -258,7 +258,7 @@ const NO_PROPS_PROCESSOR = (props: any) => props;
 
 const fetchMetaData = async (contentApiUrl: string, xpContentPath: string, xpRequestType: string | boolean, isEditMode: boolean): Promise<MetaResult> => {
     const body: ContentApiBaseBody = {
-        query: getMetaQuery(isEditMode, /* xpRequestType == "page" ? */ PAGE_FRAGMENT /* : undefined */),
+        query: getMetaQuery(isEditMode, /* xpRequestType == "view" ? */ PAGE_FRAGMENT /* : undefined */),
         variables: {
             path: xpContentPath
         }
@@ -309,7 +309,7 @@ const getCleanContentPathArrayOrThrow400 = (contentPath: string | string[] | und
 }
 
 
-//------------------------------------------------------------- XP page component data handling
+//------------------------------------------------------------- XP view component data handling
 
 
 interface PageRegion {
@@ -367,7 +367,7 @@ function buildRegionTree(comps: PageComponent[], pageAsJson?: PageAsJson, isEdit
 
             region.components.push(cmp);
         } else {
-            // this is page component
+            // this is view component
             // TODO: something here later, if we're making a pageSelector too
         }
     });
@@ -386,7 +386,7 @@ function buildRegionTree(comps: PageComponent[], pageAsJson?: PageAsJson, isEdit
  * @param enonicConnectionConfig Object containing attributes imported from enonic-connecion-config.js: the methods getXpPath and fromXpRequestType, and the string CONTENT_API_URL. Easiest: caller imports enonic-connection-config and just passes that entire object here as enonicConnectionConfig.
  * @param typeSelector Object, usually the typeSelector from typeSelector.ts, where keys are full XP content type strings (eg. 'my.app:content-type') and values are optional type-specific objects of config for how to handle that function. All attributes in these objecs are optional (see typeSelector.ts for examples):
  *          - 'query' can be a guillotine query string to use to fetch data for that content type, OR also have a get-guillotine-variables function - by an object with 'query' and 'variables' attributes, or an array where the query string is first and the get-variables function is second.
- *          - 'props' is a function for processing props: converting directly-from-guillotine props to props adapted for displaying the selected page component
+ *          - 'props' is a function for processing props: converting directly-from-guillotine props to props adapted for displaying the selected view component
  * @param firstMethodKey boolean to switch on or off functionality that detects the first method in the query (and if used, the assumption is: there is only one method in ALL existing queries), and unpacks the data from below that key.
  *          - firstMethodKey=true: can simplify usage a bit, but ONLY use if all query strings use only one guillotine method call - no queries have more than one (eg. 'get' in the query string 'query($path:ID!){ guillotine { get(key:$path) { type }}}'). The (first) guillotine method call is autodetected from each query string ('get', 'getChildren', 'query' etc), and that string is used in two ways. The response under that key is checked for non-null content (returns 404 error if null), and the returned content is the object below that method-named key (which in turn is under the 'guillotine' key in the response from the guillotine API (in this example: the value of reponseData.guillotine['get']).
  *          - firstMethodKey=false: this disables the autodetection, a 404 error is only returned if no (or empty) object under the 'guillotine' key was found. Otherwise, the entire data object under 'guillotine' is returned, with all method-named keys from the query - not just the data under the method-named key from the query.
