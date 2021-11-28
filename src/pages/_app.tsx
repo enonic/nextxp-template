@@ -21,9 +21,9 @@ function MyApp({Component, pageProps}: AppProps) {
         // TODO: PLACEHOLDER - actually render updated single component
         return (
             <>
-                <details data-remove-above="true"></details>
-                <Component {...pageProps} />
-                <details data-remove-below="true"></details>
+                <details data-single-component-output="true">
+                    <Component {...pageProps} />
+                </details>
             </>
         );
     }
