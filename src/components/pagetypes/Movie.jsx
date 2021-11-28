@@ -1,17 +1,20 @@
 import React from "react"
 
 // Main entry component
-const MoviePage = ({displayName, data={}, parent}) => (
-    <>
-        <div>
-            <h2>{displayName}</h2>
-            <MovieInfo data={data} />
-            <Cast cast={data.cast} />
-        </div>
+const MoviePage = (props) => {
+    const {displayName, data = {}, parent = {}} = props.content;
+    return (
+        <>
+            <div>
+                <h2>{displayName}</h2>
+                <MovieInfo data={data}/>
+                <Cast cast={data.cast}/>
+            </div>
 
-        <BackLink parent={parent} />
-    </>
-);
+            <BackLink parent={parent}/>
+        </>
+    );
+};
 export default MoviePage;
 
 

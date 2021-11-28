@@ -20,23 +20,38 @@ export const PAGE_FRAGMENT = `
         image {
           caption
           image {
-            imageUrl (scale: "width-768")
+            imageUrl (type:absolute, scale: "width-768")
           }
         }
       }`;
 
-export function getMetaQuery(pageFragment?: string): string {
+export function getMetaQuery(isEditMode: boolean, pageFragment?: string): string {
     return `query($path:ID!){
               guillotine {
                 get(key:$path) {
                   type
+                  ${isEditMode ? 'pageAsJson' : ''}
                   ${pageFragment || ''}
                 }
               }
             }`;
 }
 
+export interface PageComponent {
+    type: 'part'|'text'|'image';
+    path: string;
+    part?: PartData,
+    text?: any,
+    image?: any,
+}
+
+export type PartData = {
+    descriptor?: string,
+    [customKeysFromQuery:string]: any
+}
+
 export type Meta = {
     type: string,
-    components?: Record<string, any>[],
+    pageAsJson?: {}
+    components?: PageComponent[],
 };

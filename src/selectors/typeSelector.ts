@@ -3,6 +3,11 @@ import {Context} from "../pages/[[...contentPath]]";
 // APP_NAME helps to fully qualify content type strings in the connected XP app:
 import {APP_NAME} from "../enonic-connection-config";
 
+
+import getList, {getListVariables} from "./queries/getList";
+import processList from "./props/processList";
+import ListPage from "../components/pagetypes/List";
+
 import getPerson from "./queries/getPerson";
 import processPerson from "./props/processPerson";
 import PersonPage from "../components/pagetypes/Person";
@@ -20,11 +25,11 @@ export type VariablesGetter = (path: string, context?: Context) => {
     [variables: string]: any
 };
 
-export type PageComponent = (content:any) => JSX.Element
+export type ReactComp = (props: any) => JSX.Element
 
 export type SelectedQueryMaybeVariablesFunc = string |
-    { query:string, variables:VariablesGetter } |
-    [ string, VariablesGetter ]
+    { query: string, variables: VariablesGetter } |
+    [string, VariablesGetter]
 
 
 /**
@@ -36,8 +41,7 @@ export type SelectedQueryMaybeVariablesFunc = string |
 export type TypeSelection = {
     query?: SelectedQueryMaybeVariablesFunc,
     props?: PropsProcessor,
-    page?: PageComponent
-
+    page?: ReactComp
 }
 
 /**
@@ -47,19 +51,21 @@ export type TypeSelection = {
  *          - 'page' (used in BasePage.tsx) is a react component: top-level content-type-specific rendering with the props first fetched from guillotine (and then optionally preprocessed with the function in 'props').
  */
 export type TypeSelector = {
-    [fullContentType:string]: TypeSelection
+    [fullContentType: string]: TypeSelection
 }
 
 
 /////////////////////////////////////////////////////////////////////////  TypeSelector:
 
 const typeSelector: TypeSelector = {
+/*
 
-    /*    'base:folder': {
-            query: [getList, getListVariables],
-            props: processList,
-            page: ListPage,
-        },*/
+    'base:folder': {
+        query: [getList, getListVariables],
+        props: processList,
+        //page: ListPage,
+    },
+*/
 
     [`${APP_NAME}:person`]: {
         query: getPerson,

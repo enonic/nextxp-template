@@ -34,6 +34,14 @@ export const getServerSideProps = async (context: Context) => {
         page = null,
     } = await fetchContent(context.params.contentPath, context);
 
+    console.log({
+        contentPath: context.params.contentPath,
+        content,
+        meta,
+        error,
+        page,
+    })
+
     return {
         props: {
             content,
