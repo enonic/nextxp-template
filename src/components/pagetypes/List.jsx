@@ -1,6 +1,6 @@
 import React from "react"
 
-const ListPage = (props) => {
+const ListView = (props) => {
     const {displayName, children} = props.content;
 
     return (
@@ -23,4 +23,4 @@ const ListPage = (props) => {
     );
 };
 
-export default ListPage;
+export default ListView;

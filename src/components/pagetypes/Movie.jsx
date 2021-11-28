@@ -1,7 +1,7 @@
 import React from "react"
 
 // Main entry component
-const MoviePage = (props) => {
+const MovieView = (props) => {
     const {displayName, data = {}, parent = {}} = props.content;
     return (
         <>
@@ -15,11 +15,11 @@ const MoviePage = (props) => {
         </>
     );
 };
-export default MoviePage;
+export default MovieView;
 
 
 // Main movie info: release year, poster image and abstract text.
-// data = movie.data (object from MoviePage)
+// data = movie.data (object from MovieView)
 const MovieInfo = ({data}) => {
     const posterPhoto = (data.photos || [])[0] || {};
 
@@ -43,7 +43,7 @@ const MovieInfo = ({data}) => {
 
 
 // List persons starring in the movie.
-// cast = movie.data.cast (array from MoviePage)
+// cast = movie.data.cast (array from MovieView)
 const Cast = ({cast}) => !!(cast?.length) && (
     <div>
         <h4>Cast</h4>
@@ -85,7 +85,7 @@ const CastMember = (person) => {
 
 
 // "Back to Movies" link at the bottom
-// parent = movie.parent (object from MoviePage)
+// parent = movie.parent (object from MovieView)
 const BackLink = ({parent}) => parent && (
     <p><a href={parent._path}>Back to Movies</a></p>
 );

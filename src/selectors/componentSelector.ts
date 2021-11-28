@@ -1,14 +1,15 @@
 
 import BasePart from "../components/pageeditor/parts/_BasePart";
-import Image from "../components/pageeditor/_Image";
-import Text from "../components/pageeditor/_Text";
-import {PropsProcessor, ReactComp, SelectedQueryMaybeVariablesFunc} from "./typeSelector";
+import ImageView from "../components/pageeditor/_Image";
+import TextView from "../components/pageeditor/_Text";
+
+import {PropsProcessor, ReactView, SelectedQueryMaybeVariablesFunc} from "./contentSelector";
 
 
 export type ComponentSelection = {
     //query?: SelectedQueryMaybeVariablesFunc,
     //props?: PropsProcessor,
-    page?: ReactComp
+    view?: ReactView
 }
 
 export type ComponentSelector = {
@@ -17,13 +18,13 @@ export type ComponentSelector = {
 
 const componentSelector: ComponentSelector = {
     'text': {
-        page: Text
+        view: TextView
     },
     'part': {
-        page: BasePart
+        view: BasePart
     },
     'image': {
-        page: Image
+        view: ImageView
     }
 };
 

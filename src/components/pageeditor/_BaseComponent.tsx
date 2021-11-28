@@ -20,7 +20,7 @@ const BaseComponent = ({component, content}: BaseComponentProps) => {
     };
 
     // @ts-ignore
-    const ComponentView: React = componentSelector[type]?.page || <p>I am a {type}</p>;
+    const ComponentView: React = componentSelector[type]?.view || <p>I am a {type}</p>;
 
     return (
         <div {...cmpAttrs}>

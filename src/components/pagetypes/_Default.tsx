@@ -13,7 +13,7 @@ type Props = {
 }
 
 
-const DefaultPage = (props: Props) => {
+const DefaultView = (props: Props) => {
     const { content } = props;
     return (
         <div style={{padding: "10px"}}>
@@ -28,4 +28,4 @@ const DefaultPage = (props: Props) => {
     )
 }
 
-export default DefaultPage;
+export default DefaultView;

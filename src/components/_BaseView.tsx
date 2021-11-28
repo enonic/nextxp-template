@@ -4,11 +4,10 @@ import Custom500 from './errors/500';
 import Custom404 from './errors/404';
 import CustomError from './errors/Error';
 
-import DefaultPage from "../components/pagetypes/_Default";
-import selector, {TypeSelection} from "../selectors/typeSelector";
+import DefaultView from "../components/pagetypes/_Default";
+import selector, {ContentSelection} from "../selectors/contentSelector";
 
 import {FetchContentResult} from "../guillotine/fetchContent";
-import BaseComponent from "./pageeditor/_BaseComponent";
 import SingleComponent from "./pageeditor/_SingleComponent";
 
 
@@ -19,7 +18,7 @@ const errorPageSelector = {
 
 
 
-const BasePage = (props: FetchContentResult) => {
+const _BaseView = (props: FetchContentResult) => {
     const {content, meta, page, error} = props;
     if (error) {
         // @ts-ignore
@@ -31,7 +30,7 @@ const BasePage = (props: FetchContentResult) => {
     if (meta.xpRequestType === "component") {
         return <SingleComponent {...props} />
                                                                                                                         /*
-                                                                                                                        console.log("--> regions:", JSON.stringify(page?.regions, null, 2));
+                                                                                                                        console.log("--> regions:", JSON.stringify(view?.regions, null, 2));
                                                                                                                         console.log("meta:", JSON.stringify(meta, null, 2));
                                                                                                                         */
     }
@@ -43,14 +42,14 @@ const BasePage = (props: FetchContentResult) => {
     }
 
     if (!meta || !meta.type) {
-        console.warn("BasePage props are missing 'meta.type'. Falling back to _Default page type.");
+        console.warn("BasePage props are missing 'meta.type'. Falling back to _Default view type.");
     }
 
-    const typeSelection: TypeSelection = (selector || {})[meta.type]
-    const SelectedPage = typeSelection?.page || DefaultPage;
+    const typeSelection: ContentSelection = (selector || {})[meta.type]
+    const SelectedPage = typeSelection?.view || DefaultView;
 
     // @ts-ignore
     return <SelectedPage content={content} page={page} />;
 };
 
-export default BasePage;
+export default _BaseView;

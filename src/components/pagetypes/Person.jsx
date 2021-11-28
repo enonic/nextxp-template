@@ -1,6 +1,6 @@
 import React from "react"
 
-const PersonPage = (props) => {
+const PersonView = (props) => {
     const {displayName, data={}, parent={}} = props.content;
     const {bio, photos} = data;
     const {_path} = parent;
@@ -31,4 +31,4 @@ const PersonPage = (props) => {
     )
 }
 
-export default PersonPage;
+export default PersonView;

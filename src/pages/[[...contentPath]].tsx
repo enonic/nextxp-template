@@ -2,7 +2,7 @@ import React from 'react';
 
 import {fetchContent} from "../guillotine/fetchContent";
 
-import BasePage from "../components/BasePage";
+import BaseView from "../components/_BaseView";
 import {getCommonProps} from "../shared/commonProps";
 
 export type Context = {
@@ -53,4 +53,4 @@ export const getServerSideProps = async (context: Context) => {
     }
 };
 
-export default BasePage;
+export default BaseView;

@@ -10,7 +10,7 @@ type Props = {
     content?: any;                  // Content is passed down for optional consumption in componentviews. TODO: Use a react contextprovider instead?
 }
 
-const DefaultPart = ({part}: Props) => (
+const DefaultPartView = ({part}: Props) => (
     <div className={`part ${(part.descriptor || "").replace(/[.\-:]/g, "_")}`}
          style={{marginTop:"2rem"}}>
         <h6 style={{marginTop:"0", marginBottom:"0"}}>DefaultPart:</h6>
@@ -27,8 +27,8 @@ type BasePartProps = {
 const BasePart = (props: BasePartProps) => {
     const {component, content} = props;
     const partSelection = partSelector[component?.descriptor || 0];
-    const SelectedPart = partSelection?.page || DefaultPart;
-    return <SelectedPart part={{descriptor: component?.descriptor, config: component?.__config__}}
+    const SelectedPartView = partSelection?.view || DefaultPartView;
+    return <SelectedPartView part={{descriptor: component?.descriptor, config: component?.__config__}}
                          content={content}
  />;
 }
