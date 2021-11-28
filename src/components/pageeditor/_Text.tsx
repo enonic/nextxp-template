@@ -1,17 +1,15 @@
 import React from "react"
 
 type Props = {
-    text: {
+    component: {
         value: {
             processedHtml: string
         }
     }
 }
 
-const _Text = (props: Props) => (
-    <>
-        <section dangerouslySetInnerHTML={{__html: props.text.value?.processedHtml}}/>
-    </>
-)
+const _Text = ({component}: Props) => (
+    <section dangerouslySetInnerHTML={{__html: component.value?.processedHtml}}/>
+);
 
 export default _Text;

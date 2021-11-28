@@ -20,7 +20,7 @@ export const PAGE_FRAGMENT = `
         image {
           caption
           image {
-            imageUrl (scale: "width-768")
+            imageUrl (type:absolute, scale: "width-768")
           }
         }
       }`;

@@ -1,20 +1,21 @@
 import React from "react"
 
 type Props = {
-    image?: {
-        caption: string,
+    component: {
+        caption?: string,
         image?: {
             imageUrl: string,
         }
     },
+
+    content?: any
 }
 
-const _Image = (props: Props) => (
-    <>
-        <figure>
-            <img alt={props.image?.caption} src={props.image?.image?.imageUrl}/>
-        </figure>
-    </>
-)
+const _Image = ({component}: Props) => {
+    return <figure>
+        <img alt={component.caption}
+             src={component.image?.imageUrl}/>
+    </figure>
+}
 
 export default _Image;
