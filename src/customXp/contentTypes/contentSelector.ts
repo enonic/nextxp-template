@@ -3,15 +3,6 @@ import {Context} from "../../pages/[[...contentPath]]";
 // APP_NAME helps to fully qualify content type strings in the connected XP app:
 import {APP_NAME} from "../../enonic-connection-config";
 
-
-import getList, {getListVariables} from "./list/getList";
-import processList from "./list/processList";
-import ListView from "./list/List";
-
-import getPerson from "./person/getPerson";
-import processPerson from "./person/processPerson";
-import PersonView from "./person/Person";
-
 import getMovie from "./movie/getMovie";
 import processMovie from "./movie/processMovie";
 import MovieView from "./movie/Movie";
@@ -67,11 +58,11 @@ const typeSelector: ContentSelector = {
     },
 */
 
-    [`${APP_NAME}:person`]: {
+/*    [`${APP_NAME}:person`]: {
         query: getPerson,
         props: processPerson,
         view: PersonView,
-    },
+    },*/
 
     [`${APP_NAME}:movie`]: {
         query: getMovie,
