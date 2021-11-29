@@ -9,16 +9,16 @@ const ListView = ({content}) => {
 
     return (
         <Layout {...layoutProps}>
-            <h1>{displayName}</h1>
+            <h2>{displayName}</h2>
             {
                 children &&
                 <ul>{
                     children.map((child, i) => (
-                            <li key={i}>
-                                <a href={child._path}>
-                                    {child.displayName}
-                                </a>
-                            </li>
+                        <li key={i}>
+                            <a href={child._path}>
+                                {child.displayName}
+                            </a>
+                        </li>
                         )
                     )
                 }</ul>

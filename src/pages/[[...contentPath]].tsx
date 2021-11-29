@@ -3,7 +3,6 @@ import React from 'react';
 import {fetchContent} from "../xpAdapter/guillotine/fetchContent";
 
 import MainView from "../xpAdapter/views/_MainView";
-import {getCommonProps} from "../shared/commonProps";
 import {getPublicAssetUrl} from "../enonic-connection-config";
 
 export type Context = {
@@ -30,20 +29,21 @@ const mainHeading = "Next.xp"
 
 export const getServerSideProps = async (context: Context) => {
     const {
-        content = null,
+        content,
         meta = null,
         error = null,
         page = null,
     } = await fetchContent(context.params.contentPath, context);
 
-    content.layoutProps = {
-        title: content?.displayName || "Next.JS",
-        logoUrl: getPublicAssetUrl('images/xp-shield.svg', context),
-    }
-
     return {
         props: {
-            content,
+            content: {
+                ...content,
+                layoutProps: {
+                    title: content?.displayName || "Next.JS",
+                    logoUrl: getPublicAssetUrl('images/xp-shield.svg', context),
+                }
+            },
             meta,
             error,
             page,

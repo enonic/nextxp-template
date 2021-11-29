@@ -3,7 +3,9 @@ import {APP_NAME} from "../enonic-connection-config";
 
 import {ReactView} from "./contentSelector";
 
-import PersonsView, {PERSONLIST_PART_NAME} from "./parts/PersonsList";
+import PersonList, {PERSONLIST_PART_NAME} from "./parts/PersonList";
+import HeaderView, {HEADER_PART_NAME} from "./parts/Header";
+import FooterView, {FOOTER_PART_NAME} from "./parts/Footer";
 
 export type PartSelector = {
     [descriptor:string]: PartSelection
@@ -16,7 +18,13 @@ export type PartSelection = {
 const partSelector: PartSelector = {
 
     [PERSONLIST_PART_NAME]: {
-        view: PersonsView
+        view: PersonList
+    },
+    [HEADER_PART_NAME]: {
+        view: HeaderView
+    },
+    [FOOTER_PART_NAME]: {
+        view: FooterView
     },
 
 };

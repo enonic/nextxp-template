@@ -65,7 +65,7 @@ const typeSelector: ContentSelector = {
 
     [LIST_CONTENTTYPE_NAME]: {
         query: [getList, getListVariables],
-        view: ListView,
+    //    view: ListView,
     },
 
    [PERSON_CONTENTTYPE_NAME]: {

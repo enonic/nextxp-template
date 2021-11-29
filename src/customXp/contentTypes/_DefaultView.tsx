@@ -13,11 +13,11 @@ type Props = {
 }
 
 
-const DefaultContentView = (props: Props) => {
+const DefaultView = (props: Props) => {
     const { content } = props;
     return (
      <Region {...props} />
     )
 }
 
-export default DefaultContentView;
+export default DefaultView;

@@ -2,7 +2,7 @@ import React from "react";
 
 import {FetchContentResult} from "../guillotine/fetchContent";
 
-import DefaultContentView from "../../customXp/contentTypes/_Content";
+import DefaultContentView from "../../customXp/contentTypes/_DefaultView";
 
 import contentSelector, {ContentSelection} from "../../customXp/contentSelector";
 

@@ -13,7 +13,7 @@ const Person = ({content}) => {
     return (
         <Layout {...layoutProps}>
             <div>
-                <h1>{displayName}</h1>
+                <h2>{displayName}</h2>
 
                 <p>{bio}</p>
 
