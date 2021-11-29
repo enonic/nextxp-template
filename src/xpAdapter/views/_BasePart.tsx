@@ -1,6 +1,6 @@
 import React from "react"
 
-import partSelector from '../../customXp/parts/partSelector';
+import partSelector from '../../customXp/partSelector';
 import {PartData} from "../../customXp/queries/_getMetaData";
 import DefaultPartView from "../../customXp/parts/_Part";
 

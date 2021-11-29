@@ -4,7 +4,7 @@ import {FetchContentResult} from "../guillotine/fetchContent";
 
 import DefaultContentView from "../../customXp/contentTypes/_Content";
 
-import contentSelector, {ContentSelection} from "../../customXp/contentTypes/contentSelector";
+import contentSelector, {ContentSelection} from "../../customXp/contentSelector";
 
 
 const BaseContent =(props: FetchContentResult) => {

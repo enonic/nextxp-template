@@ -1,11 +1,16 @@
-import {Context} from "../../pages/[[...contentPath]]";
+import {Context} from "../pages/[[...contentPath]]";
 
 // APP_NAME helps to fully qualify content type strings in the connected XP app:
-import {APP_NAME} from "../../enonic-connection-config";
+import {APP_NAME} from "../enonic-connection-config";
 
-import getMovie from "./movie/getMovie";
-import processMovie from "./movie/processMovie";
-import MovieView from "./movie/Movie";
+import getList, {getListVariables} from "./contentTypes/list/getList";
+import ListView, {LIST_CONTENTTYPE_NAME} from "./contentTypes/list/List";
+
+import getPerson from "./contentTypes/person/getPerson";
+import PersonView, {PERSON_CONTENTTYPE_NAME} from "./contentTypes/person/Person";
+
+import getMovie from "./contentTypes/movie/getMovie";
+import MovieView, {MOVIE_CONTENTTYPE_NAME} from "./contentTypes/movie/Movie";
 
 ////////////////////////////////////////////////////////////////////////  Types:
 
@@ -42,6 +47,8 @@ export type ContentSelection = {
  *          - 'view' (used in BasePage.tsx) is a react component: top-level content-type-specific rendering with the props first fetched from guillotine (and then optionally preprocessed with the function in 'props').
  */
 export type ContentSelector = {
+    //query?: SelectedQueryMaybeVariablesFunc,
+    //props?: PropsProcessor,
     [fullContentType: string]: ContentSelection
 }
 
@@ -50,23 +57,23 @@ export type ContentSelector = {
 
 const typeSelector: ContentSelector = {
 /*
-
-    'base:folder': {
+    [LIST_CONTENTTYPE_NAME]: {
         query: [getList, getListVariables],
-        props: processList,
-        //view: ListView,
+        view: ListView,
     },
-*/
+    */
 
-/*    [`${APP_NAME}:person`]: {
+    [LIST_CONTENTTYPE_NAME]: {
+        query: [getList, getListVariables],
+    },
+
+   [PERSON_CONTENTTYPE_NAME]: {
         query: getPerson,
-        props: processPerson,
         view: PersonView,
-    },*/
+    },
 
-    [`${APP_NAME}:movie`]: {
+    [MOVIE_CONTENTTYPE_NAME]: {
         query: getMovie,
-        props: processMovie,
         view: MovieView,
     }
 };

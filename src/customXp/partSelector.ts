@@ -1,9 +1,9 @@
 // APP_NAME helps to fully qualify XP-component name strings in the connected XP app:
-import {APP_NAME} from "../../enonic-connection-config";
+import {APP_NAME} from "../enonic-connection-config";
 
-import {ReactView} from "../contentTypes/contentSelector";
+import {ReactView} from "./contentSelector";
 
-import PersonsView, {PERSONS_LIST_PART_NAME} from "./PersonsList";
+import PersonsView, {PERSONLIST_PART_NAME} from "./parts/PersonsList";
 
 export type PartSelector = {
     [descriptor:string]: PartSelection
@@ -14,9 +14,11 @@ export type PartSelection = {
 }
 
 const partSelector: PartSelector = {
-    [`${APP_NAME}:${PERSONS_LIST_PART_NAME}`]: {
+
+    [PERSONLIST_PART_NAME]: {
         view: PersonsView
     },
+
 };
 
 

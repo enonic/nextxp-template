@@ -3,7 +3,7 @@ import {LOW_PERFORMING_DEFAULT_QUERY} from "../../customXp/queries/_getDefaultDa
 
 import {Context} from "../../pages/[[...contentPath]]";
 
-import typeSelector, {SelectedQueryMaybeVariablesFunc, ContentSelector, VariablesGetter} from "../../customXp/contentTypes/contentSelector";
+import typeSelector, {SelectedQueryMaybeVariablesFunc, ContentSelector, VariablesGetter} from "../../customXp/contentSelector";
 import enonicConnectionConfig, {
     APP_NAME, APP_NAME_DASHED,
     fromXpRequestType,

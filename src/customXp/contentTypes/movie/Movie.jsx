@@ -1,4 +1,8 @@
 import React from "react"
+import {APP_NAME} from "../../../enonic-connection-config";
+
+// fully qualified XP content-type name:
+export const MOVIE_CONTENTTYPE_NAME = `${APP_NAME}:movie`;
 
 // Main entry component
 const MovieView = (props) => {

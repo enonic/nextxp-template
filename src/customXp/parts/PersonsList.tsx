@@ -1,12 +1,14 @@
 import React from "react"
+import {APP_NAME} from "../../enonic-connection-config";
+
+// fully qualified XP part name:
+export const PERSONLIST_PART_NAME = `${APP_NAME}:personList`;
 
 type Props = Record<string, any>;
 
-export const PERSONS_LIST_PART_NAME = 'personList';
-
 const PersonsList = ({part, content}: Props) => (
     <>
-        <h2>{part.config.heading}</h2>
+        <h2>Person: {part?.config?.heading}</h2>
         <pre>{JSON.stringify(content, null, 2)}</pre>
     </>
 )

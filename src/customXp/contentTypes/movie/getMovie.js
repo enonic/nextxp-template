@@ -24,7 +24,7 @@ query($path:ID!){
             character
             actor {
               ... on ${APP_NAME_UNDERSCORED}_Person {
-                _path
+                _path(siteRelative:true)
                 displayName
                 data {
                   photos {
@@ -41,7 +41,7 @@ query($path:ID!){
           }
         }
         parent {
-            _path
+            _path(siteRelative:true)
         }
       }
     }
