@@ -10,7 +10,7 @@ import enonicConnectionConfig, {
     getRenderMode,
     getSingleCompRequest,
     XP_RENDER_MODE
-} from "../../enonic-connection-config";
+} from "../enonic-connection-config";
 
 
 export type EnonicConnectionConfigRequiredFields = {

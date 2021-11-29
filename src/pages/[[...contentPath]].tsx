@@ -3,7 +3,7 @@ import React from 'react';
 import {fetchContent} from "../xpAdapter/guillotine/fetchContent";
 
 import MainView from "../xpAdapter/views/_MainView";
-import {getPublicAssetUrl} from "../enonic-connection-config";
+import {getPublicAssetUrl} from "../xpAdapter/enonic-connection-config";
 
 export type Context = {
     params: {

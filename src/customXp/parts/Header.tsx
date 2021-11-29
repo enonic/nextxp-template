@@ -1,5 +1,5 @@
 import React from "react"
-import {APP_NAME} from "../../enonic-connection-config";
+import {APP_NAME} from "../../xpAdapter/enonic-connection-config";
 import Header from "../../components/blocks/Header";
 
 // fully qualified XP part name:

@@ -1,5 +1,5 @@
 import React from "react"
-import { PORTAL_REGION_ATTRIBUTE } from '../../enonic-connection-config';
+import { PORTAL_REGION_ATTRIBUTE } from '../enonic-connection-config';
 
 import Component from "./_BaseComponent";
 import {PageData} from "../guillotine/fetchContent";

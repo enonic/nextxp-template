@@ -16,7 +16,7 @@ type Props = {
 const DefaultView = (props: Props) => {
     const { content } = props;
     return (
-     <Region {...props} />
+        <Region {...props} />
     )
 }
 

@@ -1,6 +1,6 @@
 import React from "react";
 
-import { PORTAL_COMPONENT_ATTRIBUTE } from "../../enonic-connection-config";
+import { PORTAL_COMPONENT_ATTRIBUTE } from "../enonic-connection-config";
 
 import componentSelector from "../../customXp/componentSelector";
 import {PageComponent} from "../../customXp/queries/_getMetaData";

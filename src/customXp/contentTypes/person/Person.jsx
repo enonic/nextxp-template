@@ -1,5 +1,5 @@
 import React from "react"
-import {APP_NAME} from "../../../enonic-connection-config";
+import {APP_NAME} from "../../../xpAdapter/enonic-connection-config";
 import Layout from "../../../components/blocks/Layout";
 
 // fully qualified XP content-type name:

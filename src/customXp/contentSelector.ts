@@ -1,7 +1,7 @@
 import {Context} from "../pages/[[...contentPath]]";
 
 // APP_NAME helps to fully qualify content type strings in the connected XP app:
-import {APP_NAME} from "../enonic-connection-config";
+import {APP_NAME} from "../xpAdapter/enonic-connection-config";
 
 import getList, {getListVariables} from "./contentTypes/list/getList";
 import ListView, {LIST_CONTENTTYPE_NAME} from "./contentTypes/list/List";
