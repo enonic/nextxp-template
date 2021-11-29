@@ -8,7 +8,6 @@ import Layout from '../components/blocks/Layout'
 import React from 'react';
 import Head from "next/head";
 
-const mainHeading = "Next.xp"
 
 /**
  *
@@ -30,25 +29,19 @@ function MyApp({Component, pageProps}: AppProps) {
     }
 
 
-    const subHeading = pageProps.common?.header?.title || "PoC";
-    const layoutProps = {
-        title: mainHeading + ": " + subHeading,
-        logoUrl: pageProps.common?.header?.logoUrl
-    }
+
 
     // const renderMode = pageProps.meta.renderMode;
 
     return (
         <>
             {   !pageProps.meta?.xpRequestType && (
-                    <Head>
-                        <base href='/' />
-                    </Head>
+                <Head>
+                    <base href='/' />
+                </Head>
             )}
-            <Layout {...layoutProps}>
-                <Seo title={subHeading} siteTitle={mainHeading}/>
-                <Component {...pageProps} />
-            </Layout>
+
+            <Component {...pageProps} />
         </>
     );
 }

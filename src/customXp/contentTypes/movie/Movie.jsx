@@ -1,14 +1,16 @@
 import React from "react"
 import {APP_NAME} from "../../../enonic-connection-config";
+import Layout from "../../../components/blocks/Layout";
 
 // fully qualified XP content-type name:
 export const MOVIE_CONTENTTYPE_NAME = `${APP_NAME}:movie`;
 
 // Main entry component
 const MovieView = ({content}) => {
-    const {displayName, data = {}, parent = {}} = content;
+    const {displayName, data = {}, parent = {}, layoutProps} = content;
     return (
-        <>
+
+        <Layout {...layoutProps}>
             <div>
                 <h2>{displayName}</h2>
                 <MovieInfo data={data}/>
@@ -16,7 +18,7 @@ const MovieView = ({content}) => {
             </div>
 
             <BackLink parent={parent}/>
-        </>
+        </Layout>
     );
 };
 export default MovieView;

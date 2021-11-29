@@ -4,6 +4,7 @@ import {fetchContent} from "../xpAdapter/guillotine/fetchContent";
 
 import MainView from "../xpAdapter/views/_MainView";
 import {getCommonProps} from "../shared/commonProps";
+import {getPublicAssetUrl} from "../enonic-connection-config";
 
 export type Context = {
     params: {
@@ -23,6 +24,7 @@ export type Context = {
     }
 };
 
+const mainHeading = "Next.xp"
 
 ////////////////////////////////////////////////////////////////////////////////////////////// SSR:
 
@@ -34,13 +36,10 @@ export const getServerSideProps = async (context: Context) => {
         page = null,
     } = await fetchContent(context.params.contentPath, context);
 
-    console.log({
-        contentPath: context.params.contentPath,
-        content,
-        meta,
-        error,
-        page,
-    })
+    content.layoutProps = {
+        title: content?.displayName || "Next.JS",
+        logoUrl: getPublicAssetUrl('images/xp-shield.svg', context),
+    }
 
     return {
         props: {
@@ -48,7 +47,7 @@ export const getServerSideProps = async (context: Context) => {
             meta,
             error,
             page,
-            common: getCommonProps(content, context)
+
         }
     }
 };

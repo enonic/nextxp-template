@@ -76,15 +76,15 @@ export const getXpPath = (pageUrl: string): string => `/${SITE}/${pageUrl}`;
 /** Takes an XP _path string and returns a Next.js-server-ready URL for the corresponding content for that _path */
 export const getPageUrlFromXpPath = (xpPath: string, context: Context): string => (
     fromXpRequestType(context)
-    ? xpPath.replace(siteNamePattern, `${NEXT_DOMAIN}/`)     // proxy-relative: should be absolute when served through the proxy
-    : xpPath.replace(siteNamePattern, '/')                   // site relative: should just start with slash when served directly
+        ? xpPath.replace(siteNamePattern, `${NEXT_DOMAIN}/`)     // proxy-relative: should be absolute when served through the proxy
+        : xpPath.replace(siteNamePattern, '/')                   // site relative: should just start with slash when served directly
 );
 
 /** Special-case (for <a href link values in props that target XP content pages - for when links too should work in CS) version of getPageUrlFromXpPath, depending on whether or not the request stems from the XP proxy used for content studio preview, or not */
 export const getContentLinkUrlFromXpPath = (xpPath: string, context: Context): string => (
     fromXpRequestType(context)
-    ? xpPath.replace(siteNamePattern, '')           // proxy-relative: should not start with a slash when served through the proxy
-    : xpPath.replace(siteNamePattern, '/')          // site relative: should start with slash when served directly
+        ? xpPath.replace(siteNamePattern, '')           // proxy-relative: should not start with a slash when served through the proxy
+        : xpPath.replace(siteNamePattern, '/')          // site relative: should start with slash when served directly
 );
 
 /**
@@ -95,8 +95,8 @@ export const getContentLinkUrlFromXpPath = (xpPath: string, context: Context): s
  */
 export const getPublicAssetUrl = (serverRelativeAssetPath: string, context: Context): string => (
     fromXpRequestType(context)
-    ? serverRelativeAssetPath.replace(publicPattern, `${NEXT_DOMAIN}/`)
-    : serverRelativeAssetPath.replace(publicPattern, `/`)
+        ? serverRelativeAssetPath.replace(publicPattern, `${NEXT_DOMAIN}/`)
+        : serverRelativeAssetPath.replace(publicPattern, `/`)
 );
 
 // ---------------------------------------------------------------------------------------------------------------- Export
