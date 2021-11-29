@@ -6,7 +6,7 @@ query($path:ID!, $maxChildren:Int, $start:Int) {
       displayName
       children(first:$maxChildren, offset:$start) {                 
         displayName
-        _path(siteRelative:true)
+        _path(siteRelative:false)
       }
     }
   }

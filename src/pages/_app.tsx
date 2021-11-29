@@ -6,6 +6,7 @@ import '../styles/globals.css'
 import Seo from '../components/blocks/Seo'
 import Layout from '../components/blocks/Layout'
 import React from 'react';
+import Head from "next/head";
 
 const mainHeading = "Next.xp"
 
@@ -39,6 +40,11 @@ function MyApp({Component, pageProps}: AppProps) {
 
     return (
         <>
+            {   !pageProps.meta?.xpRequestType && (
+                    <Head>
+                        <base href='/' />
+                    </Head>
+            )}
             <Layout {...layoutProps}>
                 <Seo title={subHeading} siteTitle={mainHeading}/>
                 <Component {...pageProps} />

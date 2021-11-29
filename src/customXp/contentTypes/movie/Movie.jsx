@@ -5,8 +5,8 @@ import {APP_NAME} from "../../../enonic-connection-config";
 export const MOVIE_CONTENTTYPE_NAME = `${APP_NAME}:movie`;
 
 // Main entry component
-const MovieView = (props) => {
-    const {displayName, data = {}, parent = {}} = props.content;
+const MovieView = ({content}) => {
+    const {displayName, data = {}, parent = {}} = content;
     return (
         <>
             <div>
