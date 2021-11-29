@@ -5,9 +5,7 @@ import Header from "../../components/blocks/Header";
 // fully qualified XP part name:
 export const HEADER_PART_NAME = `${APP_NAME}:header`;
 
-type Props = Record<string, any>;
-
-const HeaderPart = ({part, content}: Props) => {
+const HeaderPart = ({part, content}) => {
     const { displayName, layoutProps } = content;
     layoutProps.title = part?.config?.title || displayName;
 

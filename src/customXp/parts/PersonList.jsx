@@ -5,9 +5,7 @@ import {APP_NAME} from "../../xpAdapter/enonic-connection-config";
 export const PERSONLIST_PART_NAME = `${APP_NAME}:personList`;
 
 
-type Props = Record<string, any>;
-
-const PersonList = ({part, content}: Props) => {
+const PersonList = ({part, content}) => {
     const {displayName, children} = content;
     return (
         <main style={{

@@ -3,8 +3,6 @@ import type {AppProps} from 'next/app'
 
 import '../styles/globals.css'
 
-import Seo from '../components/blocks/Seo'
-import Layout from '../components/blocks/Layout'
 import React from 'react';
 import Head from "next/head";
 
