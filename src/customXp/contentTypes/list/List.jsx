@@ -1,25 +1,10 @@
 import React from "react"
+import Region from "../../../xpAdapter/views/_Region";
 
-const ListView = ({content}) => {
-    const {displayName, children} = content;
+const ListView = (props) => {
 
     return (
-        <>
-            <h2>{displayName}</h2>
-            {
-                children &&
-                <ul>{
-                    children.map((child, i) => (
-                        <li key={i}>
-                            <a href={child._path}>
-                                {child.displayName}
-                            </a>
-                        </li>
-                        )
-                    )
-                }</ul>
-            }
-        </>
+        <Region {...props} />
     );
 };
 
