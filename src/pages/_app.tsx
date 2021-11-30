@@ -5,6 +5,7 @@ import '../styles/globals.css'
 
 import React from 'react';
 import Head from "next/head";
+import Layout from "../components/blocks/Layout";
 
 
 /**
@@ -32,7 +33,7 @@ function MyApp({Component, pageProps}: AppProps) {
     // const renderMode = pageProps.meta.renderMode;
 
     return (
-        <>
+        <Layout {...pageProps?.content?.layoutProps}>
             {   !pageProps.meta?.xpRequestType && (
                 <Head>
                     <base href='/' />
@@ -40,7 +41,7 @@ function MyApp({Component, pageProps}: AppProps) {
             )}
 
             <Component {...pageProps} />
-        </>
+        </Layout>
     );
 }
 

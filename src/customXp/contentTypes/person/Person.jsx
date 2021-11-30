@@ -1,17 +1,16 @@
 import React from "react"
 import {APP_NAME} from "../../../xpAdapter/enonic-connection-config";
-import Layout from "../../../components/blocks/Layout";
 
 // fully qualified XP content-type name:
 export const PERSON_CONTENTTYPE_NAME = `${APP_NAME}:person`;
 
 const Person = ({content}) => {
-    const {displayName, data={}, parent={}, layoutProps} = content;
+    const {displayName, data={}, parent={}} = content;
     const {bio, photos} = data;
     const {_path} = parent;
 
     return (
-        <Layout {...layoutProps}>
+        <>
             <div>
                 <h2>{displayName}</h2>
 
@@ -32,7 +31,7 @@ const Person = ({content}) => {
             </div>
 
             <p><a href={_path}>Back to Persons</a></p>
-        </Layout>
+        </>
     )
 }
 

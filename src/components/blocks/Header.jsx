@@ -18,23 +18,27 @@ const Header = ({ title, logoUrl }) => (
                 justifyContent: 'space-between'
             }}
         >
-            <h1 style={{margin: 0}}>
-                <Link
-                    href="/">
-                    <a style={{
-                        color: `white`,
-                        textDecoration: `none`,
-                    }}
-                    >
-                        {title}
-                    </a>
-                </Link>
-            </h1>
-            <img src={logoUrl}
+            {title && (
+                <h1 style={{margin: 0}}>
+                    <Link
+                        href="/">
+                        <a style={{
+                            color: `white`,
+                            textDecoration: `none`,
+                        }}
+                        >
+                            {title}
+                        </a>
+                    </Link>
+                </h1>
+            )}
+            {logoUrl && (
+                <img src={logoUrl}
                    width={33}
                    height={40}
                    alt={"Enonic XP logo"}
-            />
+                />
+            )}
         </div>
     </header>
 )
