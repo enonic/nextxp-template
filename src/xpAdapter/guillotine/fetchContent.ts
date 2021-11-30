@@ -471,8 +471,6 @@ export const buildContentFetcher = <T extends EnonicConnectionConfigRequiredFiel
             const renderMode = getRenderMode(context);
             const isEditMode = renderMode === XP_RENDER_MODE.EDIT
 
-            console.info(`fetchContent: fromXp = ${xpRequestType}; renderMode = ${renderMode}`);
-
             ////////////////////////////////////////////// FIRST GUILLOTINE CALL FOR METADATA - MAINLY XP CONTENT TYPE:
             const metaResult = await fetchMetaData(CONTENT_API_URL, xpContentPath, xpRequestType, isEditMode);
             //////////////////////////////////////////////

@@ -4,8 +4,6 @@ import {APP_NAME} from "../xpAdapter/enonic-connection-config";
 import {ReactView} from "./contentSelector";
 
 import PersonList, {PERSONLIST_PART_NAME} from "./parts/PersonList";
-import HeaderView, {HEADER_PART_NAME} from "./parts/Header";
-import FooterView, {FOOTER_PART_NAME} from "./parts/Footer";
 
 export type PartSelector = {
     [descriptor:string]: PartSelection
@@ -19,12 +17,6 @@ const partSelector: PartSelector = {
 
     [PERSONLIST_PART_NAME]: {
         view: PersonList
-    },
-    [HEADER_PART_NAME]: {
-        view: HeaderView
-    },
-    [FOOTER_PART_NAME]: {
-        view: FooterView
     },
 
 };
