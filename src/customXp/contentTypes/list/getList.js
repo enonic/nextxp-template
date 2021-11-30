@@ -14,3 +14,5 @@ query($path:ID!) {
 
 export default getListQuery;
 
+// fully qualified XP content-type name:
+export const LIST_CONTENTTYPE_NAME = `base:folder`;

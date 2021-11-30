@@ -3,14 +3,14 @@ import {Context} from "../pages/[[...contentPath]]";
 // APP_NAME helps to fully qualify content type strings in the connected XP app:
 import {APP_NAME} from "../xpAdapter/enonic-connection-config";
 
-import getList, {getListVariables} from "./contentTypes/list/getList";
-import ListView, {LIST_CONTENTTYPE_NAME} from "./contentTypes/list/List";
+import getList, {LIST_CONTENTTYPE_NAME} from "./contentTypes/list/getList";
+import ListView from "./contentTypes/list/List";
 
-import getPerson from "./contentTypes/person/getPerson";
-import PersonView, {PERSON_CONTENTTYPE_NAME} from "./contentTypes/person/Person";
+import getPerson, {PERSON_CONTENTTYPE_NAME} from "./contentTypes/person/getPerson";
+import PersonView from "./contentTypes/person/Person";
 
-import getMovie from "./contentTypes/movie/getMovie";
-import MovieView, {MOVIE_CONTENTTYPE_NAME} from "./contentTypes/movie/Movie";
+import getMovie, {MOVIE_CONTENTTYPE_NAME} from "./contentTypes/movie/getMovie";
+import MovieView from "./contentTypes/movie/Movie";
 
 ////////////////////////////////////////////////////////////////////////  Types:
 

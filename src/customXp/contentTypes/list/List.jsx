@@ -1,6 +1,4 @@
 import React from "react"
-// fully qualified XP content-type name:
-export const LIST_CONTENTTYPE_NAME = `base:folder`;
 
 const ListView = ({content}) => {
     const {displayName, children} = content;

@@ -1,4 +1,4 @@
-import {APP_NAME_UNDERSCORED} from '../../../xpAdapter/enonic-connection-config'
+import {APP_NAME, APP_NAME_UNDERSCORED} from '../../../xpAdapter/enonic-connection-config'
 
 const getMovie = `
 query($path:ID!){
@@ -49,3 +49,6 @@ query($path:ID!){
 }`;
 
 export default getMovie;
+
+// fully qualified XP content-type name:
+export const MOVIE_CONTENTTYPE_NAME = `${APP_NAME}:movie`;

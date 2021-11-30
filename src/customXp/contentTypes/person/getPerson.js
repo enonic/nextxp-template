@@ -1,4 +1,4 @@
-import {APP_NAME_UNDERSCORED} from '../../../xpAdapter/enonic-connection-config'
+import {APP_NAME, APP_NAME_UNDERSCORED} from '../../../xpAdapter/enonic-connection-config'
 
 export default `
 query($path:ID!){
@@ -25,3 +25,6 @@ query($path:ID!){
     }
   }
 }`;
+
+// fully qualified XP content-type name:
+export const PERSON_CONTENTTYPE_NAME = `${APP_NAME}:person`;
