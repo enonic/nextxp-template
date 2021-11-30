@@ -29,7 +29,7 @@ const mainHeading = "Next.xp"
 
 export const getServerSideProps = async (context: Context) => {
     const {
-        content,
+        content = null,
         meta = null,
         error = null,
         page = null,
