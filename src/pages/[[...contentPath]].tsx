@@ -2,7 +2,7 @@ import React from 'react';
 
 import {fetchContent} from "../xpAdapter/guillotine/fetchContent";
 
-import MainView from "../xpAdapter/views/_MainView";
+import MainXpView from "../xpAdapter/views/_MainXpView";
 import {getPublicAssetUrl} from "../xpAdapter/enonic-connection-config";
 
 export type Context = {
@@ -12,18 +12,17 @@ export type Context = {
         contentPath: string[]
     },
     query: {
-
-        // The XP preview proxy injects the '__fromXp__' parameter.  It's used here
-        // to make some adaptations in the rendered and returned code, adapting to some postprocessing needed for the CS preview to work.
         [key: string]: string | boolean
     },
     req: {
         mode: string,
+
+        // The XP preview proxy injects some parameters. They are used here on the Next.js
+        // to make some adaptations in the rendered and returned code, adapting to some postprocessing needed for the CS preview to work.
         headers?: { [key: string]: string }
     }
 };
 
-const mainHeading = "Next.xp"
 
 ////////////////////////////////////////////////////////////////////////////////////////////// SSR:
 
@@ -39,10 +38,13 @@ export const getServerSideProps = async (context: Context) => {
         props: {
             content: {
                 ...content,
+
+                // Injecting into props some values used in the header:
                 layoutProps: {
                     title: content?.displayName || "Next.JS",
                     logoUrl: getPublicAssetUrl('images/xp-shield.svg', context),
                 }
+
             },
             meta,
             error,
@@ -52,4 +54,4 @@ export const getServerSideProps = async (context: Context) => {
     }
 };
 
-export default MainView;
+export default MainXpView;

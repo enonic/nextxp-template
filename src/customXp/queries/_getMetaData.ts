@@ -1,3 +1,5 @@
+import {XP_COMPONENT_TYPE} from "../../xpAdapter/enonic-connection-config";
+
 export const PAGE_FRAGMENT = `
       components {
         type
@@ -38,6 +40,7 @@ export function getMetaQuery(isEditMode: boolean, pageFragment?: string): string
 }
 
 export interface PageComponent {
+    // TODO: This is actually XP_COMPONENT_TYPE values, but TS protests. Probably in need of a type fix
     type: 'part'|'text'|'image';
     path: string;
     part?: PartData,

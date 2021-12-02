@@ -10,7 +10,9 @@ import {PageComponent} from "../../customXp/queries/_getMetaData";
 export type BaseComponentProps = {
     component: PageComponent,
 
-    content?: any;                  // Content is passed down for optional consumption in componentviews. TODO: Use a react contextprovider instead?
+    content?: any;                  // Content is passed down for optional consumption in componentviews.
+    // TODO: pass more than content? Meta? Headers?
+    // TODO: Use a react contextprovider instead of "manually" passing everything down
 }
 
 const BaseComponent = ({component, content}: BaseComponentProps) => {

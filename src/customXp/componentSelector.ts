@@ -3,29 +3,38 @@ import BasePart from "../xpAdapter/views/_BasePart";
 import ImageView from "./components/_Image";
 import TextView from "./components/_Text";
 
-import {PropsProcessor, ReactView, SelectedQueryMaybeVariablesFunc} from "./contentSelector";
+import {TypeSelection} from "./_selectorTypes";
+import {XP_COMPONENT_TYPE} from "../xpAdapter/enonic-connection-config";
 
 
-export type ComponentSelection = {
-    //query?: SelectedQueryMaybeVariablesFunc,
-    //props?: PropsProcessor,
-    view?: ReactView
-}
 
 export type ComponentSelector = {
-    [fullContentType: string]: ComponentSelection
+    [fullContentType: string]: TypeSelection
 }
 
 const componentSelector: ComponentSelector = {
-    'text': {
+
+    [XP_COMPONENT_TYPE.TEXT]: {
+        // query: TODO: allow override queries (which would affect all text components) to be added here? If so, should they mutate the first (meta) or the second one?
+        // props: TODO: same,
         view: TextView
     },
-    'part': {
+
+    [XP_COMPONENT_TYPE.PART]: {
+        //
         view: BasePart
     },
-    'image': {
+
+    [XP_COMPONENT_TYPE.IMAGE]: {
+        // query: TODO: allow override queries (which would affect all image components) to be added here? If so, should they mutate the first (meta) or the second one?
+        // props: TODO: same,
         view: ImageView
-    }
+    },
+
+    /* TODO: Support
+        Layout
+        Fragment
+     */
 };
 
 export default componentSelector;

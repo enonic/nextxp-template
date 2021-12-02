@@ -9,29 +9,20 @@ import Layout from "../components/blocks/Layout";
 
 
 /**
- *
+ * Wraps all rendered components
  * @param Component Usually triggering [[...contentPath]].tsx, this component is BasePage.tsx
  * @param pageProps {{content, common, meta, error}}
  */
 function MyApp({Component, pageProps}: AppProps) {
-    // In single-component rendering mode, only render the component. This is problematic to do dynamically in Next.js, so we leave that to post-processing in the proxy.
-    if (pageProps.meta?.xpRequestType === 'component') {
 
-        // TODO: PLACEHOLDER - actually render updated single component
-        return (
-            <>
-                <details data-single-component-output="true">
-                    <Component {...pageProps} />
-                </details>
-            </>
-        );
+    // Special case: in XP single-component rendering mode (used in edit mode when updating one targeted component without reloading the page),
+    // only render the component surrounded by tags needed by post-processing in the proxy:
+    if (pageProps.meta?.xpRequestType === 'component') {
+        return <details data-single-component-output="true"><Component {...pageProps} /></details>;
     }
 
 
-
-
-    // const renderMode = pageProps.meta.renderMode;
-
+    // MAIN RENDERING:
     return (
         <Layout {...pageProps?.content?.layoutProps}>
             {   !pageProps.meta?.xpRequestType && (

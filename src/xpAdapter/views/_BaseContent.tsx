@@ -4,7 +4,8 @@ import {FetchContentResult} from "../guillotine/fetchContent";
 
 import DefaultContentView from "../../customXp/contentTypes/_DefaultView";
 
-import contentSelector, {ContentSelection} from "../../customXp/contentSelector";
+import contentSelector from "../../customXp/contentSelector";
+import {TypeSelection} from "../../customXp/_selectorTypes";
 
 
 const BaseContent = (props: FetchContentResult) => {
@@ -19,7 +20,7 @@ const BaseContent = (props: FetchContentResult) => {
         console.warn("BasePage props are missing 'meta.type'. Falling back to _Default view type.");
     }
 
-    const typeSelection: ContentSelection = (contentSelector || {})[meta.type]
+    const typeSelection: TypeSelection = (contentSelector || {})[meta.type]
     const SelectedPage = typeSelection?.view || DefaultContentView;
 
     // @ts-ignore

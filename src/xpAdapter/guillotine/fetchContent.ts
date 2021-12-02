@@ -3,26 +3,32 @@ import {LOW_PERFORMING_DEFAULT_QUERY} from "../../customXp/queries/_getDefaultDa
 
 import {Context} from "../../pages/[[...contentPath]]";
 
-import typeSelector, {SelectedQueryMaybeVariablesFunc, ContentSelector, VariablesGetter} from "../../customXp/contentSelector";
+import typeSelector, {ContentSelector} from "../../customXp/contentSelector";
 import enonicConnectionConfig, {
-    APP_NAME, APP_NAME_DASHED,
-    fromXpRequestType,
-    getRenderMode,
-    getSingleCompRequest,
-    XP_RENDER_MODE
+    AppName,
+    AppNameDashed,
+    ContentApiUrl,
+    XP_COMPONENT_TYPE,
+    XP_RENDER_MODE,
+    XpComponentType,
 } from "../enonic-connection-config";
+import {SelectedQueryMaybeVariablesFunc, VariablesGetter} from "../../customXp/_selectorTypes";
 
 
 export type EnonicConnectionConfigRequiredFields = {
-    CONTENT_API_URL: string,
+    APP_NAME: AppName,
+    APP_NAME_DASHED: AppNameDashed,
+    CONTENT_API_URL: ContentApiUrl,
     getXpPath: (siteRelativeContentPath: string) => string,
-    fromXpRequestType: (context?: Context) => string | boolean
+    fromXpRequestType: (context?: Context) => XpComponentType | boolean
+    getRenderMode: (context?: Context) => XP_RENDER_MODE,
+    getSingleCompRequest: (context?: Context) => string|undefined
 };
 
 
 export type ResultMeta = Meta & {
     path: string,
-    xpRequestType?: string | boolean,
+    xpRequestType?: XpComponentType | boolean,
     requestedComponent?: string
     renderMode: XP_RENDER_MODE,
 }
@@ -334,7 +340,13 @@ type PageAsJson = {
     regions?: Record<string, any>
 }
 
-function buildRegionTree(comps: PageComponent[], pageAsJson?: PageAsJson, isEditMode?: boolean): RegionTree {
+function buildRegionTree(
+    comps: PageComponent[],
+    appName: AppName,
+    appNameDashed: AppNameDashed,
+    pageAsJson?: PageAsJson,
+    isEditMode?: boolean
+): RegionTree {
     const regions: RegionTree = {};
 
     if (isEditMode) {
@@ -358,10 +370,10 @@ function buildRegionTree(comps: PageComponent[], pageAsJson?: PageAsJson, isEdit
                 regions[info.region] = region;
             }
 
-            if (cmp.type === 'part' && cmp.part && cmp.part.configAsJson) {
+            if (cmp.type === XP_COMPONENT_TYPE.PART && cmp.part && cmp.part.configAsJson) {
                 const [appName, partName] = (cmp.part.descriptor || "").split(':');
-                if (appName === APP_NAME && cmp.part.configAsJson[APP_NAME_DASHED][partName]) {
-                    cmp.part.__config__ = cmp.part!.configAsJson[APP_NAME_DASHED][partName]
+                if (appName === appName && cmp.part.configAsJson[appNameDashed][partName]) {
+                    cmp.part.__config__ = cmp.part!.configAsJson[appNameDashed][partName]
                 }
             }
 
@@ -383,7 +395,7 @@ function buildRegionTree(comps: PageComponent[], pageAsJson?: PageAsJson, isEdit
 
 /**
  * Configures, builds and returns a general fetchContent function.
- * @param enonicConnectionConfig Object containing attributes imported from enonic-connecion-config.js: the methods getXpPath and fromXpRequestType, and the string CONTENT_API_URL. Easiest: caller imports enonic-connection-config and just passes that entire object here as enonicConnectionConfig.
+ * @param enonicConnectionConfig Object containing attributes imported from enonic-connecion-config.js: constants and function concerned with connection to the XP backend. Easiest: caller imports enonic-connection-config and just passes that entire object here as enonicConnectionConfig.
  * @param typeSelector Object, usually the typeSelector from typeSelector.ts, where keys are full XP content type strings (eg. 'my.app:content-type') and values are optional type-specific objects of config for how to handle that function. All attributes in these objecs are optional (see typeSelector.ts for examples):
  *          - 'query' can be a guillotine query string to use to fetch data for that content type, OR also have a get-guillotine-variables function - by an object with 'query' and 'variables' attributes, or an array where the query string is first and the get-variables function is second.
  *          - 'props' is a function for processing props: converting directly-from-guillotine props to props adapted for displaying the selected view component
@@ -400,7 +412,14 @@ export const buildContentFetcher = <T extends EnonicConnectionConfigRequiredFiel
     }: FetcherConfig<T>
 ): ContentFetcher => {
 
-    const {CONTENT_API_URL, getXpPath, fromXpRequestType} = enonicConnectionConfig;
+    const {
+        APP_NAME,
+        APP_NAME_DASHED,
+        CONTENT_API_URL,
+        getXpPath,
+        fromXpRequestType,
+        getRenderMode,
+        getSingleCompRequest } = enonicConnectionConfig;
 
     const defaultGetVariables: VariablesGetter = (path) => ({path});
 
@@ -544,7 +563,7 @@ export const buildContentFetcher = <T extends EnonicConnectionConfigRequiredFiel
             if (components || (pageAsJson && isEditMode)) {
                 response.page = {
                     ...response.page || {},
-                    regions: buildRegionTree(components!, pageAsJson, isEditMode)
+                    regions: buildRegionTree(components!, APP_NAME, APP_NAME_DASHED, pageAsJson, isEditMode)
                 }
             }
             response.meta!.renderMode = renderMode;
@@ -581,5 +600,7 @@ export const buildContentFetcher = <T extends EnonicConnectionConfigRequiredFiel
 export const fetchContent: ContentFetcher = buildContentFetcher<EnonicConnectionConfigRequiredFields>({
     enonicConnectionConfig,
     typeSelector,
+
+    // TODO: We should find a different approach
     firstMethodKey: true
 });

@@ -16,8 +16,8 @@ const errorPageSelector = {
 
 
 
-const _MainView = (props: FetchContentResult) => {
-    const {content, meta, page, error} = props;
+const _MainXpView = (props: FetchContentResult) => {
+    const { meta, error} = props;
     if (error) {
         // @ts-ignore
         const ErrorPage = errorPageSelector[error.code] || CustomError;
@@ -33,4 +33,4 @@ const _MainView = (props: FetchContentResult) => {
     return <BaseContent {...props} />
 };
 
-export default _MainView;
+export default _MainXpView;
