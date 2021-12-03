@@ -1,8 +1,9 @@
 import React from 'react';
 
-import { fetchContent } from "../guillotine/fetchContent";
+import {fetchContent} from "../xpAdapter/guillotine/fetchContent";
 
-import BasePage from "../components/BasePage";
+import MainXpView from "../xpAdapter/views/_MainXpView";
+import {getPublicAssetUrl} from "../xpAdapter/enonic-connection-config";
 
 export type Context = {
     params: {
@@ -11,19 +12,16 @@ export type Context = {
         contentPath: string[]
     },
     query: {
-
-        // The XP preview proxy injects the '__fromXp__' parameter.  It's used here
-        // to make some adaptations in the rendered and returned code, adapting to some postprocessing needed for the CS preview to work.
-        [fromXpParam:string]: string|boolean
+        [key: string]: string | boolean
     },
-    req?: {
-        headers?: {
-            [FROM_XP_PARAM:string]:string|boolean
-        }
+    req: {
+        mode: string,
+
+        // The XP preview proxy injects some parameters. They are used here on the Next.js
+        // to make some adaptations in the rendered and returned code, adapting to some postprocessing needed for the CS preview to work.
+        headers?: { [key: string]: string }
     }
 };
-
-
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////// SSR:
@@ -32,16 +30,28 @@ export const getServerSideProps = async (context: Context) => {
     const {
         content = null,
         meta = null,
-        error = null
+        error = null,
+        page = null,
     } = await fetchContent(context.params.contentPath, context);
 
     return {
         props: {
-            content,
+            content: {
+                ...content,
+
+                // Injecting into props some values used in the header:
+                layoutProps: {
+                    title: content?.displayName || "Next.JS",
+                    logoUrl: getPublicAssetUrl('images/xp-shield.svg', context),
+                }
+
+            },
             meta,
             error,
+            page,
+
         }
     }
 };
 
-export default BasePage;
+export default MainXpView;

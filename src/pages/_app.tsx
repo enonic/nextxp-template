@@ -1,14 +1,38 @@
 import type {AppProps} from 'next/app'
 
+
+import '../styles/globals.css'
+
+import React from 'react';
+import Head from "next/head";
+import Layout from "../components/blocks/Layout";
+
+
 /**
- * Main Next.js component wrapper. Use to add elements that should be present on all pages (headers, footers, etc).
- *
- * @param Component Usually BasePage.tsx
- * @param pageProps {{content, meta, error}} pageProps will be whatever is sent in as `props` from top-level getServerSideProps etc., usually from [[...contentPath]].tsx
+ * Wraps all rendered components
+ * @param Component Usually triggering [[...contentPath]].tsx, this component is BasePage.tsx
+ * @param pageProps {{content, common, meta, error}}
  */
 function MyApp({Component, pageProps}: AppProps) {
+
+    // Special case: in XP single-component rendering mode (used in edit mode when updating one targeted component without reloading the page),
+    // only render the component surrounded by tags needed by post-processing in the proxy:
+    if (pageProps.meta?.xpRequestType === 'component') {
+        return <details data-single-component-output="true"><Component {...pageProps} /></details>;
+    }
+
+
+    // MAIN RENDERING:
     return (
-        <Component {...pageProps} />
+        <Layout {...pageProps?.content?.layoutProps}>
+            {   !pageProps.meta?.xpRequestType && (
+                <Head>
+                    <base href='/' />
+                </Head>
+            )}
+
+            <Component {...pageProps} />
+        </Layout>
     );
 }
 

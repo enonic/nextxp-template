@@ -1,4 +1,4 @@
-import {Context} from "./pages/[[...contentPath]]";
+import {Context} from "../pages/[[...contentPath]]";
 
 
 /** Import config values from .env, .env.development and .env.production */
@@ -6,20 +6,27 @@ const mode = process.env.MODE || process.env.NEXT_PUBLIC_MODE;
 export const IS_DEV_MODE = (mode === 'development');
 
 
-// Where is XP running
-export const API_DOMAIN: string = (process.env.API_DOMAIN || process.env.NEXT_PUBLIC_API_DOMAIN) as string
+/** Where is XP running */
+export type ApiDomain = string
+export const API_DOMAIN: ApiDomain = (process.env.API_DOMAIN || process.env.NEXT_PUBLIC_API_DOMAIN) as ApiDomain
 
-// Which site this server communicates with: content item _name for the root site item
-export const SITE: string = (process.env.SITE || process.env.NEXT_PUBLIC_SITE) as string
+/** Which site this server communicates with: content item _name for the root site item */
+export type Site = string;
+export const SITE: Site = (process.env.SITE || process.env.NEXT_PUBLIC_SITE) as Site
 
 /** URL to the guillotine API */
-export const CONTENT_API_URL: string = (process.env.CONTENT_API_URL || process.env.NEXT_PUBLIC_CONTENT_API_URL) as string
+export type ContentApiUrl = string;
+export const CONTENT_API_URL: ContentApiUrl = (process.env.CONTENT_API_URL || process.env.NEXT_PUBLIC_CONTENT_API_URL) as ContentApiUrl
 
-// Optional utility value - defining in one place the name of the target app
-// (the app that defines the content types, the app name is therefore part of the content type strings used both in typeselector and in query introspections)
-export const APP_NAME: string = (process.env.APP_NAME || process.env.NEXT_PUBLIC_APP_NAME) as string;
-export const APP_NAME_UNDERSCORED: string = (APP_NAME || '').replace(/\./g, '_')
-export const APP_NAME_DASHED: string = (APP_NAME || '').replace(/\./g, '-')
+/** Optional utility value - defining in one place the name of the target app (the app that defines the content types, the app name is therefore part of the content type strings used both in typeselector and in query introspections) */
+export type AppName = string;
+export const APP_NAME: AppName = (process.env.APP_NAME || process.env.NEXT_PUBLIC_APP_NAME) as AppName;
+/** Optional utility value - derived from APP_NAME, only with underscores instead of dots */
+export type AppNameUnderscored = string;
+export const APP_NAME_UNDERSCORED: AppNameUnderscored = (APP_NAME || '').replace(/\./g, '_')
+/** Optional utility value - derived from APP_NAME, only with dashes instead of dots */
+export type AppNameDashed = string;
+export const APP_NAME_DASHED: AppNameDashed = (APP_NAME || '').replace(/\./g, '-')
 
 /** The domain (full: with protocol and port if necessary) of this next.js server */
 export const NEXT_DOMAIN: string = (process.env.NEXT_DOMAIN || process.env.NEXT_PUBLIC_NEXT_DOMAIN) as string
@@ -31,17 +38,49 @@ export const XP_PREVIEW_ORIGIN: string = (process.env.XP_PREVIEW_ORIGIN || proce
 //////////////////////////////////////////////////////////////////////////  Hardcode-able constants
 
 // URI parameter marking that a request is for a preview for CS. MUST MATCH THE VALUE OF 'FROM_XP_PARAM' on XP side.
-const FROM_XP_PARAM = '__fromxp__';
+export const FROM_XP_PARAM = '__fromxp__';
+export const COMPONENT_SUBPATH_HEADER = "xp-component-path";
+const XP_RENDER_MODE_HEADER = 'content-studio-mode';
 
+export const PORTAL_COMPONENT_ATTRIBUTE = "data-portal-component-type";
+export const PORTAL_REGION_ATTRIBUTE = "data-portal-region";
 
 // ------------------------------- Exports and auxillary functions derived from values above ------------------------------------
 
 /** Returns true if the context object (from next.js in [[...contentPath]].jsx ) stems from a request that comes from XP in a CS-preview, i.e. has the URI param FROM_XP_PARAM (defined as '__fromXp__' above).
  *  False if no context, query or FROM_XP_PARAM param */
-export const requestIsFromXp = (context: Context): boolean => (
-    !!((context?.query || {})[FROM_XP_PARAM]) || !!((context?.req?.headers || {})[FROM_XP_PARAM])
+// TODO: The string values here are actually XP_COMPONENT_TYPE values:
+export type XpComponentType = string;
+export const fromXpRequestType = (context?: Context): XpComponentType|boolean => (
+    !!((context?.query || {})[FROM_XP_PARAM]) || ((context?.req?.headers || {})[FROM_XP_PARAM])
 );
 
+export enum XP_RENDER_MODE {
+    INLINE = "inline",
+    EDIT = "edit",
+    PREVIEW = "preview",
+    LIVE = "live",
+    ADMIN = "admin",
+}
+
+// TODO: Use these instead of hardcoded strings everywhere
+export enum XP_COMPONENT_TYPE {
+    PART = "part",
+    LAYOUT = "layout",
+    IMAGE = "image",
+    TEXT = "text",
+    FRAGMENT = "fragment",
+}
+
+const getRenderMode = (context?: Context): XP_RENDER_MODE => {
+    const value = (context?.req?.headers || {})[XP_RENDER_MODE_HEADER];
+    const enumValue = XP_RENDER_MODE[<keyof typeof XP_RENDER_MODE>value?.toUpperCase()];
+    return enumValue || XP_RENDER_MODE.PREVIEW;
+};
+
+const getSingleCompRequest = (context?: Context): string|undefined => (
+    (context?.req?.headers || {})[COMPONENT_SUBPATH_HEADER]
+);
 
 const siteNamePattern = new RegExp('^/' + SITE + "/");
 const publicPattern = new RegExp('^/*');
@@ -54,14 +93,14 @@ export const getXpPath = (pageUrl: string): string => `/${SITE}/${pageUrl}`;
 
 /** Takes an XP _path string and returns a Next.js-server-ready URL for the corresponding content for that _path */
 export const getPageUrlFromXpPath = (xpPath: string, context: Context): string => (
-    requestIsFromXp(context)
+    fromXpRequestType(context)
         ? xpPath.replace(siteNamePattern, `${NEXT_DOMAIN}/`)     // proxy-relative: should be absolute when served through the proxy
         : xpPath.replace(siteNamePattern, '/')                   // site relative: should just start with slash when served directly
 );
 
 /** Special-case (for <a href link values in props that target XP content pages - for when links too should work in CS) version of getPageUrlFromXpPath, depending on whether or not the request stems from the XP proxy used for content studio preview, or not */
 export const getContentLinkUrlFromXpPath = (xpPath: string, context: Context): string => (
-    requestIsFromXp(context)
+    fromXpRequestType(context)
         ? xpPath.replace(siteNamePattern, '')           // proxy-relative: should not start with a slash when served through the proxy
         : xpPath.replace(siteNamePattern, '/')          // site relative: should start with slash when served directly
 );
@@ -73,7 +112,7 @@ export const getContentLinkUrlFromXpPath = (xpPath: string, context: Context): s
  * @returns {string}
  */
 export const getPublicAssetUrl = (serverRelativeAssetPath: string, context: Context): string => (
-    requestIsFromXp(context)
+    fromXpRequestType(context)
         ? serverRelativeAssetPath.replace(publicPattern, `${NEXT_DOMAIN}/`)
         : serverRelativeAssetPath.replace(publicPattern, `/`)
 );
@@ -94,11 +133,18 @@ const enonicConnectionConfig = {
     APP_NAME_UNDERSCORED,
     APP_NAME_DASHED,
 
+    FROM_XP_PARAM,
+    COMPONENT_SUBPATH_HEADER,
+    PORTAL_COMPONENT_ATTRIBUTE,
+    PORTAL_REGION_ATTRIBUTE,
+
     getXpPath,
     getPageUrlFromXpPath,
     getContentLinkUrlFromXpPath,
     getPublicAssetUrl,
-    requestIsFromXp
+    fromXpRequestType,
+    getSingleCompRequest,
+    getRenderMode
 };
 
 // Verify required values
