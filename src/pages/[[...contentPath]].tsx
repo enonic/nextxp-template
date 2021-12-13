@@ -5,6 +5,8 @@ import {fetchContent} from "../xpAdapter/guillotine/fetchContent";
 import MainXpView from "../xpAdapter/views/_MainXpView";
 import {getPublicAssetUrl} from "../xpAdapter/enonic-connection-config";
 
+import "../customXp/typesSelector";
+
 export type Context = {
     params: {
 

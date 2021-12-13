@@ -1,5 +1,5 @@
 import React from "react"
-import RegionView from "../../../xpAdapter/views/_Region";
+import {RegionView} from "../../../xpAdapter/views/_Region";
 
 const ListView = (props) => {
 

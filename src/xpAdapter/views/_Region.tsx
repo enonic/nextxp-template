@@ -21,7 +21,7 @@ export interface RegionsProps {
 // ------------------------------------------------------------
 
 /** One XP region */
-const RegionView = ({name, components, content, className}: RegionProps) => {
+export const RegionView = ({name, components, content, className}: RegionProps) => {
     const regionAttrs: { [key: string]: string } = {
         id: name + "Region",
         [PORTAL_REGION_ATTRIBUTE]: name,
@@ -43,7 +43,7 @@ const RegionView = ({name, components, content, className}: RegionProps) => {
 
 
 /** Multiple XP regions, or only one if named in props.selected */
-export const RegionsView = (props: RegionsProps) => {
+const RegionsView = (props: RegionsProps) => {
     const {regions, selected, content} = props;
     if (!regions || !Object.keys(regions)) {
         return null;
@@ -72,4 +72,4 @@ export const RegionsView = (props: RegionsProps) => {
     );
 }
 
-export default RegionView;
+export default RegionsView;

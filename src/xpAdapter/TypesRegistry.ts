@@ -1,4 +1,5 @@
-import {PropsProcessor, ReactView, SelectedQueryMaybeVariablesFunc} from '../customXp/_selectorTypes';
+import {Context} from "../pages/[[...contentPath]]";
+
 
 /**
  *  Object that configures the handling of a particular content type. All attributes are optional (see examples below), and missing values will fall back to default behavior:
@@ -15,6 +16,21 @@ export interface TypeSelection {
 interface TypeSelector {
     [type: string]: TypeSelection;
 }
+
+export type ReactView = (props: any) => JSX.Element;
+
+export type PropsProcessor = (content: any, context?: Context) => any
+
+// TODO: also access as arguments: dataAsJson, pageAsJson, configAsJson from the first (meta) call here? To allow content or component config values to affect the query? Another option could be to let the component or page controller pass those values to nextjs by a header
+export type VariablesGetter = (path: string, context?: Context) => {
+    path: string,
+    [variables: string]: any
+};
+
+
+export type SelectedQueryMaybeVariablesFunc = string |
+    { query: string, variables: VariablesGetter } |
+    [string, VariablesGetter]
 
 type SelectorName = "content" | "component" | "part" | "layout";
 
@@ -52,11 +68,11 @@ export class TypesRegistry {
         selector[name] = obj;
     }
 
-    public static addContent(name: string, obj: TypeSelection): void {
+    public static addContentType(name: string, obj: TypeSelection): void {
         return TypesRegistry.addType('content', name, obj);
     }
 
-    public static getContent(name: string): TypeSelection | null {
+    public static getContentType(name: string): TypeSelection | null {
         return TypesRegistry.getType('content', name);
     }
 

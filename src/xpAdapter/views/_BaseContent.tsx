@@ -19,7 +19,7 @@ const BaseContent = (props: FetchContentResult) => {
         console.warn("BasePage props are missing 'meta.type'. Falling back to _Default view type.");
     }
 
-    const typeSelection = TypesRegistry.getContent(meta.type);
+    const typeSelection = TypesRegistry.getContentType(meta.type);
     const SelectedPageView = typeSelection?.view || DefaultContentView;
 
     return <SelectedPageView content={content} page={page}/>;

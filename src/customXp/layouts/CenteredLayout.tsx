@@ -1,5 +1,5 @@
 import React from "react"
-import RegionView from '../../xpAdapter/views/_Region';
+import {RegionView} from '../../xpAdapter/views/_Region';
 import {LayoutProps} from './_Layout';
 import {APP_NAME} from '../../xpAdapter/enonic-connection-config';
 

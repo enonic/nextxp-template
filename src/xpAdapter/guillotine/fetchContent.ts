@@ -11,8 +11,7 @@ import enonicConnectionConfig, {
     XP_RENDER_MODE,
     XpComponentType,
 } from "../enonic-connection-config";
-import {SelectedQueryMaybeVariablesFunc, VariablesGetter} from "../../customXp/_selectorTypes";
-import {TypesRegistry} from '../TypesRegistry';
+import {SelectedQueryMaybeVariablesFunc, TypesRegistry, VariablesGetter} from '../TypesRegistry';
 
 
 export type EnonicConnectionConfigRequiredFields = {
@@ -31,6 +30,7 @@ export type ResultMeta = Meta & {
     xpRequestType?: XpComponentType | boolean,
     requestedComponent?: string
     renderMode: XP_RENDER_MODE,
+    parentRegion?: PageRegion,
 }
 
 type Result = {
@@ -399,7 +399,7 @@ function buildRegionTree(
     // this is needed in non-edit mode as well to create layouts' regions
     const regions: RegionTree = extractRegions(pageAsJson?.regions);
 
-    console.log("Regions structure: " + JSON.stringify(regions, null, 2));
+    // console.log("Regions structure: " + JSON.stringify(regions, null, 2));
 
     (comps || []).forEach(cmp => {
         const cmpPath = parseComponentPath(cmp.path);
@@ -562,7 +562,7 @@ export const buildContentFetcher = <T extends EnonicConnectionConfigRequiredFiel
 
             ////////////////////////////////////////////////////  Content type established. Proceed to data call:
 
-            const typeSelection = typesRegistry?.getContent(type);
+            const typeSelection = typesRegistry?.getContentType(type);
 
             const {query, variables} = getQueryAndVariables(type, xpContentPath, context, typeSelection?.query);
             if (!query.trim()) {
@@ -599,16 +599,21 @@ export const buildContentFetcher = <T extends EnonicConnectionConfigRequiredFiel
             } as FetchContentResult;
 
             // .meta will be visible in final rendered inline props. Only adding some .meta attributes here on certain conditions (instead if always adding them and letting them be visible as false/undefined etc)
-            if (xpRequestType) {
-                response.meta!.xpRequestType = xpRequestType
-                if (xpRequestType === 'component') {
-                    response.meta!.requestedComponent = getSingleCompRequest(context);
-                }
-            }
             if (components || pageAsJson) {
                 response.page = {
                     ...response.page || {},
                     regions: buildRegionTree(components!, APP_NAME, APP_NAME_DASHED, pageAsJson, isEditMode)
+                }
+            }
+            if (xpRequestType) {
+                response.meta!.xpRequestType = xpRequestType
+                if (xpRequestType === 'component') {
+                    const requestedComponent = getSingleCompRequest(context);
+                    response.meta!.requestedComponent = requestedComponent;
+                    if (requestedComponent && response.page?.regions) {
+                        const cmpPath = parseComponentPath(requestedComponent);
+                        response.meta!.parentRegion = getParentRegion(response.page?.regions!, cmpPath);
+                    }
                 }
             }
             response.meta!.renderMode = renderMode;
