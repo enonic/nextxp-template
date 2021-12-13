@@ -7,6 +7,11 @@ import React from 'react';
 import Head from "next/head";
 import Layout from "../components/blocks/Layout";
 
+import "../customXp/contentSelector";
+import "../customXp/componentSelector";
+import "../customXp/partSelector";
+import "../customXp/layoutSelector";
+
 
 /**
  * Wraps all rendered components

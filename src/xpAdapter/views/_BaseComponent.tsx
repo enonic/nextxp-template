@@ -1,10 +1,8 @@
 import React from "react";
 
-import { PORTAL_COMPONENT_ATTRIBUTE } from "../enonic-connection-config";
-
-import componentSelector from "../../customXp/componentSelector";
+import {PORTAL_COMPONENT_ATTRIBUTE, XP_COMPONENT_TYPE} from "../enonic-connection-config";
 import {PageComponent} from "../../customXp/queries/_getMetaData";
-
+import {TypesRegistry} from '../TypesRegistry';
 
 
 export type BaseComponentProps = {
@@ -17,16 +15,26 @@ export type BaseComponentProps = {
 
 const BaseComponent = ({component, content}: BaseComponentProps) => {
     const {type} = component;
-    const cmpAttrs: { [key: string]: string } = {
+    const divAttrs: { [key: string]: string } = {
         [PORTAL_COMPONENT_ATTRIBUTE]: type
     };
 
     // @ts-ignore
-    const ComponentView: React = componentSelector[type]?.view || <p>I am a {type}</p>;
+    const ComponentView: React = TypesRegistry.getComponent(type)?.view || <p>I am a {type}</p>;
+
+    const cmpAttrs: { [key: string]: any } = {
+        component: component[type],
+        content,
+    };
+
+    if (component.type === XP_COMPONENT_TYPE.LAYOUT) {
+        // add regions to layout because they are not present in component[component.type] above
+        cmpAttrs.regions = component.regions;
+    }
 
     return (
-        <div {...cmpAttrs}>
-            <ComponentView component={component[component.type]} content={content}/>
+        <div {...divAttrs}>
+            <ComponentView {...cmpAttrs}/>
         </div>
     )
 }

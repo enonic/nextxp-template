@@ -1,23 +1,24 @@
 import React from "react"
 
-import partSelector from '../../customXp/partSelector';
 import {PartData} from "../../customXp/queries/_getMetaData";
 import DefaultPartView from "../../customXp/parts/_Part";
+import {TypesRegistry} from '../TypesRegistry';
 
 
-
-type BasePartProps = {
-    component?: PartData,
-    content?: string
+interface BasePartProps {
+    component?: PartData;
+    content?: any;
 }
 
 const BasePart = (props: BasePartProps) => {
     const {component, content} = props;
-    const partSelection = partSelector[component?.descriptor || 0];
+    let partSelection;
+    if (component) {
+        partSelection = TypesRegistry.getPart(component.descriptor);
+    }
     const SelectedPartView = partSelection?.view || DefaultPartView;
     return <SelectedPartView part={{descriptor: component?.descriptor, config: component?.__config__}}
-                         content={content}
- />;
+                             content={content}/>;
 }
 
 export default BasePart;

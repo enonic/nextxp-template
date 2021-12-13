@@ -1,7 +1,7 @@
 import React from "react"
 
-import Region  from "../../xpAdapter/views/_Region";
 import {PageData} from "../../xpAdapter/guillotine/fetchContent";
+import {RegionsView} from '../../xpAdapter/views/_Region';
 
 type ContentProps = {
     displayName: string,
@@ -9,14 +9,14 @@ type ContentProps = {
 
 type Props = {
     content: ContentProps,
-    page: PageData
+    page?: PageData
 }
 
 
 const DefaultView = (props: Props) => {
-    const { content } = props;
+
     return (
-        <Region {...props} />
+        <RegionsView regions={props.page?.regions} content={props.content}/>
     )
 }
 

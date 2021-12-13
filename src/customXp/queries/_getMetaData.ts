@@ -10,6 +10,10 @@ export const PAGE_FRAGMENT = `
             _path
           }
         }
+        layout {
+          descriptor
+          configAsJson
+        }
         text {
           value {
             processedHtml
@@ -32,7 +36,7 @@ export function getMetaQuery(isEditMode: boolean, pageFragment?: string): string
               guillotine {
                 get(key:$path) {
                   type
-                  ${isEditMode ? 'pageAsJson' : ''}
+                  pageAsJson
                   ${pageFragment || ''}
                 }
               }
@@ -40,20 +44,37 @@ export function getMetaQuery(isEditMode: boolean, pageFragment?: string): string
 }
 
 export interface PageComponent {
-    // TODO: This is actually XP_COMPONENT_TYPE values, but TS protests. Probably in need of a type fix
-    type: 'part'|'text'|'image';
+    type: XP_COMPONENT_TYPE;
     path: string;
-    part?: PartData,
-    text?: any,
-    image?: any,
+    part?: PartData;
+    layout?: LayoutData;
+    fragment?: any;
+    text?: any;
+    image?: any;
+    regions?: RegionTree;
+}
+
+export interface RegionTree {
+    [key: string]: PageRegion;
+}
+
+export interface PageRegion {
+    name: string;
+    components: PageComponent[];
 }
 
 export type PartData = {
-    descriptor?: string,
-    [customKeysFromQuery:string]: any
+    descriptor: string,
+    [customKeysFromQuery: string]: any
 }
 
-export type Meta = {
+export interface LayoutData {
+    descriptor: string,
+
+    [customKeysFromQuery: string]: any
+}
+
+export interface Meta {
     type: string,
     pageAsJson?: {}
     components?: PageComponent[],

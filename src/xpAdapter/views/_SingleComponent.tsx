@@ -2,23 +2,20 @@
 
 import BaseComponent from "./_BaseComponent";
 import React from "react";
-import {FetchContentResult} from "../guillotine/fetchContent";
+import {FetchContentResult, getParentRegion, parseComponentPath} from "../guillotine/fetchContent";
 
 const SingleComponent = ({page, meta, content}: FetchContentResult) => {
     if (!page?.regions || !Object.keys(page.regions)) {
         // TODO: Fallback when view.regions is missing/empty (throw an error? 404?)
     }
 
-    // Pick region name from target, eg. "main" from "/main/0"
-    const targetRegion = (meta.requestedComponent || "")
-        .replace(/^\/?/, '')
-        .split("/")[0]
+    const cmpPath = parseComponentPath(meta.requestedComponent!);
+    const region = getParentRegion(page?.regions!, cmpPath);
 
-    if (!targetRegion || !page!.regions![targetRegion]) {
+    if (!region) {
         // TODO: Handle missing target region (Throw a 404, "component path not found"?)
     }
 
-    const region = page!.regions![targetRegion]!;
     const targetCompData = region.components.find(comp => comp.path === meta.requestedComponent);
 
     if (!targetCompData) {
