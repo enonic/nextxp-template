@@ -1,7 +1,7 @@
 import React from "react";
 
 import {PORTAL_COMPONENT_ATTRIBUTE, XP_COMPONENT_TYPE} from "../enonic-connection-config";
-import {PageComponent} from "../../customXp/queries/_getMetaData";
+import {PageComponent} from "../../cms/queries/_getMetaData";
 import {TypesRegistry} from '../TypesRegistry';
 
 

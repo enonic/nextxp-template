@@ -2,7 +2,7 @@ import React from "react"
 import {PORTAL_REGION_ATTRIBUTE} from '../enonic-connection-config';
 
 import BaseComponent from "./_BaseComponent";
-import {PageComponent, RegionTree} from "../../customXp/queries/_getMetaData";
+import {PageComponent, RegionTree} from "../../cms/queries/_getMetaData";
 
 export interface RegionProps {
     name: string;
@@ -13,7 +13,7 @@ export interface RegionProps {
 
 export interface RegionsProps {
     regions?: RegionTree;
-    selected?: string;
+    name?: string;
     content?: any;                  // Content is passed down for optional consumption in componentviews. TODO: Use a react contextprovider instead?
 }
 
@@ -44,17 +44,17 @@ export const RegionView = ({name, components, content, className}: RegionProps) 
 
 /** Multiple XP regions, or only one if named in props.selected */
 const RegionsView = (props: RegionsProps) => {
-    const {regions, selected, content} = props;
+    const {regions, name, content} = props;
     if (!regions || !Object.keys(regions)) {
         return null;
     }
 
     // Detect if any single region is selected for rendering and if so, handle that
-    if (selected) {
-        const selectedRegion = regions[selected];
+    if (name) {
+        const selectedRegion = regions[name];
         if (!selectedRegion) {
             console.warn(
-                `Region name '${selected}' was selected but not found among regions (${JSON.stringify(Object.keys(regions))}). Skipping.`);    // TODO: Throw error instead of this? Return null?
+                `Region name '${name}' was selected but not found among regions (${JSON.stringify(Object.keys(regions))}). Skipping.`);    // TODO: Throw error instead of this? Return null?
             return null;
         }
         return <RegionView {...selectedRegion} content={content}/>;
