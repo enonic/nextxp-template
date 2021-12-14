@@ -1,9 +1,10 @@
 import React from "react";
-import {PartData} from "../queries/_getMetaData";
 
-type Props = {
-    part: PartData,
-
+interface Props {
+    part: {
+        descriptor?: string;
+        config?: any;
+    };
     content?: any;                  // Content is passed down for optional consumption in componentviews. TODO: Use a react contextprovider instead?
 }
 

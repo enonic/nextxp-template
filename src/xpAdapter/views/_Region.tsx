@@ -1,21 +1,19 @@
 import React from "react"
-import { PORTAL_REGION_ATTRIBUTE } from '../enonic-connection-config';
+import {PORTAL_REGION_ATTRIBUTE} from '../enonic-connection-config';
 
-import Component from "./_BaseComponent";
-import {PageData} from "../guillotine/fetchContent";
-import {PageComponent} from "../../customXp/queries/_getMetaData";
+import BaseComponent from "./_BaseComponent";
+import {PageComponent, RegionTree} from "../../customXp/queries/_getMetaData";
 
-interface RegionProps {
+export interface RegionProps {
     name: string;
-    components: PageComponent[];
-
+    components?: PageComponent[];
+    className?: string;
     content?: any;                  // Content is passed down for optional consumption in componentviews. TODO: Use a react contextprovider instead?
 }
 
-type Props = {
-    page: PageData;
+export interface RegionsProps {
+    regions?: RegionTree;
     selected?: string;
-
     content?: any;                  // Content is passed down for optional consumption in componentviews. TODO: Use a react contextprovider instead?
 }
 
@@ -23,17 +21,20 @@ type Props = {
 // ------------------------------------------------------------
 
 /** One XP region */
-const SingleRegion = ({name, components, content}: RegionProps) => {
+export const RegionView = ({name, components, content, className}: RegionProps) => {
     const regionAttrs: { [key: string]: string } = {
         id: name + "Region",
         [PORTAL_REGION_ATTRIBUTE]: name,
     };
+    if (className) {
+        regionAttrs.className = className;
+    }
 
     return (
-        <div id={`${name}Region`} data-portal-region={name}>
+        <div {...regionAttrs}>
             {
                 components?.map((component: PageComponent, i: number) => (
-                    <Component key={regionAttrs.id + "-" + i} component={component} content={content} />
+                    <BaseComponent key={regionAttrs.id + "-" + i} component={component} content={content}/>
                 ))
             }
         </div>
@@ -42,22 +43,21 @@ const SingleRegion = ({name, components, content}: RegionProps) => {
 
 
 /** Multiple XP regions, or only one if named in props.selected */
-const Region = (props: Props) => {
-    const {page, selected, content} = props;
-    if (!page?.regions || !Object.keys(page.regions)) {
+const RegionsView = (props: RegionsProps) => {
+    const {regions, selected, content} = props;
+    if (!regions || !Object.keys(regions)) {
         return null;
     }
-
-    const regions = page.regions;
 
     // Detect if any single region is selected for rendering and if so, handle that
     if (selected) {
         const selectedRegion = regions[selected];
         if (!selectedRegion) {
-            console.warn(`Region name '${selected}' was selected but not found among regions (${JSON.stringify(Object.keys(regions))}). Skipping.`);    // TODO: Throw error instead of this? Return null?
+            console.warn(
+                `Region name '${selected}' was selected but not found among regions (${JSON.stringify(Object.keys(regions))}). Skipping.`);    // TODO: Throw error instead of this? Return null?
             return null;
         }
-        return <SingleRegion {...selectedRegion} content={content} />;
+        return <RegionView {...selectedRegion} content={content}/>;
     }
 
     return (
@@ -65,11 +65,11 @@ const Region = (props: Props) => {
             {
                 Object.keys(regions).map((name: string, i) => {
                     const region = regions![name];
-                    return <SingleRegion key={i} {...region} content={content} />;
+                    return <RegionView key={i} {...region} content={content}/>;
                 })
             }
         </>
     );
 }
 
-export default Region;
+export default RegionsView;

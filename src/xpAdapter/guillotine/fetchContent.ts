@@ -1,9 +1,8 @@
-import {getMetaQuery, Meta, PAGE_FRAGMENT, PageComponent} from "../../customXp/queries/_getMetaData";
+import {getMetaQuery, Meta, PAGE_FRAGMENT, PageComponent, PageRegion, RegionTree} from "../../customXp/queries/_getMetaData";
 import {LOW_PERFORMING_DEFAULT_QUERY} from "../../customXp/queries/_getDefaultData";
 
 import {Context} from "../../pages/[[...contentPath]]";
 
-import typeSelector, {ContentSelector} from "../../customXp/contentSelector";
 import enonicConnectionConfig, {
     AppName,
     AppNameDashed,
@@ -12,7 +11,7 @@ import enonicConnectionConfig, {
     XP_RENDER_MODE,
     XpComponentType,
 } from "../enonic-connection-config";
-import {SelectedQueryMaybeVariablesFunc, VariablesGetter} from "../../customXp/_selectorTypes";
+import {SelectedQueryMaybeVariablesFunc, TypesRegistry, VariablesGetter} from '../TypesRegistry';
 
 
 export type EnonicConnectionConfigRequiredFields = {
@@ -22,7 +21,7 @@ export type EnonicConnectionConfigRequiredFields = {
     getXpPath: (siteRelativeContentPath: string) => string,
     fromXpRequestType: (context?: Context) => XpComponentType | boolean
     getRenderMode: (context?: Context) => XP_RENDER_MODE,
-    getSingleCompRequest: (context?: Context) => string|undefined
+    getSingleCompRequest: (context?: Context) => string | undefined
 };
 
 
@@ -31,6 +30,7 @@ export type ResultMeta = Meta & {
     xpRequestType?: XpComponentType | boolean,
     requestedComponent?: string
     renderMode: XP_RENDER_MODE,
+    parentRegion?: PageRegion,
 }
 
 type Result = {
@@ -58,7 +58,7 @@ export type FetchContentResult = Result & {
 
 type FetcherConfig<T extends EnonicConnectionConfigRequiredFields> = {
     enonicConnectionConfig: T,
-    typeSelector?: ContentSelector,
+    typesRegistry?: typeof TypesRegistry,
     firstMethodKey?: boolean,
 }
 
@@ -202,8 +202,8 @@ const fetchGuillotine = async (
             }
 
             const data = requiredMethodKeyFromQuery
-                ? json.data.guillotine[requiredMethodKeyFromQuery]
-                : json.data.guillotine;
+                         ? json.data.guillotine[requiredMethodKeyFromQuery]
+                         : json.data.guillotine;
 
             return {
                 [key]: data
@@ -262,7 +262,8 @@ const NO_PROPS_PROCESSOR = (props: any) => props;
 
 ///////////////////////////////////////////////////////////////////////////////// Specific fetch wrappers:
 
-const fetchMetaData = async (contentApiUrl: string, xpContentPath: string, xpRequestType: string | boolean, isEditMode: boolean): Promise<MetaResult> => {
+const fetchMetaData = async (contentApiUrl: string, xpContentPath: string, xpRequestType: string | boolean,
+                             isEditMode: boolean): Promise<MetaResult> => {
     const body: ContentApiBaseBody = {
         query: getMetaQuery(isEditMode, /* xpRequestType == "view" ? */ PAGE_FRAGMENT /* : undefined */),
         variables: {
@@ -318,26 +319,73 @@ const getCleanContentPathArrayOrThrow400 = (contentPath: string | string[] | und
 //------------------------------------------------------------- XP view component data handling
 
 
-interface PageRegion {
-    name: string;
-    components: PageComponent[];
-}
+type PathFragment = { region: string, index: number };
 
-export type RegionTree = { [key: string]: PageRegion }
-
-function getInfo(cmp: PageComponent): { region: string, index: number } | undefined {
-    const match = cmp.path.match(/\/(\w+)\/(\d+)/);
-    if (match) {
-        return {
+export function parseComponentPath(path: string): PathFragment[] {
+    const matches: PathFragment[] = [];
+    let match;
+    let myRegexp = /(?:(\w+)\/(\d+))+/g;
+    while ((match = myRegexp.exec(path)) !== null) {
+        matches.push({
             region: match[1],
             index: +match[2],
-        }
+        })
     }
-    return;
+    return matches;
 }
 
 type PageAsJson = {
-    regions?: Record<string, any>
+    regions?: RegionTree;
+}
+
+function extractRegions(source: RegionTree | undefined): RegionTree {
+    const target: RegionTree = {};
+    for (const [regionName, region] of Object.entries(source || [])) {
+        const newRegion = target[regionName] = {
+            name: regionName,
+            components: [] as any[],
+        };
+        region.components.forEach((cmp: PageComponent) => {
+            if (cmp.type === XP_COMPONENT_TYPE.LAYOUT) {
+                const layoutCmp: PageComponent = {
+                    type: cmp.type,
+                    path: cmp.path,
+                    regions: extractRegions(cmp.regions)
+                }
+                newRegion.components.push(layoutCmp);
+            }
+        });
+    }
+    return target;
+}
+
+export function getParentRegion(source: RegionTree, path: PathFragment[]): PageRegion {
+    if (!path.length) {
+        throw 'component path can not be empty';
+    }
+
+    let currentTree: RegionTree = source;
+    let currentRegion: PageRegion | undefined;
+
+    for (let i = 0; i < path.length; i++) {
+        const pathFragment = path[i];
+        const regionName = pathFragment.region; //TODO: try using index instead
+        currentRegion = currentTree && currentTree[regionName];
+
+        if (!currentRegion) {
+            throw `region[${regionName}] not found`;
+        } else if (i < path.length - 1) {
+            // look for layouts inside if this is not the last path fragment
+            const layout = currentRegion.components.find((cmp: PageComponent, cmpIdx: number) => {
+                return cmp.type === XP_COMPONENT_TYPE.LAYOUT && cmpIdx === pathFragment.index;
+            });
+            // TODO: use next defined region to get regions
+            if (layout && layout.regions) {
+                currentTree = layout.regions;
+            }
+        }
+    }
+    return currentRegion!;
 }
 
 function buildRegionTree(
@@ -347,44 +395,40 @@ function buildRegionTree(
     pageAsJson?: PageAsJson,
     isEditMode?: boolean
 ): RegionTree {
-    const regions: RegionTree = {};
 
-    if (isEditMode) {
-        Object.keys(pageAsJson?.regions || []).forEach(regionName => {
-            regions[regionName] = {
-                name: regionName,
-                components: []
-            };
-        })
-    }
+    // this is needed in non-edit mode as well to create layouts' regions
+    const regions: RegionTree = extractRegions(pageAsJson?.regions);
+
+    // console.log("Regions structure: " + JSON.stringify(regions, null, 2));
 
     (comps || []).forEach(cmp => {
-        const info = getInfo(cmp);
-        if (info) {
-            let region = regions[info.region];
-            if (!region) {
-                region = {
-                    name: info.region,
-                    components: [],
-                };
-                regions[info.region] = region;
-            }
+        const cmpPath = parseComponentPath(cmp.path);
 
-            if (cmp.type === XP_COMPONENT_TYPE.PART && cmp.part && cmp.part.configAsJson) {
-                const [appName, partName] = (cmp.part.descriptor || "").split(':');
-                if (appName === appName && cmp.part.configAsJson[appNameDashed][partName]) {
-                    cmp.part.__config__ = cmp.part!.configAsJson[appNameDashed][partName]
-                }
-            }
-
-            region.components.push(cmp);
-        } else {
-            // this is view component
+        if (!cmpPath.length) {
+            // this is page view component
             // TODO: something here later, if we're making a pageSelector too
+            return;
+        }
+
+        if (cmp.type === XP_COMPONENT_TYPE.PART && cmp.part && cmp.part.configAsJson) {
+            const [appName, partName] = (cmp.part.descriptor || "").split(':');
+            if (appName === appName && cmp.part.configAsJson[appNameDashed][partName]) {
+                cmp.part.__config__ = cmp.part!.configAsJson[appNameDashed][partName]
+            }
+        }
+
+        const region = getParentRegion(regions, cmpPath);
+        const existingCmp = region.components.find((regionCmp: PageComponent) => regionCmp.path === cmp.path);
+        if (existingCmp) {
+            // append data to existing component
+            Object.assign(existingCmp, cmp)
+        } else {
+            const cmpIndex = cmpPath[cmpPath.length - 1].index;
+            region.components.splice(cmpIndex, 0, cmp);
         }
     });
 
-    //console.log("Regions: " + JSON.stringify(regions, null, 2));
+    console.log("Regions with components: " + JSON.stringify(regions, null, 2));
 
     return regions;
 }
@@ -407,7 +451,7 @@ function buildRegionTree(
 export const buildContentFetcher = <T extends EnonicConnectionConfigRequiredFields>(
     {
         enonicConnectionConfig,
-        typeSelector,
+        typesRegistry,
         firstMethodKey
     }: FetcherConfig<T>
 ): ContentFetcher => {
@@ -419,7 +463,8 @@ export const buildContentFetcher = <T extends EnonicConnectionConfigRequiredFiel
         getXpPath,
         fromXpRequestType,
         getRenderMode,
-        getSingleCompRequest } = enonicConnectionConfig;
+        getSingleCompRequest
+    } = enonicConnectionConfig;
 
     const defaultGetVariables: VariablesGetter = (path) => ({path});
 
@@ -517,7 +562,7 @@ export const buildContentFetcher = <T extends EnonicConnectionConfigRequiredFiel
 
             ////////////////////////////////////////////////////  Content type established. Proceed to data call:
 
-            const typeSelection = (typeSelector || {})[type];
+            const typeSelection = typesRegistry?.getContentType(type);
 
             const {query, variables} = getQueryAndVariables(type, xpContentPath, context, typeSelection?.query);
             if (!query.trim()) {
@@ -531,8 +576,8 @@ export const buildContentFetcher = <T extends EnonicConnectionConfigRequiredFiel
             }
 
             const methodKeyFromQuery = firstMethodKey
-                ? getQueryMethodKey(type, query)
-                : undefined;
+                                       ? getQueryMethodKey(type, query)
+                                       : undefined;
 
 
             ////////////////////////////////////////////// SECOND GUILLOTINE CALL FOR DATA:
@@ -554,16 +599,21 @@ export const buildContentFetcher = <T extends EnonicConnectionConfigRequiredFiel
             } as FetchContentResult;
 
             // .meta will be visible in final rendered inline props. Only adding some .meta attributes here on certain conditions (instead if always adding them and letting them be visible as false/undefined etc)
-            if (xpRequestType) {
-                response.meta!.xpRequestType = xpRequestType
-                if (xpRequestType === 'component') {
-                    response.meta!.requestedComponent = getSingleCompRequest(context);
-                }
-            }
-            if (components || (pageAsJson && isEditMode)) {
+            if (components || pageAsJson) {
                 response.page = {
                     ...response.page || {},
                     regions: buildRegionTree(components!, APP_NAME, APP_NAME_DASHED, pageAsJson, isEditMode)
+                }
+            }
+            if (xpRequestType) {
+                response.meta!.xpRequestType = xpRequestType
+                if (xpRequestType === 'component') {
+                    const requestedComponent = getSingleCompRequest(context);
+                    response.meta!.requestedComponent = requestedComponent;
+                    if (requestedComponent && response.page?.regions) {
+                        const cmpPath = parseComponentPath(requestedComponent);
+                        response.meta!.parentRegion = getParentRegion(response.page?.regions!, cmpPath);
+                    }
                 }
             }
             response.meta!.renderMode = renderMode;
@@ -599,7 +649,7 @@ export const buildContentFetcher = <T extends EnonicConnectionConfigRequiredFiel
 // Config and prepare a default fetchContent function, with params from imports:
 export const fetchContent: ContentFetcher = buildContentFetcher<EnonicConnectionConfigRequiredFields>({
     enonicConnectionConfig,
-    typeSelector,
+    typesRegistry: TypesRegistry,
 
     // TODO: We should find a different approach
     firstMethodKey: true
