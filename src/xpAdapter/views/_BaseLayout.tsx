@@ -1,7 +1,7 @@
 import React from "react"
-import {LayoutData, RegionTree} from "../../customXp/queries/_getMetaData";
+import {LayoutData, RegionTree} from "../../cms/queries/_getMetaData";
 import {TypesRegistry} from '../TypesRegistry';
-import DefaultLayoutView from '../../customXp/layouts/_Layout';
+import DefaultLayoutView from '../../cms/layouts/_Layout';
 
 
 interface BaseLayoutProps {

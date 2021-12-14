@@ -1,5 +1,5 @@
-import {getMetaQuery, Meta, PAGE_FRAGMENT, PageComponent, PageRegion, RegionTree} from "../../customXp/queries/_getMetaData";
-import {LOW_PERFORMING_DEFAULT_QUERY} from "../../customXp/queries/_getDefaultData";
+import {getMetaQuery, Meta, PAGE_FRAGMENT, PageComponent, PageRegion, RegionTree} from "../../cms/queries/_getMetaData";
+import {LOW_PERFORMING_DEFAULT_QUERY} from "../../cms/queries/_getDefaultData";
 
 import {Context} from "../../pages/[[...contentPath]]";
 
@@ -321,7 +321,7 @@ const getCleanContentPathArrayOrThrow400 = (contentPath: string | string[] | und
 
 type PathFragment = { region: string, index: number };
 
-export function parseComponentPath(path: string): PathFragment[] {
+function parseComponentPath(path: string): PathFragment[] {
     const matches: PathFragment[] = [];
     let match;
     let myRegexp = /(?:(\w+)\/(\d+))+/g;
@@ -359,7 +359,7 @@ function extractRegions(source: RegionTree | undefined): RegionTree {
     return target;
 }
 
-export function getParentRegion(source: RegionTree, path: PathFragment[]): PageRegion {
+function getParentRegion(source: RegionTree, path: PathFragment[]): PageRegion {
     if (!path.length) {
         throw 'component path can not be empty';
     }

@@ -9,7 +9,7 @@ import BasePart from '../xpAdapter/views/_BasePart';
 import BaseLayout from '../xpAdapter/views/_BaseLayout';
 import ImageView from './components/_Image';
 import TextView from './components/_Text';
-import PersonList, {PERSONLIST_PART_NAME} from './parts/PersonList';
+import PersonList, {PERSONLIST_PART_NAME, PERSONLIST_QUERY, personListProcessor} from './parts/PersonList';
 import ThreeColumnLayoutView, {THREE_COL_LAYOUT_NAME} from './layouts/ThreeColumnLayout';
 import CenteredLayoutView, {CENTERED_LAYOUT_NAME} from './layouts/CenteredLayout';
 import DefaultLayoutView from './layouts/_Layout';
@@ -64,9 +64,9 @@ TypesRegistry.addComponent(XP_COMPONENT_TYPE.TEXT, {
 * */
 
 TypesRegistry.addPart(PERSONLIST_PART_NAME, {
-    // query: personQuery,              // TODO: support specifying queries to parts in fetchContent
-    // props: personPropsProcessor      // TODO: support props processors to parts in fetchContent
-    view: PersonList
+    query: PERSONLIST_QUERY,
+    props: personListProcessor,
+    view: PersonList,
 })
 
 /*

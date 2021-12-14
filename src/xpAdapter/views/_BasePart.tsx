@@ -1,7 +1,7 @@
 import React from "react"
 
-import {PartData} from "../../customXp/queries/_getMetaData";
-import DefaultPartView from "../../customXp/parts/_Part";
+import {PartData} from "../../cms/queries/_getMetaData";
+import DefaultPartView from "../../cms/parts/_Part";
 import {TypesRegistry} from '../TypesRegistry';
 
 
