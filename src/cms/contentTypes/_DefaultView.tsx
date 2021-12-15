@@ -1,7 +1,7 @@
 import React from "react"
 
-import {PageData} from "../../xpAdapter/guillotine/fetchContent";
 import RegionsView from '../../xpAdapter/views/_Region';
+import {PageData} from '../queries/_getMetaData';
 
 type ContentProps = {
     displayName: string,

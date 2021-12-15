@@ -23,20 +23,24 @@ export type ReactView = (props: any) => JSX.Element;
 
 export type PropsProcessor = (content: any, context?: Context) => any;
 
-export type VariablesGetterResult = {
-    path: string,
-    [variables: string]: any
-};
-
 // TODO: also access as arguments: dataAsJson, pageAsJson, configAsJson from the first (meta) call here?
 //  To allow content or component config values to affect the query?
 //  Another option could be to let the component or page controller pass those values to nextjs by a header
 export type VariablesGetter = (path: string, context?: Context) => VariablesGetterResult;
 
+export type VariablesGetterResult = {
+    path: string,
+    [variables: string]: any
+};
 
 export type SelectedQueryMaybeVariablesFunc = string |
     { query: string, variables: VariablesGetter } |
-    [string, VariablesGetter]
+    [string, VariablesGetter];
+
+export interface QueryAndVariables {
+    query: string;
+    variables: Record<string, any>;
+}
 
 export class TypesRegistry {
 

@@ -47,13 +47,10 @@ export const PORTAL_REGION_ATTRIBUTE = "data-portal-region";
 
 // ------------------------------- Exports and auxillary functions derived from values above ------------------------------------
 
-/** Returns true if the context object (from next.js in [[...contentPath]].jsx ) stems from a request that comes from XP in a CS-preview, i.e. has the URI param FROM_XP_PARAM (defined as '__fromXp__' above).
- *  False if no context, query or FROM_XP_PARAM param */
-// TODO: The string values here are actually XP_COMPONENT_TYPE values:
-export type XpComponentType = string;
-export const fromXpRequestType = (context?: Context): XpComponentType|boolean => (
-    !!((context?.query || {})[FROM_XP_PARAM]) || ((context?.req?.headers || {})[FROM_XP_PARAM])
-);
+export enum XP_REQUEST_TYPE {
+    COMPONENT = "component",
+    TYPE = "type",
+}
 
 export enum XP_RENDER_MODE {
     INLINE = "inline",
@@ -72,13 +69,24 @@ export enum XP_COMPONENT_TYPE {
     FRAGMENT = "fragment",
 }
 
+/** Returns true if the context object (from next.js in [[...contentPath]].jsx ) stems from a request that comes from XP in a CS-preview, i.e. has the URI param FROM_XP_PARAM (defined as '__fromXp__' above).
+ *  False if no context, query or FROM_XP_PARAM param */
+export const isRequestFromXP = (context?: Context): boolean => {
+    return !!getXPRequestType(context);
+};
+
+export const getXPRequestType = (context?: Context): XP_REQUEST_TYPE => {
+    const headerValue = (context?.req?.headers || {})[FROM_XP_PARAM];
+    return XP_REQUEST_TYPE[<keyof typeof XP_REQUEST_TYPE>headerValue?.toUpperCase()];
+}
+
 const getRenderMode = (context?: Context): XP_RENDER_MODE => {
     const value = (context?.req?.headers || {})[XP_RENDER_MODE_HEADER];
     const enumValue = XP_RENDER_MODE[<keyof typeof XP_RENDER_MODE>value?.toUpperCase()];
     return enumValue || XP_RENDER_MODE.PREVIEW;
 };
 
-const getSingleCompRequest = (context?: Context): string|undefined => (
+const getSingleComponentPath = (context?: Context): string | undefined => (
     (context?.req?.headers || {})[COMPONENT_SUBPATH_HEADER]
 );
 
@@ -93,14 +101,14 @@ export const getXpPath = (pageUrl: string): string => `/${SITE}/${pageUrl}`;
 
 /** Takes an XP _path string and returns a Next.js-server-ready URL for the corresponding content for that _path */
 export const getPageUrlFromXpPath = (xpPath: string, context: Context): string => (
-    fromXpRequestType(context)
+    isRequestFromXP(context)
         ? xpPath.replace(siteNamePattern, `${NEXT_DOMAIN}/`)     // proxy-relative: should be absolute when served through the proxy
         : xpPath.replace(siteNamePattern, '/')                   // site relative: should just start with slash when served directly
 );
 
 /** Special-case (for <a href link values in props that target XP content pages - for when links too should work in CS) version of getPageUrlFromXpPath, depending on whether or not the request stems from the XP proxy used for content studio preview, or not */
 export const getContentLinkUrlFromXpPath = (xpPath: string, context: Context): string => (
-    fromXpRequestType(context)
+    isRequestFromXP(context)
         ? xpPath.replace(siteNamePattern, '')           // proxy-relative: should not start with a slash when served through the proxy
         : xpPath.replace(siteNamePattern, '/')          // site relative: should start with slash when served directly
 );
@@ -112,7 +120,7 @@ export const getContentLinkUrlFromXpPath = (xpPath: string, context: Context): s
  * @returns {string}
  */
 export const getPublicAssetUrl = (serverRelativeAssetPath: string, context: Context): string => (
-    fromXpRequestType(context)
+    isRequestFromXP(context)
         ? serverRelativeAssetPath.replace(publicPattern, `${NEXT_DOMAIN}/`)
         : serverRelativeAssetPath.replace(publicPattern, `/`)
 );
@@ -142,8 +150,8 @@ const enonicConnectionConfig = {
     getPageUrlFromXpPath,
     getContentLinkUrlFromXpPath,
     getPublicAssetUrl,
-    fromXpRequestType,
-    getSingleCompRequest,
+    getXPRequestType,
+    getSingleComponentPath,
     getRenderMode
 };
 

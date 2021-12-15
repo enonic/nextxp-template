@@ -9,7 +9,10 @@ export const PERSONLIST_PART_NAME = `${APP_NAME}:personList`;
 
 
 const PersonList = (props: PartProps) => {
-    const {displayName, children} = props.content;
+    const {data} = props;
+    const personsContent = data.get;
+    const displayName = `${data.getSite.displayName} - ${personsContent.displayName}`;
+    const children = personsContent.children;
     return (
         <main style={{
             margin: `0 auto`,
@@ -36,10 +39,25 @@ const PersonList = (props: PartProps) => {
 export default PersonList;
 
 export const PERSONLIST_QUERY = {
-    query: '',
+    query: `query ($parentKey: ID) {
+              guillotine {
+                getSite {
+                  displayName
+                }
+                get(key: $parentKey) {
+                  displayName
+                  children {
+                      _path
+                      _id
+                      displayName
+                  }
+                }
+              }
+            }`,
     variables: function (path: string, context?: Context): VariablesGetterResult {
         return {
-            path
+            path,
+            parentKey: "ff9e01f1-9284-453e-9900-9178104d3258"
         }
     }
 };
