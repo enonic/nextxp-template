@@ -7,21 +7,21 @@ import {Context} from "../pages/[[...contentPath]]";
  *          - 'props' (used in fetchContent.ts) is a function for processing props after fetching them
  *          - 'view' (used in BasePage.tsx) is a react component: top-level content-type-specific rendering with the props first fetched from guillotine (and then optionally preprocessed with the function in 'props').
  */
-export interface TypeSelection {
+export interface TypeDefinition {
     query?: SelectedQueryMaybeVariablesFunc,
-    props?: PropsProcessor,
+    processor?: DataProcessor,
     view?: ReactView
 }
 
 type SelectorName = "content" | "component" | "part" | "layout";
 
 interface TypeSelector {
-    [type: string]: TypeSelection;
+    [type: string]: TypeDefinition;
 }
 
 export type ReactView = (props: any) => JSX.Element;
 
-export type PropsProcessor = (content: any, context?: Context) => any;
+export type DataProcessor = (data: any, context?: Context) => Promise<any>;
 
 // TODO: also access as arguments: dataAsJson, pageAsJson, configAsJson from the first (meta) call here?
 //  To allow content or component config values to affect the query?
@@ -39,7 +39,7 @@ export type SelectedQueryMaybeVariablesFunc = string |
 
 export interface QueryAndVariables {
     query: string;
-    variables: Record<string, any>;
+    variables?: Record<string, any>;
 }
 
 export class TypesRegistry {
@@ -62,49 +62,49 @@ export class TypesRegistry {
         }
     }
 
-    private static getType(selectorName: SelectorName, typeName: string, useCatchAll: boolean = true): TypeSelection | null {
+    private static getType(selectorName: SelectorName, typeName: string, useCatchAll: boolean = true): TypeDefinition | undefined {
         const selector = TypesRegistry.getSelector(selectorName);
         let type = selector[typeName];
         if (!type && useCatchAll) {
             type = selector["*"];
         }
-        return type || null;
+        return type;
     }
 
-    private static addType(selectorName: SelectorName, name: string, obj: TypeSelection): void {
+    private static addType(selectorName: SelectorName, name: string, obj: TypeDefinition): void {
         const selector = TypesRegistry.getSelector(selectorName);
         selector[name] = obj;
     }
 
-    public static addContentType(name: string, obj: TypeSelection): void {
+    public static addContentType(name: string, obj: TypeDefinition): void {
         return TypesRegistry.addType('content', name, obj);
     }
 
-    public static getContentType(name: string): TypeSelection | null {
+    public static getContentType(name: string): TypeDefinition | undefined {
         return TypesRegistry.getType('content', name);
     }
 
-    public static addPart(name: string, obj: TypeSelection): void {
+    public static addPart(name: string, obj: TypeDefinition): void {
         return TypesRegistry.addType('part', name, obj);
     }
 
-    public static getPart(name: string): TypeSelection | null {
+    public static getPart(name: string): TypeDefinition | undefined {
         return TypesRegistry.getType('part', name);
     }
 
-    public static addLayout(name: string, obj: TypeSelection): void {
+    public static addLayout(name: string, obj: TypeDefinition): void {
         return TypesRegistry.addType('layout', name, obj);
     }
 
-    public static getLayout(name: string): TypeSelection | null {
+    public static getLayout(name: string): TypeDefinition | undefined {
         return TypesRegistry.getType('layout', name);
     }
 
-    public static addComponent(name: string, obj: TypeSelection): void {
+    public static addComponent(name: string, obj: TypeDefinition): void {
         return TypesRegistry.addType('component', name, obj);
     }
 
-    public static getComponent(name: string): TypeSelection | null {
+    public static getComponent(name: string): TypeDefinition | undefined {
         return TypesRegistry.getType('component', name);
     }
 }

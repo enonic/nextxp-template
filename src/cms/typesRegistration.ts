@@ -13,6 +13,7 @@ import PersonList, {PERSONLIST_PART_NAME, PERSONLIST_QUERY, personListProcessor}
 import ThreeColumnLayoutView, {THREE_COL_LAYOUT_NAME} from './layouts/ThreeColumnLayout';
 import CenteredLayoutView, {CENTERED_LAYOUT_NAME} from './layouts/CenteredLayout';
 import DefaultLayoutView from './layouts/_Layout';
+import PersonInfo, {PERSONINFO_PART_NAME, personInfoProcessor} from './parts/PersonInfo';
 
 
 /*
@@ -21,7 +22,7 @@ import DefaultLayoutView from './layouts/_Layout';
 
 TypesRegistry.addContentType(LIST_CONTENTTYPE_NAME, {
     query: {query: getList, variables: getListVariables},         // or just:     query: [ getList, getListVariables ]
-    props: processListPropsExample,
+    processor: processListPropsExample,
     view: ListView,
 });
 /*
@@ -65,8 +66,13 @@ TypesRegistry.addComponent(XP_COMPONENT_TYPE.TEXT, {
 
 TypesRegistry.addPart(PERSONLIST_PART_NAME, {
     query: PERSONLIST_QUERY,
-    props: personListProcessor,
+    processor: personListProcessor,
     view: PersonList,
+});
+
+TypesRegistry.addPart(PERSONINFO_PART_NAME, {
+    processor: personInfoProcessor,
+    view: PersonInfo,
 })
 
 /*
