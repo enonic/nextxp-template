@@ -9,19 +9,20 @@ import {Context} from "../pages/[[...contentPath]]";
  */
 export interface TypeDefinition {
     query?: SelectedQueryMaybeVariablesFunc,
-    processor?: DataProcessor,
+    props?: DataProcessor,
     view?: ReactView
 }
 
 type SelectorName = "content" | "component" | "part" | "layout";
 
-interface TypeSelector {
+interface TypeDictionary {
     [type: string]: TypeDefinition;
 }
 
-export type ReactView = (props: any) => JSX.Element;
+export type ReactView = (props: any) => JSX.Element | null;
 
-export type DataProcessor = (data: any, context?: Context) => Promise<any>;
+//NB! Always return null or empty object from processor for next is unable to serialize undefined
+export type DataProcessor = (data: any, context?: Context) => Promise<Record<string, any>>;
 
 // TODO: also access as arguments: dataAsJson, pageAsJson, configAsJson from the first (meta) call here?
 //  To allow content or component config values to affect the query?
@@ -37,19 +38,16 @@ export type SelectedQueryMaybeVariablesFunc = string |
     { query: string, variables: VariablesGetter } |
     [string, VariablesGetter];
 
-export interface QueryAndVariables {
-    query: string;
-    variables?: Record<string, any>;
-}
+export const CATCH_ALL_NAME = "*";
 
 export class TypesRegistry {
 
-    private static contents: TypeSelector = {};
-    private static components: TypeSelector = {};
-    private static parts: TypeSelector = {};
-    private static layouts: TypeSelector = {};
+    private static contents: TypeDictionary = {};
+    private static components: TypeDictionary = {};
+    private static parts: TypeDictionary = {};
+    private static layouts: TypeDictionary = {};
 
-    private static getSelector(name: SelectorName): TypeSelector {
+    private static getSelector(name: SelectorName): TypeDictionary {
         switch (name) {
         case 'content':
             return this.contents;
@@ -66,7 +64,10 @@ export class TypesRegistry {
         const selector = TypesRegistry.getSelector(selectorName);
         let type = selector[typeName];
         if (!type && useCatchAll) {
-            type = selector["*"];
+            type = selector[CATCH_ALL_NAME];
+            if (type) {
+                console.log(`TypeRegistry: using catch-all view for ${selectorName} '${typeName}': ${type.view?.name}`)
+            }
         }
         return type;
     }

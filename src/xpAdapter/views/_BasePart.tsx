@@ -1,7 +1,6 @@
 import React from "react"
 
 import {PartData} from "../../cms/queries/_getMetaData";
-import DefaultPartView from "../../cms/parts/_Part";
 import {TypesRegistry} from '../TypesRegistry';
 
 
@@ -17,10 +16,15 @@ const BasePart = (props: BasePartProps) => {
     if (component) {
         partSelection = TypesRegistry.getPart(component.descriptor);
     }
-    const SelectedPartView = partSelection?.view || DefaultPartView;
-    return <SelectedPartView part={{descriptor: component?.descriptor, config: component?.__config__}}
-                             data={data}
-                             content={content}/>;
+    const SelectedPartView = partSelection?.view;
+    if (SelectedPartView) {
+        return <SelectedPartView part={{descriptor: component?.descriptor, config: component?.__config__}}
+                                 data={data}
+                                 content={content}/>;
+    } else {
+        console.log(`BasePart: can not render part '${component?.descriptor}': no next view or catch-all defined`);
+        return null;
+    }
 }
 
 export default BasePart;

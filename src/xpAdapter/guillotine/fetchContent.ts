@@ -2,22 +2,15 @@ import {getMetaQuery, MetaData, PAGE_FRAGMENT, PageComponent, PageData, PageRegi
 
 import {Context} from "../../pages/[[...contentPath]]";
 
-import enonicConnectionConfig, {
-    AppName,
-    AppNameDashed,
-    ContentApiUrl,
-    XP_COMPONENT_TYPE,
-    XP_RENDER_MODE,
-    XP_REQUEST_TYPE,
-} from "../enonic-connection-config";
-import {QueryAndVariables, SelectedQueryMaybeVariablesFunc, TypeDefinition, TypesRegistry} from '../TypesRegistry';
+import enonicConnectionConfig, {XP_COMPONENT_TYPE, XP_RENDER_MODE, XP_REQUEST_TYPE,} from "../enonic-connection-config";
+import {SelectedQueryMaybeVariablesFunc, TypeDefinition, TypesRegistry} from '../TypesRegistry';
 import {defaultVariables, LOW_PERFORMING_DEFAULT_QUERY} from '../../cms/queries/_getDefaultData';
 
 
-export type EnonicConnectionConfigRequiredFields = {
-    APP_NAME: AppName,
-    APP_NAME_DASHED: AppNameDashed,
-    CONTENT_API_URL: ContentApiUrl,
+export type EnonicConnectionConfig = {
+    APP_NAME: string,
+    APP_NAME_DASHED: string,
+    CONTENT_API_URL: string,
     getXpPath: (siteRelativeContentPath: string) => string,
     getXPRequestType: (context?: Context) => XP_REQUEST_TYPE,
     getRenderMode: (context?: Context) => XP_RENDER_MODE,
@@ -28,7 +21,7 @@ type Result = {
     error?: {
         code: string,
         message: string
-    }
+    } | null;
 }
 
 type GuillotineResult = Result & {
@@ -36,7 +29,11 @@ type GuillotineResult = Result & {
 }
 
 type MetaResult = Result & {
-    meta?: MetaData
+    meta?: {
+        type: string,
+        pageAsJson?: PageData,
+        components?: PageComponent[],
+    }
 };
 
 type ContentResult = Result & {
@@ -50,22 +47,19 @@ interface ComponentDescriptor {
 }
 
 export type FetchContentResult = Result & {
-    content: any,
-    meta: MetaData & {
-        path: string,
-        xpRequestType?: XP_REQUEST_TYPE,
-        requestedComponent?: string
-        renderMode: XP_RENDER_MODE,
-        parentRegion?: PageRegion,
-    },
-    page?: PageData,
-    components?: any,
+    content: Record<string, any>,
+    meta: MetaData | null,
+    page: PageData | null,
 };
 
 
-type FetcherConfig<T extends EnonicConnectionConfigRequiredFields> = {
-    enonicConnectionConfig: T,
-    typesRegistry?: typeof TypesRegistry,
+type FetcherConfig<T extends EnonicConnectionConfig> = T & {
+    typesRegistry: typeof TypesRegistry
+};
+
+interface QueryAndVariables {
+    query: string;
+    variables?: Record<string, any>;
 }
 
 /**
@@ -73,13 +67,10 @@ type FetcherConfig<T extends EnonicConnectionConfigRequiredFields> = {
  * @param contentPath string or string array: pre-split or slash-delimited _path to a content available on the API
  * @returns FetchContentResult object: {data?: T, error?: {code, message}}
  */
-export type ContentFetcher = (
-    contentPath: string | string[],
-    context: Context
-) => Promise<FetchContentResult>
+export type ContentFetcher = (contentPath: string | string[], context: Context) => Promise<FetchContentResult>
 
 
-const NO_PROPS_PROCESSOR = async (props: any) => props;
+const NO_PROPS_PROCESSOR = async (props: any) => props || {};
 
 const ALIAS_PREFIX = 'request';
 
@@ -348,8 +339,7 @@ function getParentRegion(source: RegionTree, path: PathFragment[]): PageRegion {
 }
 
 function buildRegionTree(
-    appName: AppName,
-    appNameDashed: AppNameDashed,
+    appNameDashed: string,
     comps?: PageComponent[],
     pageAsJson?: PageData
 ): RegionTree {
@@ -458,7 +448,7 @@ async function applyProcessors(componentDescriptors: ComponentDescriptor[], cont
         // some of them might not have provided graphql requests
         // but we still need to run props processor for them
         // in case they want to fetch their data from elsewhere
-        const propsProcessor = desc.type?.processor || NO_PROPS_PROCESSOR;
+        const propsProcessor = desc.type?.props || NO_PROPS_PROCESSOR;
         let data;
         if (desc.queryAndVariables) {
             // if there is a query then there must be a result for it
@@ -541,21 +531,57 @@ function getQueryAndVariables(type: string,
     }
 }
 
+
+function createPageData(appNameDashed: string, components?: PageComponent[], pageAsJson?: PageData): PageData {
+    let page;
+    if (components || pageAsJson) {
+        page = {
+            regions: buildRegionTree(appNameDashed, components, pageAsJson)
+        }
+    }
+
+    return page as PageData;
+}
+
+
+function createMetaData(contentType: string, contentPath: string, requestType: XP_REQUEST_TYPE, renderMode: XP_RENDER_MODE,
+                        requestedComponentPath: string | undefined,
+                        pageData: PageData): MetaData {
+    // .meta will be visible in final rendered inline props.
+    // Only adding some .meta attributes here on certain conditions
+    // (instead of always adding them and letting them be visible as false/undefined etc)
+    const meta: MetaData = {
+        type: contentType,
+        path: contentPath,
+        requestType: requestType,
+        renderMode: renderMode
+    }
+
+    const regions = pageData?.regions;
+
+    if (requestedComponentPath) {
+        meta!.requestedComponent = requestedComponentPath;
+        if (regions) {
+            const cmpPath = parseComponentPath(requestedComponentPath);
+            meta!.parentRegion = getParentRegion(regions, cmpPath);
+        }
+    }
+
+    const hasController = regions && Object.keys(regions).length > 0;
+    meta.canRender = hasController || !!TypesRegistry.getContentType(contentType)?.view
+
+    return meta;
+}
+
 ///////////////////////////////  ENTRY 1 - THE BUILDER:
 
 /**
  * Configures, builds and returns a general fetchContent function.
  * @param enonicConnectionConfig Object containing attributes imported from enonic-connecion-config.js: constants and function concerned with connection to the XP backend. Easiest: caller imports enonic-connection-config and just passes that entire object here as enonicConnectionConfig.
- * @param typeSelector Object, usually the typeSelector from typeSelector.ts, where keys are full XP content type strings (eg. 'my.app:content-type') and values are optional type-specific objects of config for how to handle that function. All attributes in these objecs are optional (see typeSelector.ts for examples):
- *          - 'query' can be a guillotine query string to use to fetch data for that content type, OR also have a get-guillotine-variables function - by an object with 'query' and 'variables' attributes, or an array where the query string is first and the get-variables function is second.
- *          - 'props' is a function for processing props: converting directly-from-guillotine props to props adapted for displaying the selected view component
+ * @param typesRegistry TypesRegistry object from TypesRegistry.ts, holding user type mappings that are set in typesRegistration.ts file
+ * @returns ContentFetcher
  */
-export const buildContentFetcher = <T extends EnonicConnectionConfigRequiredFields>(
-    {
-        enonicConnectionConfig,
-        typesRegistry,
-    }: FetcherConfig<T>
-): ContentFetcher => {
+export const buildContentFetcher = <T extends EnonicConnectionConfig>(config: FetcherConfig<T>): ContentFetcher => {
 
     const {
         APP_NAME,
@@ -564,8 +590,9 @@ export const buildContentFetcher = <T extends EnonicConnectionConfigRequiredFiel
         getXpPath,
         getXPRequestType,
         getRenderMode,
-        getSingleComponentPath
-    } = enonicConnectionConfig;
+        getSingleComponentPath,
+        typesRegistry,
+    } = config;
 
     return async (
         contentPath: string | string[],
@@ -576,10 +603,10 @@ export const buildContentFetcher = <T extends EnonicConnectionConfigRequiredFiel
             const siteRelativeContentPath = getCleanContentPathArrayOrThrow400(contentPath);
             const xpContentPath = getXpPath(siteRelativeContentPath);
 
-            const xpRequestType = getXPRequestType(context);
+            const requestType = getXPRequestType(context);
             const renderMode = getRenderMode(context);
             let requestedComponentPath: string | undefined;
-            if (xpRequestType === XP_REQUEST_TYPE.COMPONENT) {
+            if (requestType === XP_REQUEST_TYPE.COMPONENT) {
                 requestedComponentPath = getSingleComponentPath(context);
             }
 
@@ -589,7 +616,7 @@ export const buildContentFetcher = <T extends EnonicConnectionConfigRequiredFiel
 
             if (metaResult.error) {
                 // @ts-ignore
-                return await {
+                return {
                     error: metaResult.error
                 };
             }
@@ -598,9 +625,9 @@ export const buildContentFetcher = <T extends EnonicConnectionConfigRequiredFiel
 
             if (!type) {
                 // @ts-ignore
-                return await {
+                return {
                     error: {
-                        code: 500,
+                        code: '500',
                         message: "Server responded with incomplete meta data: missing content 'type' attribute."
                     }
                 }
@@ -660,36 +687,14 @@ export const buildContentFetcher = <T extends EnonicConnectionConfigRequiredFiel
                 componentDescriptors[i].component!.data = datas[i];
             }
 
-            const response = {
-                // content query is always present at the first position
+            const page = createPageData(APP_NAME_DASHED, components, pageAsJson);
+            const meta = createMetaData(type, siteRelativeContentPath, requestType, renderMode, requestedComponentPath, page);
+
+            return {
                 content,
-                meta: {
-                    path: siteRelativeContentPath,
-                    type
-                }
+                meta,
+                page,
             } as FetchContentResult;
-
-            // .meta will be visible in final rendered inline props. Only adding some .meta attributes here on certain conditions (instead if always adding them and letting them be visible as false/undefined etc)
-            if (components || pageAsJson) {
-                response.page = {
-                    ...response.page || {},
-                    regions: buildRegionTree(APP_NAME, APP_NAME_DASHED, components, pageAsJson)
-                }
-            }
-            if (xpRequestType) {
-                response.meta!.xpRequestType = xpRequestType
-            }
-            if (requestedComponentPath) {
-                response.meta!.requestedComponent = requestedComponentPath;
-                if (response.page?.regions) {
-                    const cmpPath = parseComponentPath(requestedComponentPath);
-                    response.meta!.parentRegion = getParentRegion(response.page?.regions, cmpPath);
-                }
-            }
-            response.meta!.renderMode = renderMode;
-
-            return response;
-
 
             /////////////////////////////////////////////////////////////  Catch
 
@@ -706,16 +711,23 @@ export const buildContentFetcher = <T extends EnonicConnectionConfigRequiredFiel
                 }
             }
             // @ts-ignore
-            return await {error};
+            return {error};
         }
     };
 };
 
 
-//////////////////////////////////////////////////////////////  ENTRY 2: ready-to-use fetchContent function
+//////////////////////////////  ENTRY 2: ready-to-use fetchContent function
 
-// Config and prepare a default fetchContent function, with params from imports:
-export const fetchContent: ContentFetcher = buildContentFetcher<EnonicConnectionConfigRequiredFields>({
-    enonicConnectionConfig,
+/**
+ * Default fetchContent function, built with params from imports.
+ * It runs custom content-type-specific guillotine calls against an XP guillotine endpoint, returns content data, error and some meta data
+ * Sends one query to the guillotine API and asks for content type, then uses the type to select a second query and variables, which is sent to the API and fetches content data.
+ * @param contentPath string or string array: local (site-relative) path to a content available on the API (by XP _path - obtainable by running contentPath through getXpPath). Pre-split into string array, or already a slash-delimited string.
+ * @param context object from Next, contains .query info
+ * @returns FetchContentResult object: {data?: T, error?: {code, message}}
+ */
+export const fetchContent: ContentFetcher = buildContentFetcher<EnonicConnectionConfig>({
+    ...enonicConnectionConfig,
     typesRegistry: TypesRegistry,
 });

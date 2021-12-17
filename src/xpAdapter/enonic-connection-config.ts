@@ -7,26 +7,23 @@ export const IS_DEV_MODE = (mode === 'development');
 
 
 /** Where is XP running */
-export type ApiDomain = string
-export const API_DOMAIN: ApiDomain = (process.env.API_DOMAIN || process.env.NEXT_PUBLIC_API_DOMAIN) as ApiDomain
+export const API_DOMAIN = (process.env.API_DOMAIN || process.env.NEXT_PUBLIC_API_DOMAIN) as string
 
 /** Which site this server communicates with: content item _name for the root site item */
-export type Site = string;
-export const SITE: Site = (process.env.SITE || process.env.NEXT_PUBLIC_SITE) as Site
+export const SITE = (process.env.SITE || process.env.NEXT_PUBLIC_SITE) as string
 
 /** URL to the guillotine API */
-export type ContentApiUrl = string;
-export const CONTENT_API_URL: ContentApiUrl = (process.env.CONTENT_API_URL || process.env.NEXT_PUBLIC_CONTENT_API_URL) as ContentApiUrl
+export const CONTENT_API_URL = (process.env.CONTENT_API_URL || process.env.NEXT_PUBLIC_CONTENT_API_URL) as string
 
 /** Optional utility value - defining in one place the name of the target app (the app that defines the content types, the app name is therefore part of the content type strings used both in typeselector and in query introspections) */
-export type AppName = string;
-export const APP_NAME: AppName = (process.env.APP_NAME || process.env.NEXT_PUBLIC_APP_NAME) as AppName;
+
+export const APP_NAME = (process.env.APP_NAME || process.env.NEXT_PUBLIC_APP_NAME) as string;
 /** Optional utility value - derived from APP_NAME, only with underscores instead of dots */
-export type AppNameUnderscored = string;
-export const APP_NAME_UNDERSCORED: AppNameUnderscored = (APP_NAME || '').replace(/\./g, '_')
+
+export const APP_NAME_UNDERSCORED = (APP_NAME || '').replace(/\./g, '_')
 /** Optional utility value - derived from APP_NAME, only with dashes instead of dots */
-export type AppNameDashed = string;
-export const APP_NAME_DASHED: AppNameDashed = (APP_NAME || '').replace(/\./g, '-')
+
+export const APP_NAME_DASHED = (APP_NAME || '').replace(/\./g, '-')
 
 /** The domain (full: with protocol and port if necessary) of this next.js server */
 export const NEXT_DOMAIN: string = (process.env.NEXT_DOMAIN || process.env.NEXT_PUBLIC_NEXT_DOMAIN) as string
@@ -76,18 +73,18 @@ export const isRequestFromXP = (context?: Context): boolean => {
 };
 
 export const getXPRequestType = (context?: Context): XP_REQUEST_TYPE => {
-    const headerValue = (context?.req?.headers || {})[FROM_XP_PARAM];
+    const headerValue = (context?.req?.headers || {})[FROM_XP_PARAM] as string | undefined;
     return XP_REQUEST_TYPE[<keyof typeof XP_REQUEST_TYPE>headerValue?.toUpperCase()];
 }
 
 const getRenderMode = (context?: Context): XP_RENDER_MODE => {
-    const value = (context?.req?.headers || {})[XP_RENDER_MODE_HEADER];
+    const value = (context?.req?.headers || {})[XP_RENDER_MODE_HEADER] as string | undefined;
     const enumValue = XP_RENDER_MODE[<keyof typeof XP_RENDER_MODE>value?.toUpperCase()];
     return enumValue || XP_RENDER_MODE.PREVIEW;
 };
 
 const getSingleComponentPath = (context?: Context): string | undefined => (
-    (context?.req?.headers || {})[COMPONENT_SUBPATH_HEADER]
+    (context?.req?.headers || {})[COMPONENT_SUBPATH_HEADER] as string | undefined
 );
 
 const siteNamePattern = new RegExp('^/' + SITE + "/");
