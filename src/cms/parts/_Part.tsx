@@ -5,6 +5,7 @@ export interface PartProps {
         descriptor?: string;
         config?: any;
     };
+    data?: any;
     content?: any;                  // Content is passed down for optional consumption in componentviews. TODO: Use a react contextprovider instead?
 }
 

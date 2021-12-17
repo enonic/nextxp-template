@@ -31,7 +31,7 @@ export const PAGE_FRAGMENT = `
         }
       }`;
 
-export function getMetaQuery(isEditMode: boolean, pageFragment?: string): string {
+export function getMetaQuery(pageFragment?: string): string {
     return `query($path:ID!){
               guillotine {
                 get(key:$path) {
@@ -52,6 +52,7 @@ export interface PageComponent {
     text?: any;
     image?: any;
     regions?: RegionTree;
+    data?: any;
 }
 
 export interface RegionTree {
@@ -63,19 +64,24 @@ export interface PageRegion {
     components: PageComponent[];
 }
 
-export type PartData = {
-    descriptor: string,
-    [customKeysFromQuery: string]: any
+export interface PartData {
+    descriptor: string;
+
+    [customKeysFromQuery: string]: any;
 }
 
 export interface LayoutData {
-    descriptor: string,
+    descriptor: string;
 
-    [customKeysFromQuery: string]: any
+    [customKeysFromQuery: string]: any;
 }
 
-export interface Meta {
+export interface PageData {
+    regions?: RegionTree;
+}
+
+export interface MetaData {
     type: string,
-    pageAsJson?: {}
+    pageAsJson?: PageData,
     components?: PageComponent[],
 };

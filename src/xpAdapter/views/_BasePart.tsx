@@ -8,16 +8,18 @@ import {TypesRegistry} from '../TypesRegistry';
 interface BasePartProps {
     component?: PartData;
     content?: any;
+    data?: any;
 }
 
 const BasePart = (props: BasePartProps) => {
-    const {component, content} = props;
+    const {component, content, data} = props;
     let partSelection;
     if (component) {
         partSelection = TypesRegistry.getPart(component.descriptor);
     }
     const SelectedPartView = partSelection?.view || DefaultPartView;
     return <SelectedPartView part={{descriptor: component?.descriptor, config: component?.__config__}}
+                             data={data}
                              content={content}/>;
 }
 
