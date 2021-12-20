@@ -20,7 +20,10 @@ const BaseComponent = ({component, content}: BaseComponentProps) => {
     };
 
     // @ts-ignore
-    const ComponentView: React = TypesRegistry.getComponent(type)?.view || <p>I am a {type}</p>;
+    const ComponentView: React = TypesRegistry.getComponent(type)?.view || (() => {
+        console.error(`Missing view for component type '${type}'`);
+        return <></>;
+    });
 
     const cmpAttrs: { [key: string]: any } = {
         component: component[type],
