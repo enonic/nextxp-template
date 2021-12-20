@@ -15,7 +15,7 @@ export const PAGE_FRAGMENT = `
           configAsJson
         }
         text {
-          value {
+          value(processHtml:{type:absolute}) {
             processedHtml
           }
         }
