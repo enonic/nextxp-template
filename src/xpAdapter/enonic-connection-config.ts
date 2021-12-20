@@ -106,12 +106,13 @@ export const getPageUrlFromXpPath = (xpPath: string, context: Context): string =
         : xpPath.replace(siteNamePattern, '/')                   // site relative: should just start with slash when served directly
 );
 
-/** Special-case (for <a href link values in props that target XP content pages - for when links too should work in CS) version of getPageUrlFromXpPath, depending on whether or not the request stems from the XP proxy used for content studio preview, or not */
-export const getContentLinkUrlFromXpPath = (xpPath: string, context: Context): string => (
-    isRequestFromXP(context)
-        ? xpPath.replace(siteNamePattern, '')           // proxy-relative: should not start with a slash when served through the proxy
-        : xpPath.replace(siteNamePattern, '/')          // site relative: should start with slash when served directly
-);
+/** For '<a href="..."' link values in props when clicking the link should navigate to an XP content item page
+ *  and the query returns the XP _path to the target content item:
+ *  When viewed directly, the header will have a `<base href='/' />` (see src/pages/_app.tsx), and when viewed through an
+ *  XP Content Studio preview, lib-nextjs-proxy will add `<base href='xp/relevant/root/site/url/' />`.
+ *  So for content-item links to work in BOTH contexts, the href value should be the path relative to the root site item, not starting with a slash.
+ * */
+export const getContentLinkUrlFromXpPath = (_path: string): string => _path.replace(siteNamePattern, '')
 
 /**
  * If the request stems from XP (the CS-preview proxy), assets under the /public/ folder needs to have their URL prefixed with the running domain of this next.js server. If not, prefix only with a slash.
