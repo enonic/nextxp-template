@@ -18,8 +18,6 @@ const DefaultViewDev = ({ content, page }: Props) => {
             <h2>{content.displayName}</h2>
             <DataDump label="content" data={content} />
             <br />
-            <RegionsView regions={page?.regions} content={content}/>
-            <br />
             <p style={{fontSize: ".7em", color: "#bbb"}}>_DefaultView.tsx</p>
         </div>
     )
