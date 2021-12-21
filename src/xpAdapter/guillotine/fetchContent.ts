@@ -48,7 +48,7 @@ interface ComponentDescriptor {
 
 export type FetchContentResult = Result & {
     content: Record<string, any>,
-    meta: MetaData | null,
+    meta: MetaData,
     page: PageData | null,
 };
 

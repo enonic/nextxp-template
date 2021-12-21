@@ -21,7 +21,7 @@ export type Context = GetServerSidePropsContext<ServerSideParams>;
 export const getServerSideProps: GetServerSideProps = async (context: Context): Promise<GetServerSidePropsResult<FetchContentResult>> => {
     const {
         content = null,
-        meta = null,
+        meta,
         error = null,
         page = null,
     } = await fetchContent(context.params?.contentPath || [], context);
