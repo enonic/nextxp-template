@@ -9,19 +9,15 @@ const ThreeColumnLayoutView = (props: LayoutProps) => {
     const regions = props.layout.regions;
     const content = props.content;
 
-    let leftR;
-    let centerR
-    let rightR;
-    if (regions) {
-        leftR = regions['left'];
-        centerR = regions['center'];
-        rightR = regions['right'];
-    }
+    const leftR = regions['left'];
+    const centerR = regions['center'];
+    const rightR = regions['right'];
+
     return (
         <div className="row">
-            {leftR && <RegionView className="col-sm-4" name={leftR.name} components={leftR.components} content={content}/>}
-            {centerR && <RegionView className="col-sm-4" name={centerR.name} components={centerR.components} content={content}/>}
-            {rightR && <RegionView className="col-sm-4" name={rightR.name} components={rightR.components} content={content}/>}
+            <RegionView className="col-sm-4" name="left" components={leftR?.components} content={content}/>
+            <RegionView className="col-sm-4" name="center" components={centerR?.components} content={content}/>
+            <RegionView className="col-sm-4" name="right" components={rightR?.components} content={content}/>
         </div>
     );
 };

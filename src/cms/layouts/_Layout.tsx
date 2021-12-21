@@ -9,7 +9,7 @@ import Empty from "../../xpAdapter/views/Empty";
 export interface LayoutProps {
     layout: {
         descriptor?: string;
-        regions?: RegionTree;
+        regions: RegionTree;
     };
     content: any;
 }

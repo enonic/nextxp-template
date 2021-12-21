@@ -2,9 +2,8 @@ import React from "react";
 
 import {FetchContentResult} from "../guillotine/fetchContent";
 
-import DefaultContentView from "../../cms/contentTypes/_DefaultView";
-
 import {TypesRegistry} from '../TypesRegistry';
+import RegionsView from './_Region';
 
 
 const BaseContent = (props: FetchContentResult) => {
@@ -24,10 +23,11 @@ const BaseContent = (props: FetchContentResult) => {
 
     if (SelectedPageView) {
         // there is a view defined for this type
-        return <SelectedPageView content={content} page={page}/>
+        // component attr is used by FragmentView
+        return <SelectedPageView content={content} page={page} component={page?.regions}/>
     } else if (meta.canRender) {
-        // there is a page controller for this type
-        return <DefaultContentView content={content} page={page}/>
+        // there is a page controller
+        return <RegionsView content={content} regions={page?.regions}/>
     }
 
     console.log(`BaseContent: can not render ${meta.type} at ${meta.path}: no next view or page controller defined`);

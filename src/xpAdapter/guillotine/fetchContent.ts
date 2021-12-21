@@ -5,6 +5,7 @@ import {Context} from "../../pages/[[...contentPath]]";
 import enonicConnectionConfig, {XP_COMPONENT_TYPE, XP_RENDER_MODE, XP_REQUEST_TYPE,} from "../enonic-connection-config";
 import {SelectedQueryMaybeVariablesFunc, TypeDefinition, TypesRegistry} from '../TypesRegistry';
 import {defaultVariables, LOW_PERFORMING_DEFAULT_QUERY} from '../../cms/queries/_getDefaultData';
+import {FRAGMENT_CONTENTTYPE_NAME, FRAGMENT_DEFAULT_REGION_NAME} from '../views/_Fragment';
 
 
 export type EnonicConnectionConfig = {
@@ -288,97 +289,81 @@ function parseComponentPath(path: string): PathFragment[] {
     return matches;
 }
 
-function extractRegions(source: RegionTree | undefined): RegionTree {
-    const target: RegionTree = {};
-    for (const [regionName, region] of Object.entries(source || [])) {
-        const newRegion = target[regionName] = {
-            name: regionName,
-            components: [] as any[],
-        };
-        region.components.forEach((cmp: PageComponent) => {
-            if (cmp.type === XP_COMPONENT_TYPE.LAYOUT) {
-                const layoutCmp: PageComponent = {
-                    type: cmp.type,
-                    path: cmp.path,
-                    regions: extractRegions(cmp.regions)
-                }
-                newRegion.components.push(layoutCmp);
-            }
-        });
-    }
-    return target;
-}
+function getParentRegion(source: RegionTree, cmpPath: string, components: PageComponent[] = [],
+                         createMissing?: boolean): PageRegion | undefined {
 
-function getParentRegion(source: RegionTree, path: PathFragment[]): PageRegion {
-    if (!path.length) {
-        throw 'component path can not be empty';
-    }
+    const path = parseComponentPath(cmpPath);
 
     let currentTree: RegionTree = source;
     let currentRegion: PageRegion | undefined;
+    let parentPath = '';
 
     for (let i = 0; i < path.length; i++) {
         const pathFragment = path[i];
-        const regionName = pathFragment.region; //TODO: try using index instead
-        currentRegion = currentTree && currentTree[regionName];
+        const regionName = pathFragment.region;
+        parentPath += `/${pathFragment.region}/${pathFragment.index}`;
+        currentRegion = currentTree[regionName];
 
         if (!currentRegion) {
-            throw `region[${regionName}] not found`;
-        } else if (i < path.length - 1) {
-            // look for layouts inside if this is not the last path fragment
-            const layout = currentRegion.components.find((cmp: PageComponent, cmpIdx: number) => {
-                return cmp.type === XP_COMPONENT_TYPE.LAYOUT && cmpIdx === pathFragment.index;
-            });
-            // TODO: use next defined region to get regions
-            if (layout && layout.regions) {
-                currentTree = layout.regions;
+            if (createMissing) {
+                currentRegion = {
+                    name: regionName,
+                    components: [],
+                };
+                currentTree[regionName] = currentRegion;
+            } else {
+                throw `Region [${regionName}] was not found`;
             }
+        }
+
+        if (i < path.length - 1) {
+            // look for layouts inside if this is not the last path fragment
+
+            const layout = components.find((cmp: PageComponent) => cmp.type === XP_COMPONENT_TYPE.LAYOUT && cmp.path === parentPath);
+            if (!layout) {
+                throw `Layout [${parentPath}] not found among components, but needed for component [${cmpPath}]`
+            }
+            if (!layout.regions) {
+                layout.regions = {};
+            }
+            currentTree = layout.regions;
         }
     }
-    return currentRegion!;
+
+    return currentRegion;
 }
 
-function buildRegionTree(
-    appNameDashed: string,
-    comps?: PageComponent[],
-    pageAsJson?: PageData
-): RegionTree {
+function buildRegionTree(contentType: string, comps: PageComponent[] = []): RegionTree {
 
-    // this is needed in non-edit mode as well to create layouts' regions
-    const regions: RegionTree = extractRegions(pageAsJson?.regions);
-
-    // console.info("Regions structure: " + JSON.stringify(regions, null, 2));
-
-    (comps || []).forEach(cmp => {
-        const cmpPath = parseComponentPath(cmp.path);
-
-        if (!cmpPath.length) {
-            // this is page view component
-            // TODO: something here later, if we're making a pageSelector too
-            return;
-        }
-
-        if (cmp.type === XP_COMPONENT_TYPE.PART && cmp.part && cmp.part.configAsJson) {
-            const [appName, partName] = (cmp.part.descriptor || "").split(':');
-            if (appName === appName && cmp.part.configAsJson[appNameDashed][partName]) {
-                cmp.part.__config__ = cmp.part!.configAsJson[appNameDashed][partName]
+    const tree: RegionTree = {};
+    comps.forEach(cmp => {
+        let region;
+        if (cmp.path === '/' && contentType === FRAGMENT_CONTENTTYPE_NAME) {
+            // this is a fragment
+            // it does not need a region, but we need one in order to pass it as a page
+            // so create a 'default' region that fragment view will handle appropriately
+            region = tree[FRAGMENT_DEFAULT_REGION_NAME];
+            if (!region) {
+                region = {
+                    name: FRAGMENT_DEFAULT_REGION_NAME,
+                    components: []
+                }
+                tree[FRAGMENT_DEFAULT_REGION_NAME] = region;
             }
+        } else {
+            region = getParentRegion(tree, cmp.path, comps, true);
         }
 
-        const region = getParentRegion(regions, cmpPath);
-        const existingCmp = region.components.find((regionCmp: PageComponent) => regionCmp.path === cmp.path);
-        if (existingCmp) {
-            // append data to existing component
-            Object.assign(existingCmp, cmp)
-        } else {
-            const cmpIndex = cmpPath[cmpPath.length - 1].index;
+        if (region) {
+            // getting the index of component from string like '/main/0/left/1'
+            const cmpIndex = +cmp.path.substr(cmp.path.length - 1);
             region.components.splice(cmpIndex, 0, cmp);
         }
     });
 
-    // console.info("Regions with components: " + JSON.stringify(regions, null, 2));
+    // console.info("Regions with components: " + JSON.stringify(tree, null, 2));
 
-    return regions;
+    return tree;
 }
 
 
@@ -490,10 +475,29 @@ function collectPartDescriptors(components: PageComponent[],
                     });
                 }
             }
+        } else if (XP_COMPONENT_TYPE.FRAGMENT === cmp.type) {
+            // look for parts inside fragments
+            const fragPartDescs = collectPartDescriptors(cmp.fragment!.fragment.components, typesRegistry, requestedComponentPath,
+                xpContentPath, context);
+            if (fragPartDescs.length) {
+                partDescriptors.push(...fragPartDescs);
+            }
         }
     }
 
     return partDescriptors;
+}
+
+function processPartConfigs(appNameDashed: string, partDescriptors: ComponentDescriptor[]) {
+    partDescriptors.forEach(partDescriptor => {
+        const cmp = partDescriptor.component;
+        if (cmp?.part?.configAsJson) {
+            const [appName, partName] = (cmp.part.descriptor || "").split(':');
+            if (appName === appName && cmp.part.configAsJson[appNameDashed][partName]) {
+                cmp.part.__config__ = cmp.part!.configAsJson[appNameDashed][partName];
+            }
+        }
+    })
 }
 
 function getQueryAndVariables(type: string,
@@ -532,11 +536,11 @@ function getQueryAndVariables(type: string,
 }
 
 
-function createPageData(appNameDashed: string, components?: PageComponent[], pageAsJson?: PageData): PageData {
+function createPageData(contentType: string, components?: PageComponent[]): PageData | undefined {
     let page;
-    if (components || pageAsJson) {
+    if (components) {
         page = {
-            regions: buildRegionTree(appNameDashed, components, pageAsJson)
+            regions: buildRegionTree(contentType, components)
         }
     }
 
@@ -546,7 +550,7 @@ function createPageData(appNameDashed: string, components?: PageComponent[], pag
 
 function createMetaData(contentType: string, contentPath: string, requestType: XP_REQUEST_TYPE, renderMode: XP_RENDER_MODE,
                         requestedComponentPath: string | undefined,
-                        pageData: PageData): MetaData {
+                        pageData?: PageData): MetaData {
     // .meta will be visible in final rendered inline props.
     // Only adding some .meta attributes here on certain conditions
     // (instead of always adding them and letting them be visible as false/undefined etc)
@@ -562,8 +566,7 @@ function createMetaData(contentType: string, contentPath: string, requestType: X
     if (requestedComponentPath) {
         meta!.requestedComponent = requestedComponentPath;
         if (regions) {
-            const cmpPath = parseComponentPath(requestedComponentPath);
-            meta!.parentRegion = getParentRegion(regions, cmpPath);
+            meta!.parentRegion = getParentRegion(regions, requestedComponentPath);
         }
     }
 
@@ -621,7 +624,7 @@ export const buildContentFetcher = <T extends EnonicConnectionConfig>(config: Fe
                 };
             }
 
-            const {type, components, pageAsJson} = metaResult.meta || {};
+            const {type, components} = metaResult.meta || {};
 
             if (!type) {
                 // @ts-ignore
@@ -636,7 +639,7 @@ export const buildContentFetcher = <T extends EnonicConnectionConfig>(config: Fe
 
             ////////////////////////////////////////////////////  Content type established. Proceed to data call:
 
-            let componentDescriptors: ComponentDescriptor[] = [];
+            const componentDescriptors: ComponentDescriptor[] = [];
 
             // Add the content type query at all cases
             const contentTypeDef = typesRegistry?.getContentType(type);
@@ -656,7 +659,10 @@ export const buildContentFetcher = <T extends EnonicConnectionConfig>(config: Fe
                 // Collect part queries if defined
                 const partDescriptors = collectPartDescriptors(components, typesRegistry, requestedComponentPath, xpContentPath, context);
                 if (partDescriptors.length) {
-                    componentDescriptors = componentDescriptors.concat(partDescriptors);
+                    //TODO: can be moved to part-wide propsProcessor when ready
+                    processPartConfigs(APP_NAME_DASHED, partDescriptors);
+
+                    componentDescriptors.push(...partDescriptors);
                 }
             }
 
@@ -687,13 +693,13 @@ export const buildContentFetcher = <T extends EnonicConnectionConfig>(config: Fe
                 componentDescriptors[i].component!.data = datas[i];
             }
 
-            const page = createPageData(APP_NAME_DASHED, components, pageAsJson);
+            const page = createPageData(type, components);
             const meta = createMetaData(type, siteRelativeContentPath, requestType, renderMode, requestedComponentPath, page);
 
             return {
                 content,
                 meta,
-                page,
+                page: page || null,
             } as FetchContentResult;
 
             /////////////////////////////////////////////////////////////  Catch
