@@ -15,3 +15,9 @@ query($path:ID!){
     }
   }
 }`;
+
+export function defaultVariables(path: string) {
+    return {
+        path
+    }
+}

@@ -7,21 +7,22 @@ import {Context} from "../pages/[[...contentPath]]";
  *          - 'props' (used in fetchContent.ts) is a function for processing props after fetching them
  *          - 'view' (used in BasePage.tsx) is a react component: top-level content-type-specific rendering with the props first fetched from guillotine (and then optionally preprocessed with the function in 'props').
  */
-export interface TypeSelection {
+export interface TypeDefinition {
     query?: SelectedQueryMaybeVariablesFunc,
-    props?: PropsProcessor,
+    props?: DataProcessor,
     view?: ReactView
 }
 
 type SelectorName = "content" | "component" | "part" | "layout";
 
-interface TypeSelector {
-    [type: string]: TypeSelection;
+interface TypeDictionary {
+    [type: string]: TypeDefinition;
 }
 
-export type ReactView = (props: any) => JSX.Element;
+export type ReactView = (props: any) => JSX.Element | null;
 
-export type PropsProcessor = (content: any, context?: Context) => any;
+//NB! Always return null or empty object from processor for next is unable to serialize undefined
+export type DataProcessor = (data: any, context?: Context) => Promise<Record<string, any>>;
 
 // TODO: also access as arguments: dataAsJson, pageAsJson, configAsJson from the first (meta) call here?
 //  To allow content or component config values to affect the query?
@@ -37,19 +38,16 @@ export type SelectedQueryMaybeVariablesFunc = string |
     { query: string, variables: VariablesGetter } |
     [string, VariablesGetter];
 
-export interface QueryAndVariables {
-    query: string;
-    variables: Record<string, any>;
-}
+export const CATCH_ALL_NAME = "*";
 
 export class TypesRegistry {
 
-    private static contents: TypeSelector = {};
-    private static components: TypeSelector = {};
-    private static parts: TypeSelector = {};
-    private static layouts: TypeSelector = {};
+    private static contents: TypeDictionary = {};
+    private static components: TypeDictionary = {};
+    private static parts: TypeDictionary = {};
+    private static layouts: TypeDictionary = {};
 
-    private static getSelector(name: SelectorName): TypeSelector {
+    private static getSelector(name: SelectorName): TypeDictionary {
         switch (name) {
         case 'content':
             return this.contents;
@@ -62,49 +60,52 @@ export class TypesRegistry {
         }
     }
 
-    private static getType(selectorName: SelectorName, typeName: string, useCatchAll: boolean = true): TypeSelection | null {
+    private static getType(selectorName: SelectorName, typeName: string, useCatchAll: boolean = true): TypeDefinition | undefined {
         const selector = TypesRegistry.getSelector(selectorName);
         let type = selector[typeName];
         if (!type && useCatchAll) {
-            type = selector["*"];
+            type = selector[CATCH_ALL_NAME];
+            if (type) {
+                console.log(`TypeRegistry: using catch-all view for ${selectorName} '${typeName}': ${type.view?.name}`)
+            }
         }
-        return type || null;
+        return type;
     }
 
-    private static addType(selectorName: SelectorName, name: string, obj: TypeSelection): void {
+    private static addType(selectorName: SelectorName, name: string, obj: TypeDefinition): void {
         const selector = TypesRegistry.getSelector(selectorName);
         selector[name] = obj;
     }
 
-    public static addContentType(name: string, obj: TypeSelection): void {
+    public static addContentType(name: string, obj: TypeDefinition): void {
         return TypesRegistry.addType('content', name, obj);
     }
 
-    public static getContentType(name: string): TypeSelection | null {
+    public static getContentType(name: string): TypeDefinition | undefined {
         return TypesRegistry.getType('content', name);
     }
 
-    public static addPart(name: string, obj: TypeSelection): void {
+    public static addPart(name: string, obj: TypeDefinition): void {
         return TypesRegistry.addType('part', name, obj);
     }
 
-    public static getPart(name: string): TypeSelection | null {
+    public static getPart(name: string): TypeDefinition | undefined {
         return TypesRegistry.getType('part', name);
     }
 
-    public static addLayout(name: string, obj: TypeSelection): void {
+    public static addLayout(name: string, obj: TypeDefinition): void {
         return TypesRegistry.addType('layout', name, obj);
     }
 
-    public static getLayout(name: string): TypeSelection | null {
+    public static getLayout(name: string): TypeDefinition | undefined {
         return TypesRegistry.getType('layout', name);
     }
 
-    public static addComponent(name: string, obj: TypeSelection): void {
+    public static addComponent(name: string, obj: TypeDefinition): void {
         return TypesRegistry.addType('component', name, obj);
     }
 
-    public static getComponent(name: string): TypeSelection | null {
+    public static getComponent(name: string): TypeDefinition | undefined {
         return TypesRegistry.getType('component', name);
     }
 }

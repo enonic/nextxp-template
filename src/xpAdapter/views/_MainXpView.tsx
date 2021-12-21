@@ -7,6 +7,7 @@ import CustomError from '../../components/errors/Error';
 import {FetchContentResult} from "../guillotine/fetchContent";
 import SingleComponent from "./_SingleComponent";
 import BaseContent from "./_BaseContent";
+import {XP_REQUEST_TYPE} from '../enonic-connection-config';
 
 
 const errorPageSelector = {
@@ -25,11 +26,11 @@ const _MainXpView = (props: FetchContentResult) => {
     }
 
     // Single-component render:
-    if (meta.xpRequestType === "component") {
+    if (meta.requestType === XP_REQUEST_TYPE.COMPONENT) {
         return <SingleComponent {...props} />
     }
 
-    // meta.xpRequestType="type", and hence content-type based, is standard view for now.
+    // meta.requestType="type", and hence content-type based, is standard view for now.
     return <BaseContent {...props} />
 };
 

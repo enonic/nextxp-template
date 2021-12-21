@@ -62,6 +62,6 @@ export const PERSONLIST_QUERY = {
     }
 };
 
-export function personListProcessor(content: any, context?: Context) {
+export async function personListProcessor(content: any, context?: Context): Promise<any> {
     return content;
 }

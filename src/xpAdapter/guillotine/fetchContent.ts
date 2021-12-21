@@ -1,23 +1,16 @@
 import {getMetaQuery, MetaData, PAGE_FRAGMENT, PageComponent, PageData, PageRegion, RegionTree} from "../../cms/queries/_getMetaData";
-import {LOW_PERFORMING_DEFAULT_QUERY} from "../../cms/queries/_getDefaultData";
 
 import {Context} from "../../pages/[[...contentPath]]";
 
-import enonicConnectionConfig, {
-    AppName,
-    AppNameDashed,
-    ContentApiUrl,
-    XP_COMPONENT_TYPE,
-    XP_RENDER_MODE,
-    XP_REQUEST_TYPE,
-} from "../enonic-connection-config";
-import {QueryAndVariables, SelectedQueryMaybeVariablesFunc, TypeSelection, TypesRegistry, VariablesGetter} from '../TypesRegistry';
+import enonicConnectionConfig, {XP_COMPONENT_TYPE, XP_RENDER_MODE, XP_REQUEST_TYPE,} from "../enonic-connection-config";
+import {SelectedQueryMaybeVariablesFunc, TypeDefinition, TypesRegistry} from '../TypesRegistry';
+import {defaultVariables, LOW_PERFORMING_DEFAULT_QUERY} from '../../cms/queries/_getDefaultData';
 
 
-export type EnonicConnectionConfigRequiredFields = {
-    APP_NAME: AppName,
-    APP_NAME_DASHED: AppNameDashed,
-    CONTENT_API_URL: ContentApiUrl,
+export type EnonicConnectionConfig = {
+    APP_NAME: string,
+    APP_NAME_DASHED: string,
+    CONTENT_API_URL: string,
     getXpPath: (siteRelativeContentPath: string) => string,
     getXPRequestType: (context?: Context) => XP_REQUEST_TYPE,
     getRenderMode: (context?: Context) => XP_RENDER_MODE,
@@ -28,7 +21,7 @@ type Result = {
     error?: {
         code: string,
         message: string
-    }
+    } | null;
 }
 
 type GuillotineResult = Result & {
@@ -36,30 +29,37 @@ type GuillotineResult = Result & {
 }
 
 type MetaResult = Result & {
-    meta?: MetaData
+    meta?: {
+        type: string,
+        pageAsJson?: PageData,
+        components?: PageComponent[],
+    }
 };
 
 type ContentResult = Result & {
     contents?: Record<string, any>[];
 };
 
+interface ComponentDescriptor {
+    type?: TypeDefinition;
+    component?: PageComponent;
+    queryAndVariables?: QueryAndVariables;
+}
+
 export type FetchContentResult = Result & {
-    content: any,
-    meta: MetaData & {
-        path: string,
-        xpRequestType?: XP_REQUEST_TYPE,
-        requestedComponent?: string
-        renderMode: XP_RENDER_MODE,
-        parentRegion?: PageRegion,
-    },
-    page?: PageData,
-    components?: any,
+    content: Record<string, any>,
+    meta: MetaData,
+    page: PageData | null,
 };
 
 
-type FetcherConfig<T extends EnonicConnectionConfigRequiredFields> = {
-    enonicConnectionConfig: T,
-    typesRegistry?: typeof TypesRegistry,
+type FetcherConfig<T extends EnonicConnectionConfig> = T & {
+    typesRegistry: typeof TypesRegistry
+};
+
+interface QueryAndVariables {
+    query: string;
+    variables?: Record<string, any>;
 }
 
 /**
@@ -67,11 +67,14 @@ type FetcherConfig<T extends EnonicConnectionConfigRequiredFields> = {
  * @param contentPath string or string array: pre-split or slash-delimited _path to a content available on the API
  * @returns FetchContentResult object: {data?: T, error?: {code, message}}
  */
-export type ContentFetcher = (
-    contentPath: string | string[],
-    context: Context
-) => Promise<FetchContentResult>
+export type ContentFetcher = (contentPath: string | string[], context: Context) => Promise<FetchContentResult>
 
+
+const NO_PROPS_PROCESSOR = async (props: any) => props || {};
+
+const ALIAS_PREFIX = 'request';
+
+const GUILLOTINE_QUERY_REGEXP = /^\s*query\s*(?:\((.*)*\))?\s*{\s*guillotine\s*{((?:.|\s)+)}\s*}\s*$/;
 
 ///////////////////////////////////////////////////////////////////////////////// Data
 
@@ -192,15 +195,6 @@ const fetchGuillotine = async (
 
     return result as GuillotineResult;
 };
-
-
-///////////////////////////////////////////////////////////////////////////////// No-op
-
-const NO_PROPS_PROCESSOR = (props: any) => props;
-
-const ALIAS_PREFIX = 'request';
-
-const GUILLOTINE_QUERY_REGEXP = /^\s*query\s*(?:\((.*)*\))?\s*{\s*guillotine\s*{((?:.|\s)+)}\s*}\s*$/;
 
 ///////////////////////////////////////////////////////////////////////////////// Specific fetch wrappers:
 
@@ -345,8 +339,7 @@ function getParentRegion(source: RegionTree, path: PathFragment[]): PageRegion {
 }
 
 function buildRegionTree(
-    appName: AppName,
-    appNameDashed: AppNameDashed,
+    appNameDashed: string,
     comps?: PageComponent[],
     pageAsJson?: PageData
 ): RegionTree {
@@ -389,17 +382,19 @@ function buildRegionTree(
 }
 
 
-///////////////////////////////////////////////////////////////////////////////// ENTRY 1 - THE BUILDER:
-
-function combineMultipleQueries(queriesWithVars: QueryAndVariables[]): QueryAndVariables {
+function combineMultipleQueries(queriesWithVars: ComponentDescriptor[]): QueryAndVariables {
     const queries: string[] = [];
     const superVars: { [key: string]: any } = {};
     const superParams: string[] = [];
 
-    queriesWithVars.forEach((queryWithVars: QueryAndVariables, index: number) => {
+    queriesWithVars.forEach((componentDescriptor: ComponentDescriptor, index: number) => {
+        const queryAndVars = componentDescriptor.queryAndVariables;
+        if (!queryAndVars) {
+            return;
+        }
 
         // Extract graphql query and its params and add prefixes to exclude collisions with other queries
-        const match = queryWithVars.query.match(GUILLOTINE_QUERY_REGEXP);
+        const match = queryAndVars.query.match(GUILLOTINE_QUERY_REGEXP);
         let query = '';
         if (match && match.length === 2) {
             // no params, just query
@@ -424,7 +419,7 @@ function combineMultipleQueries(queriesWithVars: QueryAndVariables[]): QueryAndV
         }
 
         // Update variables with the same prefixes
-        Object.entries(queryWithVars.variables || {}).forEach(entry => {
+        Object.entries(queryAndVars.variables || {}).forEach(entry => {
             superVars[`${ALIAS_PREFIX}${index}_${entry[0]}`] = entry[1];
         });
     });
@@ -444,19 +439,149 @@ function combineMultipleQueries(queriesWithVars: QueryAndVariables[]): QueryAndV
     }
 }
 
+async function applyProcessors(componentDescriptors: ComponentDescriptor[], contentResults: ContentResult,
+                               context?: Context): Promise<any[]> {
+
+    let dataCounter = 0;
+    const processorPromises = componentDescriptors.map(async (desc: ComponentDescriptor) => {
+        // we're iterating component descriptors here
+        // some of them might not have provided graphql requests
+        // but we still need to run props processor for them
+        // in case they want to fetch their data from elsewhere
+        const propsProcessor = desc.type?.props || NO_PROPS_PROCESSOR;
+        let data;
+        if (desc.queryAndVariables) {
+            // if there is a query then there must be a result for it
+            // they are not
+            data = contentResults.contents![dataCounter++];
+        }
+
+        return await propsProcessor(data, context);
+    });
+
+    const settleResult = await Promise.allSettled(processorPromises);
+
+    return settleResult.map(res => res.status === 'fulfilled' ? res.value : res);
+}
+
+function collectPartDescriptors(components: PageComponent[],
+                                typesRegistry: typeof TypesRegistry,
+                                requestedComponentPath: string | undefined,
+                                xpContentPath: string,
+                                context: Context | undefined
+): ComponentDescriptor[] {
+
+    const partDescriptors: ComponentDescriptor[] = [];
+
+    for (const cmp of (components || [])) {
+        // only look for parts
+        // look for single part if it is a single component request
+        if (XP_COMPONENT_TYPE.PART == cmp.type && (!requestedComponentPath || requestedComponentPath === cmp.path)) {
+            const partDesc = cmp.part?.descriptor;
+            if (partDesc) {
+                const partTypeDef = typesRegistry.getPart(partDesc);
+                if (partTypeDef) {
+                    const partPath = `${xpContentPath}/_component${cmp.path}`;
+                    const partQueryAndVars = getQueryAndVariables(cmp.type, partPath, partTypeDef.query, context);
+                    partDescriptors.push({
+                        component: cmp,
+                        type: partTypeDef,
+                        queryAndVariables: partQueryAndVars,
+                    });
+                }
+            }
+        }
+    }
+
+    return partDescriptors;
+}
+
+function getQueryAndVariables(type: string,
+                              path: string,
+                              selectedQuery?: SelectedQueryMaybeVariablesFunc,
+                              context?: Context): QueryAndVariables | undefined {
+
+    let query, getVariables;
+
+    if (typeof selectedQuery === 'string') {
+        query = selectedQuery;
+
+    } else if (Array.isArray(selectedQuery)) {
+        query = selectedQuery[0];
+        getVariables = selectedQuery[1];
+
+    } else if (typeof selectedQuery === 'object') {
+        query = selectedQuery.query;
+        getVariables = selectedQuery.variables;
+    }
+
+    if (getVariables && typeof getVariables !== 'function') {
+        throw Error(`getVariables for content type ${type} should be a function, not: ${typeof getVariables}`);
+    }
+
+    if (query && typeof query !== 'string') {
+        throw Error(`Query for content type ${type} should be a string, not: ${typeof query}`);
+    }
+
+    if (query) {
+        return {
+            query,
+            variables: getVariables ? getVariables(path, context) : undefined,
+        }
+    }
+}
+
+
+function createPageData(appNameDashed: string, components?: PageComponent[], pageAsJson?: PageData): PageData {
+    let page;
+    if (components || pageAsJson) {
+        page = {
+            regions: buildRegionTree(appNameDashed, components, pageAsJson)
+        }
+    }
+
+    return page as PageData;
+}
+
+
+function createMetaData(contentType: string, contentPath: string, requestType: XP_REQUEST_TYPE, renderMode: XP_RENDER_MODE,
+                        requestedComponentPath: string | undefined,
+                        pageData: PageData): MetaData {
+    // .meta will be visible in final rendered inline props.
+    // Only adding some .meta attributes here on certain conditions
+    // (instead of always adding them and letting them be visible as false/undefined etc)
+    const meta: MetaData = {
+        type: contentType,
+        path: contentPath,
+        requestType: requestType,
+        renderMode: renderMode
+    }
+
+    const regions = pageData?.regions;
+
+    if (requestedComponentPath) {
+        meta!.requestedComponent = requestedComponentPath;
+        if (regions) {
+            const cmpPath = parseComponentPath(requestedComponentPath);
+            meta!.parentRegion = getParentRegion(regions, cmpPath);
+        }
+    }
+
+    const hasController = regions && Object.keys(regions).length > 0;
+    meta.canRender = hasController || !!TypesRegistry.getContentType(contentType)?.view
+
+    return meta;
+}
+
+///////////////////////////////  ENTRY 1 - THE BUILDER:
+
 /**
  * Configures, builds and returns a general fetchContent function.
  * @param enonicConnectionConfig Object containing attributes imported from enonic-connecion-config.js: constants and function concerned with connection to the XP backend. Easiest: caller imports enonic-connection-config and just passes that entire object here as enonicConnectionConfig.
- * @param typeSelector Object, usually the typeSelector from typeSelector.ts, where keys are full XP content type strings (eg. 'my.app:content-type') and values are optional type-specific objects of config for how to handle that function. All attributes in these objecs are optional (see typeSelector.ts for examples):
- *          - 'query' can be a guillotine query string to use to fetch data for that content type, OR also have a get-guillotine-variables function - by an object with 'query' and 'variables' attributes, or an array where the query string is first and the get-variables function is second.
- *          - 'props' is a function for processing props: converting directly-from-guillotine props to props adapted for displaying the selected view component
+ * @param typesRegistry TypesRegistry object from TypesRegistry.ts, holding user type mappings that are set in typesRegistration.ts file
+ * @returns ContentFetcher
  */
-export const buildContentFetcher = <T extends EnonicConnectionConfigRequiredFields>(
-    {
-        enonicConnectionConfig,
-        typesRegistry,
-    }: FetcherConfig<T>
-): ContentFetcher => {
+export const buildContentFetcher = <T extends EnonicConnectionConfig>(config: FetcherConfig<T>): ContentFetcher => {
 
     const {
         APP_NAME,
@@ -465,71 +590,11 @@ export const buildContentFetcher = <T extends EnonicConnectionConfigRequiredFiel
         getXpPath,
         getXPRequestType,
         getRenderMode,
-        getSingleComponentPath
-    } = enonicConnectionConfig;
+        getSingleComponentPath,
+        typesRegistry,
+    } = config;
 
-    const defaultGetVariables: VariablesGetter = (path) => ({path});
-
-
-    ////////////////////////////////  Inner utility function
-    const getQueryAndVariables = (type: string,
-                                  path: string,
-                                  context?: Context,
-                                  selectedQuery?: SelectedQueryMaybeVariablesFunc,
-                                  defaults?: {
-                                      query: string,
-                                      getVariables: VariablesGetter,
-                                  }): QueryAndVariables => {
-
-        let query, getVariables;
-
-        if (!selectedQuery && defaults) {
-            query = defaults.query;
-
-        } else if (typeof selectedQuery === 'string') {
-            query = selectedQuery;
-
-        } else if (Array.isArray(selectedQuery)) {
-            query = selectedQuery[0];
-            getVariables = selectedQuery[1];
-
-        } else if (typeof selectedQuery === 'object') {
-            query = selectedQuery.query;
-            getVariables = selectedQuery.variables;
-        }
-
-        if (!getVariables && defaults) {
-            getVariables = defaults.getVariables;
-        } else if (typeof getVariables !== 'function') {
-            throw Error(`Selected query for content type ${type} should be a getVariables function, not: ${typeof getVariables}`);
-        }
-
-        if (!query && defaults) {
-            console.warn(`${JSON.stringify(path)}: no query has been assigned for the content type ${JSON.stringify(
-                type)}.\n\nThe default data query (_getDefaultData.ts) will be used, but note that this is a development tool and won't scale well in production. It's HIGHLY RECOMMENDED to write a content-type-specialized guillotine query, and add that to querySelector in querySelector.ts!`);
-            query = defaults.query;
-            getVariables = defaults.getVariables;
-        } else if (typeof query !== 'string') {
-            throw Error(`Selected query for content type ${type} should be a query string, not: ${typeof query}`);
-        }
-
-        return {
-            query,
-            variables: getVariables(path, context)
-        }
-    };
-
-
-    /////////////////////////////////////////////////////// START BUILDING THE FETCHER FUNCTION, AND RETURN IT:
-
-    /**
-     * Runs custom content-type-specific guillotine calls against an XP guillotine endpoint, returns content data, error and some meta data
-     * Sends one query to the guillotine API and asks for content type, then uses the type to select a second query and variables, which is sent to the API and fetches content data.
-     * @param contentPath string or string array: local (site-relative) path to a content available on the API (by XP _path - obtainable by running contentPath through getXpPath). Pre-split into string array, or already a slash-delimited string.
-     * @param context Context object from Next, contains .query info
-     * @returns FetchContentResult object: {data?: T, error?: {code, message}}
-     */
-    const fetchContent: ContentFetcher = async (
+    return async (
         contentPath: string | string[],
         context?: Context
     ): Promise<FetchContentResult> => {
@@ -538,20 +603,20 @@ export const buildContentFetcher = <T extends EnonicConnectionConfigRequiredFiel
             const siteRelativeContentPath = getCleanContentPathArrayOrThrow400(contentPath);
             const xpContentPath = getXpPath(siteRelativeContentPath);
 
-            const xpRequestType = getXPRequestType(context);
+            const requestType = getXPRequestType(context);
             const renderMode = getRenderMode(context);
             let requestedComponentPath: string | undefined;
-            if (xpRequestType === XP_REQUEST_TYPE.COMPONENT) {
+            if (requestType === XP_REQUEST_TYPE.COMPONENT) {
                 requestedComponentPath = getSingleComponentPath(context);
             }
 
-            ////////////////////////////////////////////// FIRST GUILLOTINE CALL FOR METADATA - MAINLY XP CONTENT TYPE:
+            ///////////////  FIRST GUILLOTINE CALL FOR METADATA     /////////////////
             const metaResult = await fetchMetaData(CONTENT_API_URL, xpContentPath);
-            //////////////////////////////////////////////
+            /////////////////////////////////////////////////////////////////////////
 
             if (metaResult.error) {
                 // @ts-ignore
-                return await {
+                return {
                     error: metaResult.error
                 };
             }
@@ -560,9 +625,9 @@ export const buildContentFetcher = <T extends EnonicConnectionConfigRequiredFiel
 
             if (!type) {
                 // @ts-ignore
-                return await {
+                return {
                     error: {
-                        code: 500,
+                        code: '500',
                         message: "Server responded with incomplete meta data: missing content 'type' attribute."
                     }
                 }
@@ -571,47 +636,31 @@ export const buildContentFetcher = <T extends EnonicConnectionConfigRequiredFiel
 
             ////////////////////////////////////////////////////  Content type established. Proceed to data call:
 
-            const queriesWithVars: (QueryAndVariables & {
-                component: PageComponent | null,
-                type: TypeSelection | null,
-            })[] = [];
+            let componentDescriptors: ComponentDescriptor[] = [];
 
             // Add the content type query at all cases
-            const typeSelection = typesRegistry?.getContentType(type) || null;
-            const contentQueryAndVars = getQueryAndVariables(type, xpContentPath, context, typeSelection?.query, {
-                query: LOW_PERFORMING_DEFAULT_QUERY,
-                getVariables: defaultGetVariables,
-            })
-            queriesWithVars.push({
-                component: null,
-                type: typeSelection,
-                ...contentQueryAndVars,
+            const contentTypeDef = typesRegistry?.getContentType(type);
+            let contentQueryAndVars = getQueryAndVariables(type, xpContentPath, contentTypeDef?.query, context);
+            if (!contentQueryAndVars) {
+                contentQueryAndVars = {
+                    query: LOW_PERFORMING_DEFAULT_QUERY,
+                    variables: defaultVariables(xpContentPath),
+                }
+            }
+            componentDescriptors.push({
+                type: contentTypeDef,
+                queryAndVariables: contentQueryAndVars,
             });
 
-            // Add individual part queries if defined
-            if (typesRegistry) {
-
-                (components || []).forEach((cmp: PageComponent) => {
-                    if (XP_COMPONENT_TYPE.PART == cmp.type && (!requestedComponentPath || requestedComponentPath === cmp.path)) {
-                        const partDesc = cmp.part?.descriptor;
-                        if (partDesc) {
-                            const partType = typesRegistry.getPart(partDesc);
-                            if (partType) {
-                                const partQueryAndVars = getQueryAndVariables(cmp.type, `${xpContentPath}/_component${cmp.path}`, context,
-                                    partType.query);
-                                queriesWithVars.push({
-                                    component: cmp,
-                                    type: partType,
-                                    ...partQueryAndVars,
-                                });
-                            }
-                        }
-                    }
-                });
-
+            if (components?.length && typesRegistry) {
+                // Collect part queries if defined
+                const partDescriptors = collectPartDescriptors(components, typesRegistry, requestedComponentPath, xpContentPath, context);
+                if (partDescriptors.length) {
+                    componentDescriptors = componentDescriptors.concat(partDescriptors);
+                }
             }
 
-            const {query, variables} = combineMultipleQueries(queriesWithVars);
+            const {query, variables} = combineMultipleQueries(componentDescriptors);
 
             if (!query.trim()) {
                 // @ts-ignore
@@ -623,57 +672,29 @@ export const buildContentFetcher = <T extends EnonicConnectionConfigRequiredFiel
                 }
             }
 
-            ////////////////////////////////////////////// SECOND GUILLOTINE CALL FOR DATA:
+            /////////////////    SECOND GUILLOTINE CALL FOR DATA   //////////////////////
             const contentResults = await fetchContentData(CONTENT_API_URL, xpContentPath, query, variables);
-            //////////////////////////////////////////////////////////////////////////////
+            /////////////////////////////////////////////////////////////////////////////
 
+            // Apply processors to every component
+            const datas = await applyProcessors(componentDescriptors, contentResults, context);
 
-            let contents = contentResults.contents!;
-
-            // Applying processors
-            if (contents.length) {
-                contentResults.contents = contents.map((contentResult, index) => {
-                    const propsProcessor = queriesWithVars[index].type?.props || NO_PROPS_PROCESSOR;
-                    return propsProcessor(contentResult, context);
-                })
+            //  Unwind the data back to components
+            const content = datas[0];
+            for (let i = 1; i < datas.length; i++) {
+                // component descriptors hold references to components
+                // that will later be used for creating page regions
+                componentDescriptors[i].component!.data = datas[i];
             }
 
-            // Unwinding the data back
-            const content = contents[0];
-            for (let i = 1; i < contents.length; i++) {
-                queriesWithVars[i].component!.data = contents[i];
-            }
+            const page = createPageData(APP_NAME_DASHED, components, pageAsJson);
+            const meta = createMetaData(type, siteRelativeContentPath, requestType, renderMode, requestedComponentPath, page);
 
-            const response = {
-                // content query is always present at the first position
+            return {
                 content,
-                meta: {
-                    path: siteRelativeContentPath,
-                    type
-                }
+                meta,
+                page,
             } as FetchContentResult;
-
-            // .meta will be visible in final rendered inline props. Only adding some .meta attributes here on certain conditions (instead if always adding them and letting them be visible as false/undefined etc)
-            if (components || pageAsJson) {
-                response.page = {
-                    ...response.page || {},
-                    regions: buildRegionTree(APP_NAME, APP_NAME_DASHED, components, pageAsJson)
-                }
-            }
-            if (xpRequestType) {
-                response.meta!.xpRequestType = xpRequestType
-            }
-            if (requestedComponentPath) {
-                response.meta!.requestedComponent = requestedComponentPath;
-                if (response.page?.regions) {
-                    const cmpPath = parseComponentPath(requestedComponentPath);
-                    response.meta!.parentRegion = getParentRegion(response.page?.regions, cmpPath);
-                }
-            }
-            response.meta!.renderMode = renderMode;
-
-            return response;
-
 
             /////////////////////////////////////////////////////////////  Catch
 
@@ -690,18 +711,23 @@ export const buildContentFetcher = <T extends EnonicConnectionConfigRequiredFiel
                 }
             }
             // @ts-ignore
-            return await {error};
+            return {error};
         }
     };
-
-    return fetchContent;
 };
 
 
-//////////////////////////////////////////////////////////////  ENTRY 2: ready-to-use fetchContent function
+//////////////////////////////  ENTRY 2: ready-to-use fetchContent function
 
-// Config and prepare a default fetchContent function, with params from imports:
-export const fetchContent: ContentFetcher = buildContentFetcher<EnonicConnectionConfigRequiredFields>({
-    enonicConnectionConfig,
+/**
+ * Default fetchContent function, built with params from imports.
+ * It runs custom content-type-specific guillotine calls against an XP guillotine endpoint, returns content data, error and some meta data
+ * Sends one query to the guillotine API and asks for content type, then uses the type to select a second query and variables, which is sent to the API and fetches content data.
+ * @param contentPath string or string array: local (site-relative) path to a content available on the API (by XP _path - obtainable by running contentPath through getXpPath). Pre-split into string array, or already a slash-delimited string.
+ * @param context object from Next, contains .query info
+ * @returns FetchContentResult object: {data?: T, error?: {code, message}}
+ */
+export const fetchContent: ContentFetcher = buildContentFetcher<EnonicConnectionConfig>({
+    ...enonicConnectionConfig,
     typesRegistry: TypesRegistry,
 });

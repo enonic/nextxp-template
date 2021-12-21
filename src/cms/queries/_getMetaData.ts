@@ -1,4 +1,4 @@
-import {XP_COMPONENT_TYPE} from "../../xpAdapter/enonic-connection-config";
+import {XP_COMPONENT_TYPE, XP_RENDER_MODE, XP_REQUEST_TYPE} from "../../xpAdapter/enonic-connection-config";
 
 export const PAGE_FRAGMENT = `
       components {
@@ -82,6 +82,10 @@ export interface PageData {
 
 export interface MetaData {
     type: string,
-    pageAsJson?: PageData,
-    components?: PageComponent[],
-};
+    path: string,
+    requestType: XP_REQUEST_TYPE,
+    renderMode: XP_RENDER_MODE,
+    requestedComponent?: string
+    canRender?: boolean,
+    parentRegion?: PageRegion,
+}
