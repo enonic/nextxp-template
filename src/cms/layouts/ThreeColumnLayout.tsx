@@ -7,7 +7,7 @@ export const THREE_COL_LAYOUT_NAME = `${APP_NAME}:layout-3-col`;
 
 const ThreeColumnLayoutView = (props: LayoutProps) => {
     const regions = props.layout.regions;
-    const content = props.content;
+    const {content, meta} = props;
 
     const leftR = regions['left'];
     const centerR = regions['center'];
@@ -15,9 +15,9 @@ const ThreeColumnLayoutView = (props: LayoutProps) => {
 
     return (
         <div className="row">
-            <RegionView className="col-sm-4" name="left" components={leftR?.components} content={content}/>
-            <RegionView className="col-sm-4" name="center" components={centerR?.components} content={content}/>
-            <RegionView className="col-sm-4" name="right" components={rightR?.components} content={content}/>
+            <RegionView className="col-sm-4" name="left" components={leftR?.components} content={content} meta={meta}/>
+            <RegionView className="col-sm-4" name="center" components={centerR?.components} content={content} meta={meta}/>
+            <RegionView className="col-sm-4" name="right" components={rightR?.components} content={content} meta={meta}/>
         </div>
     );
 };

@@ -7,11 +7,13 @@ export const CENTERED_LAYOUT_NAME = `${APP_NAME}:layout-centered`;
 
 const CenteredLayoutView = (props: LayoutProps) => {
     const regions = props.layout.regions;
+    const meta = props.meta;
 
     const centerR = regions['center'];
     return (
         <div className="row">
-            <RegionView className="col-md-8 col-md-offset-2" name="center" components={centerR?.components} content={props.content}/>
+            <RegionView className="col-md-8 col-md-offset-2" name="center" components={centerR?.components} content={props.content}
+                        meta={meta}/>
         </div>
     );
 };

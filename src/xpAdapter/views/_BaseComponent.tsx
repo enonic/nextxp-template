@@ -1,19 +1,19 @@
 import React from "react";
 
-import {PORTAL_COMPONENT_ATTRIBUTE, XP_COMPONENT_TYPE} from "../enonic-connection-config";
-import {PageComponent} from "../../cms/queries/_getMetaData";
+import {PORTAL_COMPONENT_ATTRIBUTE, XP_COMPONENT_TYPE, XP_RENDER_MODE} from "../enonic-connection-config";
+import {MetaData, PageComponent} from "../../cms/queries/_getMetaData";
 import {TypesRegistry} from '../TypesRegistry';
 
 
 export type BaseComponentProps = {
-    component: PageComponent,
-
+    component: PageComponent;
+    meta: MetaData;
     content?: any;                  // Content is passed down for optional consumption in componentviews.
     // TODO: pass more than content? Meta? Headers?
     // TODO: Use a react contextprovider instead of "manually" passing everything down
 }
 
-const BaseComponent = ({component, content}: BaseComponentProps) => {
+const BaseComponent = ({component, meta, content}: BaseComponentProps) => {
     const {type, data} = component;
     const divAttrs: { [key: string]: string } = {
         [PORTAL_COMPONENT_ATTRIBUTE]: type
@@ -28,6 +28,7 @@ const BaseComponent = ({component, content}: BaseComponentProps) => {
     const cmpAttrs: { [key: string]: any } = {
         component: component[type],
         data,
+        meta,
         content,
     };
 
@@ -36,10 +37,15 @@ const BaseComponent = ({component, content}: BaseComponentProps) => {
         cmpAttrs.regions = component.regions;
     }
 
-    return (
-        <div {...divAttrs}>
-            <ComponentView {...cmpAttrs}/>
-        </div>
-    )
+    if (meta.renderMode === XP_RENDER_MODE.LIVE) {
+        // do not make component wrappers in live mode
+        return <ComponentView {...cmpAttrs}/>
+    } else {
+        return (
+            <div {...divAttrs}>
+                <ComponentView {...cmpAttrs}/>
+            </div>
+        )
+    }
 }
 export default BaseComponent;

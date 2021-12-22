@@ -24,10 +24,10 @@ const BaseContent = (props: FetchContentResult) => {
     if (SelectedPageView) {
         // there is a view defined for this type
         // component attr is used by FragmentView
-        return <SelectedPageView content={content} page={page} component={page?.regions}/>
+        return <SelectedPageView content={content} page={page} component={page?.regions} meta={meta}/>
     } else if (meta.canRender) {
         // there is a page controller
-        return <RegionsView content={content} regions={page?.regions}/>
+        return <RegionsView content={content} regions={page?.regions} meta={meta}/>
     }
 
     console.log(`BaseContent: can not render ${meta.type} at ${meta.path}: no next view or page controller defined`);
