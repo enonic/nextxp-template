@@ -1,7 +1,6 @@
 import {XP_COMPONENT_TYPE, XP_RENDER_MODE, XP_REQUEST_TYPE} from "../../xpAdapter/enonic-connection-config";
 
-export const PAGE_FRAGMENT = `
-      components {
+const COMPONENTS_QUERY = `
         type
         path
         page {
@@ -29,6 +28,20 @@ export const PAGE_FRAGMENT = `
             imageUrl (type:absolute, scale: "width-768")
           }
         }
+`
+
+// THIS QUERY DOES NOT SUPPORT NESTED FRAGMENTS
+export const PAGE_FRAGMENT = `
+      components(resolveFragment: false, resolveTemplate: true) {
+        fragment {
+          id
+          fragment {
+            components {
+              ${COMPONENTS_QUERY}
+            }
+          }
+        }
+        ${COMPONENTS_QUERY}
       }`;
 
 export function getMetaQuery(pageFragment?: string): string {
@@ -36,7 +49,6 @@ export function getMetaQuery(pageFragment?: string): string {
               guillotine {
                 get(key:$path) {
                   type
-                  pageAsJson
                   ${pageFragment || ''}
                 }
               }
@@ -48,7 +60,7 @@ export interface PageComponent {
     path: string;
     part?: PartData;
     layout?: LayoutData;
-    fragment?: any;
+    fragment?: FragmentData;
     text?: any;
     image?: any;
     regions?: RegionTree;
@@ -78,6 +90,12 @@ export interface LayoutData {
 
 export interface PageData {
     regions?: RegionTree;
+}
+
+export interface FragmentData {
+    fragment: {
+        components: PageComponent[];
+    }
 }
 
 export interface MetaData {

@@ -15,6 +15,7 @@ import CenteredLayoutView, {CENTERED_LAYOUT_NAME} from './layouts/CenteredLayout
 import DefaultLayoutView from './layouts/_Layout';
 import PersonInfo, {PERSONINFO_PART_NAME, personInfoProcessor} from './parts/PersonInfo';
 import DefaultPartView from './parts/_Part';
+import FragmentView, {FRAGMENT_CONTENTTYPE_NAME} from '../xpAdapter/views/_Fragment';
 
 
 /*
@@ -38,6 +39,10 @@ TypesRegistry.addContentType(MOVIE_CONTENTTYPE_NAME, {
     view: MovieView,
 });
 
+TypesRegistry.addContentType(FRAGMENT_CONTENTTYPE_NAME, {
+    view: FragmentView,
+});
+
 /*
 *       Component Types
 * */
@@ -50,6 +55,10 @@ TypesRegistry.addComponent(XP_COMPONENT_TYPE.PART, {
 
 TypesRegistry.addComponent(XP_COMPONENT_TYPE.LAYOUT, {
     view: BaseLayout
+});
+
+TypesRegistry.addComponent(XP_COMPONENT_TYPE.FRAGMENT, {
+    view: FragmentView
 });
 
 TypesRegistry.addComponent(XP_COMPONENT_TYPE.IMAGE, {

@@ -47,6 +47,7 @@ export const PORTAL_REGION_ATTRIBUTE = "data-portal-region";
 export enum XP_REQUEST_TYPE {
     COMPONENT = "component",
     TYPE = "type",
+    PAGE = "page",
 }
 
 export enum XP_RENDER_MODE {
