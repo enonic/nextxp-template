@@ -1,4 +1,4 @@
-import {XP_COMPONENT_TYPE, XP_RENDER_MODE, XP_REQUEST_TYPE} from "../../xpAdapter/enonic-connection-config";
+import {XP_COMPONENT_TYPE, XP_RENDER_MODE, XP_REQUEST_TYPE} from "../enonic-connection-config";
 
 const COMPONENTS_QUERY = `
         type

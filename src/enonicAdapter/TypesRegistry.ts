@@ -10,7 +10,7 @@ import {Context} from "../pages/[[...contentPath]]";
 export interface TypeDefinition {
     query?: SelectedQueryMaybeVariablesFunc,
     props?: DataProcessor,
-    view?: ReactView
+    view?: React.FunctionComponent<any>
 }
 
 type SelectorName = "content" | "component" | "part" | "layout";

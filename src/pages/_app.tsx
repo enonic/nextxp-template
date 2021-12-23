@@ -6,7 +6,7 @@ import '../styles/globals.css'
 import React from 'react';
 import Head from "next/head";
 import Layout from "../components/blocks/Layout";
-import {XP_REQUEST_TYPE} from '../xpAdapter/enonic-connection-config';
+import {XP_REQUEST_TYPE} from '../enonicAdapter/enonic-connection-config';
 
 
 /**

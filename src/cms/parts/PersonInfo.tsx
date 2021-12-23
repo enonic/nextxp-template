@@ -1,5 +1,5 @@
 import React from "react"
-import {APP_NAME} from "../../xpAdapter/enonic-connection-config";
+import {APP_NAME} from "../../enonicAdapter/enonic-connection-config";
 import {PartProps} from './_Part';
 import {Context} from '../../pages/[[...contentPath]]';
 

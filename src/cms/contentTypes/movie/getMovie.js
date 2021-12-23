@@ -1,4 +1,4 @@
-import {APP_NAME, APP_NAME_UNDERSCORED} from '../../../xpAdapter/enonic-connection-config'
+import {APP_NAME, APP_NAME_UNDERSCORED} from '../../../enonicAdapter/enonic-connection-config'
 
 const getMovie = `
 query($path:ID!){

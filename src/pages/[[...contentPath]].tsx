@@ -1,11 +1,13 @@
 import React from 'react';
 
-import {fetchContent, FetchContentResult} from "../xpAdapter/guillotine/fetchContent";
+import {fetchContent, FetchContentResult} from "../enonicAdapter/guillotine/fetchContent";
 
-import MainXpView from "../xpAdapter/views/_MainXpView";
-import {getPublicAssetUrl} from "../xpAdapter/enonic-connection-config";
+import MainView from "../enonicAdapter/views/_MainView";
+import {getPublicAssetUrl} from "../enonicAdapter/enonic-connection-config";
 import {GetServerSideProps, GetServerSidePropsContext, GetServerSidePropsResult} from 'next';
 import {ParsedUrlQuery} from 'node:querystring';
+
+// Register custom component types
 import "../cms/typesRegistration";
 
 export interface ServerSideParams
@@ -50,4 +52,4 @@ export const getServerSideProps: GetServerSideProps = async (context: Context): 
     }
 };
 
-export default MainXpView;
+export default MainView;

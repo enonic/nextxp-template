@@ -1,5 +1,5 @@
 import React from "react"
-import {LayoutData, MetaData, RegionTree} from "../../cms/queries/_getMetaData";
+import {LayoutData, MetaData, RegionTree} from "../guillotine/_getMetaData";
 import {TypesRegistry} from '../TypesRegistry';
 
 

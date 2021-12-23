@@ -2,7 +2,7 @@ import React from "react"
 import {PORTAL_REGION_ATTRIBUTE, XP_RENDER_MODE} from '../enonic-connection-config';
 
 import BaseComponent from "./_BaseComponent";
-import {MetaData, PageComponent, PageData} from "../../cms/queries/_getMetaData";
+import {MetaData, PageComponent, PageData} from "../guillotine/_getMetaData";
 
 export interface RegionProps {
     name: string;
