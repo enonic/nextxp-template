@@ -15,7 +15,7 @@ const SingleComponent = ({page, meta, content}: FetchContentResult) => {
         // TODO: Fallback for when target region or component is not found (render a placeholder? Throw a 404, "component path not found"?)
     }
 
-    return <BaseComponent component={targetCompData!} content={content} />;
+    return <BaseComponent component={targetCompData!} content={content} meta={meta}/>;
 }
 
 export default SingleComponent;

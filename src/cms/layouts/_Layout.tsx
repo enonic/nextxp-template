@@ -2,7 +2,7 @@ import React from "react";
 
 import {IS_DEV_MODE} from "../../xpAdapter/enonic-connection-config";
 
-import {RegionTree} from "../queries/_getMetaData";
+import {MetaData, RegionTree} from "../queries/_getMetaData";
 import DataDump from "../../xpAdapter/views/DataDump";
 import Empty from "../../xpAdapter/views/Empty";
 
@@ -12,6 +12,7 @@ export interface LayoutProps {
         regions: RegionTree;
     };
     content: any;
+    meta: MetaData;
 }
 
 const DefaultLayoutViewDev = ({layout}: LayoutProps) => (
