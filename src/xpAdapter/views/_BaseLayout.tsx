@@ -19,8 +19,9 @@ const BaseLayout = (props: BaseLayoutProps) => {
     }
     const SelectedLayoutView = layoutSelection?.view;
     if (SelectedLayoutView) {
-        return <SelectedLayoutView layout={{descriptor: component?.descriptor, regions}}
-                                   content={content} meta={meta}/>;
+        return <SelectedLayoutView layout={{descriptor: component?.descriptor, regions: regions || {}}}
+                                   content={content}
+                                   meta={meta}/>;
     } else {
         console.log(`BaseLayout: can not render layout '${component?.descriptor}': no next view or catch-all defined`);
         return null;

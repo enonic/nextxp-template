@@ -42,6 +42,12 @@ const XP_RENDER_MODE_HEADER = 'content-studio-mode';
 export const PORTAL_COMPONENT_ATTRIBUTE = "data-portal-component-type";
 export const PORTAL_REGION_ATTRIBUTE = "data-portal-region";
 
+export const FRAGMENT_CONTENTTYPE_NAME = 'portal:fragment';
+export const FRAGMENT_DEFAULT_REGION_NAME = 'fragment';
+
+export const PAGE_TEMPLATE_CONTENTTYPE_NAME = 'portal:page-template';
+
+
 // ------------------------------- Exports and auxillary functions derived from values above ------------------------------------
 
 export enum XP_REQUEST_TYPE {

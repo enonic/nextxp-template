@@ -103,7 +103,6 @@ export interface MetaData {
     path: string,
     requestType: XP_REQUEST_TYPE,
     renderMode: XP_RENDER_MODE,
-    requestedComponent?: string
+    requestedComponent?: PageComponent,
     canRender?: boolean,
-    parentRegion?: PageRegion,
 }
