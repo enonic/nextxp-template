@@ -374,7 +374,7 @@ function buildRegionTree(contentType: string, comps: PageComponent[] = []): Regi
         }
     });
 
-    console.info("Regions with components: " + JSON.stringify(tree, null, 2));
+    // console.info("Regions with components: " + JSON.stringify(tree, null, 2));
 
     return tree;
 }
