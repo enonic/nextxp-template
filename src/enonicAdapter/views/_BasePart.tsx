@@ -1,6 +1,6 @@
 import React from "react"
 
-import {MetaData, PartData} from "../../cms/queries/_getMetaData";
+import {MetaData, PartData} from "../guillotine/_getMetaData";
 import {TypesRegistry} from '../TypesRegistry';
 
 

@@ -1,6 +1,6 @@
 import React from "react"
-import {RegionView} from '../../xpAdapter/views/_Region';
-import {APP_NAME} from '../../xpAdapter/enonic-connection-config';
+import {RegionView} from '../../enonicAdapter/views/_Region';
+import {APP_NAME} from '../../enonicAdapter/enonic-connection-config';
 import {LayoutProps} from './_Layout';
 
 export const THREE_COL_LAYOUT_NAME = `${APP_NAME}:layout-3-col`;

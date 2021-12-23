@@ -10,7 +10,7 @@ import {Context} from "../pages/[[...contentPath]]";
 export interface TypeDefinition {
     query?: SelectedQueryMaybeVariablesFunc,
     props?: DataProcessor,
-    view?: ReactView
+    view?: React.FunctionComponent<any>
 }
 
 type SelectorName = "content" | "component" | "part" | "layout";
@@ -73,6 +73,8 @@ export class TypesRegistry {
     }
 
     private static addType(selectorName: SelectorName, name: string, obj: TypeDefinition): void {
+        console.log(`Adding ${selectorName} type: ${name}`);
+        console.log(JSON.stringify(obj, null, 2));
         const selector = TypesRegistry.getSelector(selectorName);
         selector[name] = obj;
     }

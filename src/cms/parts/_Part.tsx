@@ -1,8 +1,8 @@
 import React from "react";
 
-import {IS_DEV_MODE} from "../../xpAdapter/enonic-connection-config";
-import DataDump from "../../xpAdapter/views/DataDump";
-import Empty from "../../xpAdapter/views/Empty";
+import {IS_DEV_MODE} from "../../enonicAdapter/enonic-connection-config";
+import DataDump from "../../enonicAdapter/views/DataDump";
+import Empty from "../../enonicAdapter/views/Empty";
 
 export interface PartProps {
     part: {

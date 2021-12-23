@@ -1,10 +1,10 @@
 import React from "react";
 
-import {IS_DEV_MODE} from "../../xpAdapter/enonic-connection-config";
+import {IS_DEV_MODE} from "../../enonicAdapter/enonic-connection-config";
 
-import {MetaData, RegionTree} from "../queries/_getMetaData";
-import DataDump from "../../xpAdapter/views/DataDump";
-import Empty from "../../xpAdapter/views/Empty";
+import {MetaData, RegionTree} from "../../enonicAdapter/guillotine/_getMetaData";
+import DataDump from "../../enonicAdapter/views/DataDump";
+import Empty from "../../enonicAdapter/views/Empty";
 
 export interface LayoutProps {
     layout: {

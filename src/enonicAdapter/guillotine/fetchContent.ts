@@ -1,4 +1,4 @@
-import {getMetaQuery, MetaData, PAGE_FRAGMENT, PageComponent, PageData, PageRegion, RegionTree} from "../../cms/queries/_getMetaData";
+import {getMetaQuery, MetaData, PAGE_FRAGMENT, PageComponent, PageData, PageRegion, RegionTree} from "./_getMetaData";
 
 import {Context} from "../../pages/[[...contentPath]]";
 
@@ -11,8 +11,7 @@ import enonicConnectionConfig, {
     XP_REQUEST_TYPE,
 } from "../enonic-connection-config";
 import {SelectedQueryMaybeVariablesFunc, TypeDefinition, TypesRegistry} from '../TypesRegistry';
-import {defaultVariables, LOW_PERFORMING_DEFAULT_QUERY} from '../../cms/queries/_getDefaultData';
-
+import {defaultVariables, LOW_PERFORMING_DEFAULT_QUERY} from './_getDefaultData';
 
 export type EnonicConnectionConfig = {
     APP_NAME: string,
@@ -375,7 +374,7 @@ function buildRegionTree(contentType: string, comps: PageComponent[] = []): Regi
         }
     });
 
-    // console.info("Regions with components: " + JSON.stringify(tree, null, 2));
+    console.info("Regions with components: " + JSON.stringify(tree, null, 2));
 
     return tree;
 }
@@ -427,10 +426,6 @@ function combineMultipleQueries(queriesWithVars: ComponentDescriptor[]): QueryAn
     const superQuery = `query ${superParams.length ? `(${superParams.join(', ')})` : ''} {
         ${queries.join('\n')}
     }`;
-
-    // console.info('Combined query:');
-    // console.info(superQuery);
-    // console.info(JSON.stringify(superVars, null, 2));
 
     return {
         query: superQuery,
