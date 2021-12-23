@@ -2,10 +2,16 @@ import {getMetaQuery, MetaData, PAGE_FRAGMENT, PageComponent, PageData, PageRegi
 
 import {Context} from "../../pages/[[...contentPath]]";
 
-import enonicConnectionConfig, {XP_COMPONENT_TYPE, XP_RENDER_MODE, XP_REQUEST_TYPE,} from "../enonic-connection-config";
+import enonicConnectionConfig, {
+    FRAGMENT_CONTENTTYPE_NAME,
+    FRAGMENT_DEFAULT_REGION_NAME,
+    PAGE_TEMPLATE_CONTENTTYPE_NAME,
+    XP_COMPONENT_TYPE,
+    XP_RENDER_MODE,
+    XP_REQUEST_TYPE,
+} from "../enonic-connection-config";
 import {SelectedQueryMaybeVariablesFunc, TypeDefinition, TypesRegistry} from '../TypesRegistry';
 import {defaultVariables, LOW_PERFORMING_DEFAULT_QUERY} from '../../cms/queries/_getDefaultData';
-import {FRAGMENT_CONTENTTYPE_NAME, FRAGMENT_DEFAULT_REGION_NAME} from '../views/_Fragment';
 
 
 export type EnonicConnectionConfig = {
@@ -48,8 +54,8 @@ interface ComponentDescriptor {
 }
 
 export type FetchContentResult = Result & {
-    content: Record<string, any>,
-    meta: MetaData,
+    content: Record<string, any> | null,
+    meta: MetaData | null,
     page: PageData | null,
 };
 
@@ -147,10 +153,9 @@ const fetchGuillotine = async (
     xpContentPath: string,
 ): Promise<GuillotineResult> => {
     if (typeof body.query !== 'string' || !body.query.trim()) {
-        // @ts-ignore
-        return await {
+        return {
             error: {
-                code: 400,
+                code: '400',
                 message: `Invalid or missing query. JSON.stringify(query) = ${JSON.stringify(body.query)}`
             }
         };
@@ -174,10 +179,9 @@ const fetchGuillotine = async (
                 console.warn(`Query:\n${body.query}`);
                 console.warn(`Variables: ${JSON.stringify(body.variables, null, 2)}`);
 
-                // @ts-ignore
                 return {
                     error: {
-                        code: 500,
+                        code: '500',
                         message: `Server responded with ${errors.length} error(s), probably from guillotine - see log.`
                     }
                 };
@@ -276,23 +280,32 @@ const getCleanContentPathArrayOrThrow400 = (contentPath: string | string[] | und
 
 type PathFragment = { region: string, index: number };
 
-function parseComponentPath(path: string): PathFragment[] {
+function parseComponentPath(contentType: string, path: string): PathFragment[] {
     const matches: PathFragment[] = [];
     let match;
-    let myRegexp = /(?:(\w+)\/(\d+))+/g;
+    const myRegexp = /(?:(\w+)\/(\d+))+/g;
     while ((match = myRegexp.exec(path)) !== null) {
         matches.push({
             region: match[1],
             index: +match[2],
         })
     }
+    if (contentType === FRAGMENT_CONTENTTYPE_NAME) {
+        // there are no main region in fragment content
+        // and the root component has '/' path
+        // adding '' since we omit '/'
+        matches.unshift({
+            region: '',
+            index: -1
+        });
+    }
     return matches;
 }
 
-function getParentRegion(source: RegionTree, cmpPath: string, components: PageComponent[] = [],
+function getParentRegion(source: RegionTree, contentType: string, cmpPath: string, components: PageComponent[] = [],
                          createMissing?: boolean): PageRegion | undefined {
 
-    const path = parseComponentPath(cmpPath);
+    const path = parseComponentPath(contentType, cmpPath);
 
     let currentTree: RegionTree = source;
     let currentRegion: PageRegion | undefined;
@@ -301,7 +314,8 @@ function getParentRegion(source: RegionTree, cmpPath: string, components: PageCo
     for (let i = 0; i < path.length; i++) {
         const pathFragment = path[i];
         const regionName = pathFragment.region;
-        parentPath += `/${pathFragment.region}/${pathFragment.index}`;
+        // with fragments, there may be no index because there is no main region
+        parentPath += pathFragment.index >= 0 ? `/${pathFragment.region}/${pathFragment.index}` : '/';
         currentRegion = currentTree[regionName];
 
         if (!currentRegion) {
@@ -340,8 +354,8 @@ function buildRegionTree(contentType: string, comps: PageComponent[] = []): Regi
         let region;
         if (cmp.path === '/' && contentType === FRAGMENT_CONTENTTYPE_NAME) {
             // this is a fragment
-            // it does not need a region, but we need one in order to pass it as a page
-            // so create a 'default' region that fragment view will handle appropriately
+            // it does not have a region, but we need one in order to pass it as a page
+            // so create a FRAGMENT_DEFAULT_REGION_NAME region that fragment view will handle appropriately
             region = tree[FRAGMENT_DEFAULT_REGION_NAME];
             if (!region) {
                 region = {
@@ -351,7 +365,7 @@ function buildRegionTree(contentType: string, comps: PageComponent[] = []): Regi
                 tree[FRAGMENT_DEFAULT_REGION_NAME] = region;
             }
         } else {
-            region = getParentRegion(tree, cmp.path, comps, true);
+            region = getParentRegion(tree, contentType, cmp.path, comps, true);
         }
 
         if (region) {
@@ -550,7 +564,7 @@ function createPageData(contentType: string, components?: PageComponent[]): Page
 
 function createMetaData(contentType: string, contentPath: string, requestType: XP_REQUEST_TYPE, renderMode: XP_RENDER_MODE,
                         requestedComponentPath: string | undefined,
-                        pageData?: PageData): MetaData {
+                        pageData?: PageData, components: PageComponent[] = []): MetaData {
     // .meta will be visible in final rendered inline props.
     // Only adding some .meta attributes here on certain conditions
     // (instead of always adding them and letting them be visible as false/undefined etc)
@@ -564,16 +578,25 @@ function createMetaData(contentType: string, contentPath: string, requestType: X
     const regions = pageData?.regions;
 
     if (requestedComponentPath) {
-        meta!.requestedComponent = requestedComponentPath;
-        if (regions) {
-            meta!.parentRegion = getParentRegion(regions, requestedComponentPath);
-        }
+        meta.requestedComponent = components.find(cmp => cmp.path === requestedComponentPath);
     }
 
     const hasController = regions && Object.keys(regions).length > 0;
     meta.canRender = hasController || !!TypesRegistry.getContentType(contentType)?.view
 
     return meta;
+}
+
+function errorResponse(code: string = '500', message: string = 'Unknown error'): FetchContentResult {
+    return {
+        error: {
+            code,
+            message,
+        },
+        page: null,
+        content: null,
+        meta: null,
+    };
 }
 
 ///////////////////////////////  ENTRY 1 - THE BUILDER:
@@ -598,13 +621,13 @@ export const buildContentFetcher = <T extends EnonicConnectionConfig>(config: Fe
     } = config;
 
     return async (
-        contentPath: string | string[],
+        contentPathOrArray: string | string[],
         context?: Context
     ): Promise<FetchContentResult> => {
 
         try {
-            const siteRelativeContentPath = getCleanContentPathArrayOrThrow400(contentPath);
-            const xpContentPath = getXpPath(siteRelativeContentPath);
+            const siteRelativeContentPath = getCleanContentPathArrayOrThrow400(contentPathOrArray);
+            const contentPath = getXpPath(siteRelativeContentPath);
 
             const requestType = getXPRequestType(context);
             const renderMode = getRenderMode(context);
@@ -614,26 +637,20 @@ export const buildContentFetcher = <T extends EnonicConnectionConfig>(config: Fe
             }
 
             ///////////////  FIRST GUILLOTINE CALL FOR METADATA     /////////////////
-            const metaResult = await fetchMetaData(CONTENT_API_URL, xpContentPath);
+            const metaResult = await fetchMetaData(CONTENT_API_URL, contentPath);
             /////////////////////////////////////////////////////////////////////////
 
             if (metaResult.error) {
-                // @ts-ignore
-                return {
-                    error: metaResult.error
-                };
+                return errorResponse(metaResult.error.code, metaResult.error.message);
             }
 
             const {type, components} = metaResult.meta || {};
 
             if (!type) {
-                // @ts-ignore
-                return {
-                    error: {
-                        code: '500',
-                        message: "Server responded with incomplete meta data: missing content 'type' attribute."
-                    }
-                }
+                return errorResponse('500', "Server responded with incomplete meta data: missing content 'type' attribute.")
+
+            } else if (renderMode === XP_RENDER_MODE.LIVE && (type === FRAGMENT_CONTENTTYPE_NAME || PAGE_TEMPLATE_CONTENTTYPE_NAME)) {
+                return errorResponse('404', `Content type [${type}] is not accessible in ${renderMode} mode`);
             }
 
 
@@ -643,11 +660,11 @@ export const buildContentFetcher = <T extends EnonicConnectionConfig>(config: Fe
 
             // Add the content type query at all cases
             const contentTypeDef = typesRegistry?.getContentType(type);
-            let contentQueryAndVars = getQueryAndVariables(type, xpContentPath, contentTypeDef?.query, context);
+            let contentQueryAndVars = getQueryAndVariables(type, contentPath, contentTypeDef?.query, context);
             if (!contentQueryAndVars) {
                 contentQueryAndVars = {
                     query: LOW_PERFORMING_DEFAULT_QUERY,
-                    variables: defaultVariables(xpContentPath),
+                    variables: defaultVariables(contentPath),
                 }
             }
             componentDescriptors.push({
@@ -657,7 +674,7 @@ export const buildContentFetcher = <T extends EnonicConnectionConfig>(config: Fe
 
             if (components?.length && typesRegistry) {
                 // Collect part queries if defined
-                const partDescriptors = collectPartDescriptors(components, typesRegistry, requestedComponentPath, xpContentPath, context);
+                const partDescriptors = collectPartDescriptors(components, typesRegistry, requestedComponentPath, contentPath, context);
                 if (partDescriptors.length) {
                     //TODO: can be moved to part-wide propsProcessor when ready
                     processPartConfigs(APP_NAME_DASHED, partDescriptors);
@@ -669,17 +686,11 @@ export const buildContentFetcher = <T extends EnonicConnectionConfig>(config: Fe
             const {query, variables} = combineMultipleQueries(componentDescriptors);
 
             if (!query.trim()) {
-                // @ts-ignore
-                return {
-                    error: {
-                        code: '400',
-                        message: `Missing or empty query override for content type ${JSON.stringify(type)}`
-                    }
-                }
+                return errorResponse('400', `Missing or empty query override for content type ${type}`)
             }
 
             /////////////////    SECOND GUILLOTINE CALL FOR DATA   //////////////////////
-            const contentResults = await fetchContentData(CONTENT_API_URL, xpContentPath, query, variables);
+            const contentResults = await fetchContentData(CONTENT_API_URL, contentPath, query, variables);
             /////////////////////////////////////////////////////////////////////////////
 
             // Apply processors to every component
@@ -694,7 +705,7 @@ export const buildContentFetcher = <T extends EnonicConnectionConfig>(config: Fe
             }
 
             const page = createPageData(type, components);
-            const meta = createMetaData(type, siteRelativeContentPath, requestType, renderMode, requestedComponentPath, page);
+            const meta = createMetaData(type, siteRelativeContentPath, requestType, renderMode, requestedComponentPath, page, components);
 
             return {
                 content,
@@ -716,8 +727,7 @@ export const buildContentFetcher = <T extends EnonicConnectionConfig>(config: Fe
                     message: e.message
                 }
             }
-            // @ts-ignore
-            return {error};
+            return errorResponse(error.code, error.message);
         }
     };
 };

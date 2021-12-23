@@ -10,23 +10,21 @@ import BaseContent from "./_BaseContent";
 import {XP_REQUEST_TYPE} from '../enonic-connection-config';
 
 
-const errorPageSelector = {
+const errorPageSelector: { [key: string]: (props?: any) => JSX.Element } = {
     '404': Custom404,
-    '500': Custom500
+    '500': Custom500,
 }
 
 
-
 const _MainXpView = (props: FetchContentResult) => {
-    const { meta, error} = props;
+    const {meta, error} = props;
     if (error) {
-        // @ts-ignore
         const ErrorPage = errorPageSelector[error.code] || CustomError;
         return <ErrorPage {...error}/>;
     }
 
     // Single-component render:
-    if (meta.requestType === XP_REQUEST_TYPE.COMPONENT) {
+    if (meta?.requestType === XP_REQUEST_TYPE.COMPONENT) {
         return <SingleComponent {...props} />
     }
 

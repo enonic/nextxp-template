@@ -2,7 +2,7 @@ import React from "react"
 import {PORTAL_REGION_ATTRIBUTE, XP_RENDER_MODE} from '../enonic-connection-config';
 
 import BaseComponent from "./_BaseComponent";
-import {MetaData, PageComponent, RegionTree} from "../../cms/queries/_getMetaData";
+import {MetaData, PageComponent, PageData} from "../../cms/queries/_getMetaData";
 
 export interface RegionProps {
     name: string;
@@ -13,7 +13,7 @@ export interface RegionProps {
 }
 
 export interface RegionsProps {
-    regions?: RegionTree;
+    page: PageData | null;
     name?: string;
     content?: any;                  // Content is passed down for optional consumption in componentviews. TODO: Use a react contextprovider instead?
     meta: MetaData;
@@ -48,7 +48,8 @@ export const RegionView = (props: RegionProps) => {
 
 /** Multiple XP regions, or only one if named in props.selected */
 const RegionsView = (props: RegionsProps) => {
-    const {regions, name, meta, content} = props;
+    const {page, name, meta, content} = props;
+    const regions = page?.regions;
     if (!regions || !Object.keys(regions)) {
         return null;
     }

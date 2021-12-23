@@ -4,10 +4,9 @@ import ListView from "./contentTypes/list/List";
 import getMovie, {MOVIE_CONTENTTYPE_NAME} from "./contentTypes/movie/getMovie";
 import MovieView from "./contentTypes/movie/Movie";
 import {CATCH_ALL_NAME, TypesRegistry} from '../xpAdapter/TypesRegistry';
-import {XP_COMPONENT_TYPE} from '../xpAdapter/enonic-connection-config';
+import {FRAGMENT_CONTENTTYPE_NAME, XP_COMPONENT_TYPE} from '../xpAdapter/enonic-connection-config';
 import BasePart from '../xpAdapter/views/_BasePart';
 import BaseLayout from '../xpAdapter/views/_BaseLayout';
-import ImageView from './components/_Image';
 import TextView from './components/_Text';
 import PersonList, {PERSONLIST_PART_NAME, PERSONLIST_QUERY, personListProcessor} from './parts/PersonList';
 import ThreeColumnLayoutView, {THREE_COL_LAYOUT_NAME} from './layouts/ThreeColumnLayout';
@@ -15,7 +14,7 @@ import CenteredLayoutView, {CENTERED_LAYOUT_NAME} from './layouts/CenteredLayout
 import DefaultLayoutView from './layouts/_Layout';
 import PersonInfo, {PERSONINFO_PART_NAME, personInfoProcessor} from './parts/PersonInfo';
 import DefaultPartView from './parts/_Part';
-import FragmentView, {FRAGMENT_CONTENTTYPE_NAME} from '../xpAdapter/views/_Fragment';
+import FragmentView from '../xpAdapter/views/_Fragment';
 
 
 /*
@@ -59,10 +58,6 @@ TypesRegistry.addComponent(XP_COMPONENT_TYPE.LAYOUT, {
 
 TypesRegistry.addComponent(XP_COMPONENT_TYPE.FRAGMENT, {
     view: FragmentView
-});
-
-TypesRegistry.addComponent(XP_COMPONENT_TYPE.IMAGE, {
-    view: ImageView
 });
 
 TypesRegistry.addComponent(XP_COMPONENT_TYPE.TEXT, {
