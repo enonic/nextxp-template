@@ -290,12 +290,11 @@ function parseComponentPath(contentType: string, path: string): PathFragment[] {
         })
     }
     if (contentType === FRAGMENT_CONTENTTYPE_NAME) {
-        // there are no main region in fragment content
-        // and the root component has '/' path
-        // adding '' since we omit '/'
+        // there is no main region in fragment content and the root component has '/' path
+        // prepend FRAGMENT_DEFAULT_REGION_NAME to path to conform to page structure
         matches.unshift({
-            region: '',
-            index: -1
+            region: FRAGMENT_DEFAULT_REGION_NAME,
+            index: 0
         });
     }
     return matches;
@@ -313,8 +312,7 @@ function getParentRegion(source: RegionTree, contentType: string, cmpPath: strin
     for (let i = 0; i < path.length; i++) {
         const pathFragment = path[i];
         const regionName = pathFragment.region;
-        // with fragments, there may be no index because there is no main region
-        parentPath += pathFragment.index >= 0 ? `/${pathFragment.region}/${pathFragment.index}` : '/';
+        parentPath += `/${pathFragment.region}/${pathFragment.index}`;
         currentRegion = currentTree[regionName];
 
         if (!currentRegion) {
@@ -332,7 +330,9 @@ function getParentRegion(source: RegionTree, contentType: string, cmpPath: strin
         if (i < path.length - 1) {
             // look for layouts inside if this is not the last path fragment
 
-            const layout = components.find((cmp: PageComponent) => cmp.type === XP_COMPONENT_TYPE.LAYOUT && cmp.path === parentPath);
+            const layout = components.find((cmp: PageComponent) => {
+                return cmp.type === XP_COMPONENT_TYPE.LAYOUT && prefixLayoutPath(contentType, cmp.path) === parentPath;
+            });
             if (!layout) {
                 throw `Layout [${parentPath}] not found among components, but needed for component [${cmpPath}]`
             }
@@ -346,23 +346,30 @@ function getParentRegion(source: RegionTree, contentType: string, cmpPath: strin
     return currentRegion;
 }
 
-function buildRegionTree(contentType: string, comps: PageComponent[] = []): RegionTree {
+function prefixLayoutPath(contentType: string, path: string): string {
+    if (contentType !== FRAGMENT_CONTENTTYPE_NAME) {
+        return path;
+    } else {
+        // prepend FRAGMENT_DEFAULT_REGION_NAME to path to conform to page structure
+        // so that component with path '/' becomes /FRAGMENT_DEFAULT_REGION_NAME/0
+        // path /left/1 becomes /FRAGMENT_DEFAULT_REGION_NAME/0/left/1
+        return `/${FRAGMENT_DEFAULT_REGION_NAME}/0${path === '/' ? '' : path}`
+    }
+}
 
-    const tree: RegionTree = {};
+function buildPage(contentType: string, comps: PageComponent[] = []): PageData {
+
+    let page: PageData = {
+        regions: {}
+    };
+    const tree = page.regions!;
     comps.forEach(cmp => {
         let region;
-        if (cmp.path === '/' && contentType === FRAGMENT_CONTENTTYPE_NAME) {
-            // this is a fragment
-            // it does not have a region, but we need one in order to pass it as a page
-            // so create a FRAGMENT_DEFAULT_REGION_NAME region that fragment view will handle appropriately
-            region = tree[FRAGMENT_DEFAULT_REGION_NAME];
-            if (!region) {
-                region = {
-                    name: FRAGMENT_DEFAULT_REGION_NAME,
-                    components: []
-                }
-                tree[FRAGMENT_DEFAULT_REGION_NAME] = region;
-            }
+        if (cmp.path === '/' && cmp.type === XP_COMPONENT_TYPE.PAGE) {
+            // add page values to page object
+            page = Object.assign(page, cmp);
+            // skip adding it as component
+            return;
         } else {
             region = getParentRegion(tree, contentType, cmp.path, comps, true);
         }
@@ -374,9 +381,9 @@ function buildRegionTree(contentType: string, comps: PageComponent[] = []): Regi
         }
     });
 
-    // console.info("Regions with components: " + JSON.stringify(tree, null, 2));
+    // console.info("Page with components: " + JSON.stringify(page, null, 2));
 
-    return tree;
+    return page;
 }
 
 
@@ -548,9 +555,7 @@ function getQueryAndVariables(type: string,
 function createPageData(contentType: string, components?: PageComponent[]): PageData | undefined {
     let page;
     if (components) {
-        page = {
-            regions: buildRegionTree(contentType, components)
-        }
+        page = buildPage(contentType, components);
     }
 
     return page as PageData;
