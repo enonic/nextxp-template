@@ -9,7 +9,6 @@ export type BaseComponentProps = {
     component: PageComponent;
     meta: MetaData;
     content?: any;                  // Content is passed down for optional consumption in componentviews.
-    // TODO: pass more than content? Meta? Headers?
     // TODO: Use a react contextprovider instead of "manually" passing everything down
 }
 
@@ -19,8 +18,7 @@ const BaseComponent = ({component, meta, content}: BaseComponentProps) => {
         [PORTAL_COMPONENT_ATTRIBUTE]: type
     };
 
-    // @ts-ignore
-    const ComponentView: React = TypesRegistry.getComponent(type)?.view || (() => {
+    const ComponentView = TypesRegistry.getComponent(type)?.view || (() => {
         console.error(`Missing view for component type '${type}'`);
         return <></>;
     });

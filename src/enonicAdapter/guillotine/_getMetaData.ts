@@ -56,6 +56,7 @@ export function getMetaQuery(pageFragment?: string): string {
 }
 
 export interface PageComponent {
+    [key: string]: any; // keeps ts happy when accessing component data field by XP_COMPONENT_TYPE type
     type: XP_COMPONENT_TYPE;
     path: string;
     part?: PartData;

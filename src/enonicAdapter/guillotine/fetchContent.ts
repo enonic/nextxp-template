@@ -649,7 +649,10 @@ export const buildContentFetcher = <T extends EnonicConnectionConfig>(config: Fe
 
             const {type, components} = metaResult.meta || {};
 
-            if (!type) {
+            if (!metaResult.meta) {
+                return errorResponse('404', "No meta data found for content, most likely content does not exist")
+
+            } else if (!type) {
                 return errorResponse('500', "Server responded with incomplete meta data: missing content 'type' attribute.")
 
             } else if (renderMode === XP_RENDER_MODE.LIVE && (type === FRAGMENT_CONTENTTYPE_NAME || PAGE_TEMPLATE_CONTENTTYPE_NAME)) {
