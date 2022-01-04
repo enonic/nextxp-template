@@ -68,9 +68,9 @@ export enum XP_RENDER_MODE {
 export enum XP_COMPONENT_TYPE {
     PART = "part",
     LAYOUT = "layout",
-    IMAGE = "image",
     TEXT = "text",
     FRAGMENT = "fragment",
+    PAGE = "page",
 }
 
 /** Returns true if the context object (from next.js in [[...contentPath]].jsx ) stems from a request that comes from XP in a CS-preview, i.e. has the URI param FROM_XP_PARAM (defined as '__fromXp__' above).
