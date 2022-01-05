@@ -415,7 +415,10 @@ function combineMultipleQueries(queriesWithVars: ComponentDescriptor[]): QueryAn
                     const [prefixedKey, prefixedVal] = [`$${ALIAS_PREFIX}${index}_${originalKey.substr(1)}`, originalVal];
                     superParams.push(`${prefixedKey}:${prefixedVal}`);
                     // also update param references in query itself !
-                    query = query.replaceAll(originalKey, prefixedKey);
+                    // query = query.replaceAll(originalKey, prefixedKey);
+                    // replaceAll is not supported in older nodejs versions
+                    const origKeyPattern = new RegExp(originalKey.replace(/\$/g, "\\$"), "g");
+                    query = query.replace(origKeyPattern, prefixedKey);
                 });
             }
         }
