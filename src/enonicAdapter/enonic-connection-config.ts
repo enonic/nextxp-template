@@ -47,6 +47,8 @@ export const FRAGMENT_DEFAULT_REGION_NAME = 'fragment';
 
 export const PAGE_TEMPLATE_CONTENTTYPE_NAME = 'portal:page-template';
 
+export const SITE_CONTENTTYPE_NAME = 'portal:site';
+
 
 // ------------------------------- Exports and auxillary functions derived from values above ------------------------------------
 

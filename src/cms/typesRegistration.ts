@@ -10,14 +10,23 @@ import CenteredLayoutView, {CENTERED_LAYOUT_NAME} from './layouts/CenteredLayout
 import DefaultLayoutView from './layouts/_Layout';
 import PersonInfo, {PERSONINFO_PART_NAME, personInfoProcessor} from './parts/PersonInfo';
 import DefaultPartView from './parts/_Part';
+import DefaultView from './contentTypes/_DefaultView';
+import {SITE_CONTENTTYPE_NAME} from '../enonicAdapter/enonic-connection-config';
 
 
 // Do the required enonic types registration
+//TODO: move it somewhere safe
 import "../enonicAdapter/enonicTypesRegistration";
 
 /*
 *       Content Types
 */
+//TODO: default site view
+TypesRegistry.addContentType(SITE_CONTENTTYPE_NAME, {
+    view: DefaultView,
+});
+
+//TODO: move to comps files
 
 TypesRegistry.addContentType(LIST_CONTENTTYPE_NAME, {
     query: {query: getList, variables: getListVariables},         // or just:     query: [ getList, getListVariables ]
