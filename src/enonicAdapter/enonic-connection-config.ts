@@ -81,13 +81,14 @@ export const isRequestFromXP = (context?: Context): boolean => {
 
 export const getXPRequestType = (context?: Context): XP_REQUEST_TYPE => {
     const headerValue = (context?.req?.headers || {})[FROM_XP_PARAM] as string | undefined;
-    return XP_REQUEST_TYPE[<keyof typeof XP_REQUEST_TYPE>headerValue?.toUpperCase()];
+    const enumValue = XP_REQUEST_TYPE[<keyof typeof XP_REQUEST_TYPE>headerValue?.toUpperCase()];
+    return enumValue || XP_REQUEST_TYPE.PAGE;   // need to have some defaults here in case of rendering without XP
 }
 
 const getRenderMode = (context?: Context): XP_RENDER_MODE => {
     const value = (context?.req?.headers || {})[XP_RENDER_MODE_HEADER] as string | undefined;
     const enumValue = XP_RENDER_MODE[<keyof typeof XP_RENDER_MODE>value?.toUpperCase()];
-    return enumValue || XP_RENDER_MODE.PREVIEW;
+    return enumValue || XP_RENDER_MODE.PREVIEW;   // need to have some defaults here in case of rendering without XP
 };
 
 const getSingleComponentPath = (context?: Context): string | undefined => (
