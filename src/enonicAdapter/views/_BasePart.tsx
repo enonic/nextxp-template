@@ -21,7 +21,7 @@ const BasePart = (props: BasePartProps) => {
         console.warn(`BasePart: '${component?.descriptor}' error: ${error}`);
         return meta.renderMode === XP_RENDER_MODE.EDIT ?
                <ErrorPart reason={error} descriptor={component?.descriptor}/> :
-               Empty
+               <Empty/>;
     }
 
     let partSelection;
@@ -40,7 +40,7 @@ const BasePart = (props: BasePartProps) => {
     }
 }
 
-const ErrorPart = ({descriptor, reason}: { descriptor?: string, reason: string }) => {
+export const ErrorPart = ({descriptor, reason}: { descriptor?: string, reason: string }) => {
     return (
         <div style={{
             border: "2px solid red",

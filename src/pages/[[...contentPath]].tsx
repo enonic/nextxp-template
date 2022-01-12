@@ -28,9 +28,9 @@ export const getServerSideProps: GetServerSideProps = async (context: Context): 
         page = null,
     } = await fetchContent(context.params?.contentPath || [], context);
 
-    // return 501 if not able to render
+    // return 418 if not able to render
     if (meta && !meta.canRender) {
-        context.res.statusCode = 501;
+        context.res.statusCode = 418;
     }
 
     return {
