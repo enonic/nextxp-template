@@ -444,7 +444,7 @@ function combineMultipleQueries(queriesWithVars: ComponentDescriptor[]): QueryAn
 }
 
 async function applyProcessors(componentDescriptors: ComponentDescriptor[], contentResults: ContentResult,
-                               context?: Context): Promise<any[]> {
+                               context?: Context): Promise<PromiseSettledResult<any>[]> {
 
     let dataCounter = 0;
     const processorPromises = componentDescriptors.map(async (desc: ComponentDescriptor) => {
@@ -463,9 +463,7 @@ async function applyProcessors(componentDescriptors: ComponentDescriptor[], cont
         return await propsProcessor(data, context);
     });
 
-    const settleResult = await Promise.allSettled(processorPromises);
-
-    return settleResult.map(res => res.status === 'fulfilled' ? res.value : res);
+    return Promise.allSettled(processorPromises);
 }
 
 function collectPartDescriptors(components: PageComponent[],
@@ -707,7 +705,18 @@ export const buildContentFetcher = <T extends EnonicConnectionConfig>(config: Fe
             for (let i = 1; i < datas.length; i++) {
                 // component descriptors hold references to components
                 // that will later be used for creating page regions
-                componentDescriptors[i].component!.data = datas[i];
+                const datum = datas[i];
+                if (datum.status === 'rejected') {
+                    let reason = datum.reason;
+                    if (reason instanceof Error) {
+                        reason = reason.message
+                    } else if (typeof reason !== 'string') {
+                        reason = String(reason);
+                    }
+                    componentDescriptors[i].component!.error = reason;
+                } else {
+                    componentDescriptors[i].component!.data = datum.value;
+                }
             }
 
             const page = createPageData(type, components);

@@ -13,7 +13,7 @@ export type BaseComponentProps = {
 }
 
 const BaseComponent = ({component, meta, content}: BaseComponentProps) => {
-    const {type, data} = component;
+    const {type, data, error} = component;
     const divAttrs: { [key: string]: string } = {
         [PORTAL_COMPONENT_ATTRIBUTE]: type
     };
@@ -25,10 +25,17 @@ const BaseComponent = ({component, meta, content}: BaseComponentProps) => {
 
     const cmpAttrs: { [key: string]: any } = {
         component: component[type],
-        data,
         meta,
         content,
     };
+
+    if (data) {
+        cmpAttrs.data = data;
+    }
+
+    if (error) {
+        cmpAttrs.error = error;
+    }
 
     if (component.type === XP_COMPONENT_TYPE.LAYOUT) {
         // add regions to layout because they are not present in component[component.type] above
