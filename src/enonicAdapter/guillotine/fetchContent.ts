@@ -549,7 +549,7 @@ function getQueryAndVariables(type: string,
     if (query) {
         return {
             query,
-            variables: getVariables ? getVariables(path, context) : undefined,
+            variables: getVariables ? getVariables(path, context) : defaultVariables(path),
         }
     }
 }
