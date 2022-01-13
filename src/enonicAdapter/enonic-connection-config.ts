@@ -7,8 +7,6 @@ export const IS_DEV_MODE = (mode === 'development');
 
 
 /** Where is XP running */
-export const API_DOMAIN = (process.env.API_DOMAIN || process.env.NEXT_PUBLIC_API_DOMAIN) as string
-
 /** Which site this server communicates with: content item _name for the root site item */
 export const SITE = (process.env.SITE || process.env.NEXT_PUBLIC_SITE) as string
 
@@ -27,9 +25,6 @@ export const APP_NAME_DASHED = (APP_NAME || '').replace(/\./g, '-')
 
 /** The domain (full: with protocol and port if necessary) of this next.js server */
 export const NEXT_DOMAIN: string = (process.env.NEXT_DOMAIN || process.env.NEXT_PUBLIC_NEXT_DOMAIN) as string
-
-/** Where requests from XP CS previews (requesting next renderings) will come from */
-export const XP_PREVIEW_ORIGIN: string = (process.env.XP_PREVIEW_ORIGIN || process.env.NEXT_PUBLIC_XP_PREVIEW_ORIGIN) as string
 
 
 //////////////////////////////////////////////////////////////////////////  Hardcode-able constants
@@ -139,9 +134,6 @@ const enonicConnectionConfig = {
     IS_DEV_MODE,
 
     NEXT_DOMAIN,
-    XP_PREVIEW_ORIGIN,
-
-    API_DOMAIN,
     SITE,
     CONTENT_API_URL,
 
@@ -164,7 +156,7 @@ const enonicConnectionConfig = {
 };
 
 // Verify required values
-const NOT_REQUIRED = ['IS_DEV_MODE', 'XP_PREVIEW_ORIGIN'];
+const NOT_REQUIRED = ['IS_DEV_MODE'];
 Object.keys(enonicConnectionConfig).forEach(key => {
     // @ts-ignore
     if (NOT_REQUIRED.indexOf(key) === -1 && !enonicConnectionConfig[key]) {

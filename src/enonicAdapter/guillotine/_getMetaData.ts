@@ -66,6 +66,7 @@ export interface PageComponent {
     image?: any;
     regions?: RegionTree;
     data?: any;
+    error?: any;
 }
 
 export interface RegionTree {
