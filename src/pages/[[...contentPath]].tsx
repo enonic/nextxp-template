@@ -28,12 +28,19 @@ export const getServerSideProps: GetServerSideProps = async (context: Context): 
         page = null,
     } = await fetchContent(context.params?.contentPath || [], context);
 
+    // throw it to be handled by nextjs error page
+    if (error && error.code === '500') {
+        throw error
+    }
+
     // return 418 if not able to render
     if (meta && !meta.canRender) {
         context.res.statusCode = 418;
     }
 
     return {
+        // tells nextjs to render 404 page
+        notFound: (error && error.code === '404') || undefined,
         props: {
             content: {
                 ...content,
