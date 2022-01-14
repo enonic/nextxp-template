@@ -3,7 +3,7 @@ import React from "react";
 import {FetchContentResult} from "../guillotine/fetchContent";
 
 import {TypesRegistry} from '../TypesRegistry';
-import RegionsView from './_Region';
+import BasePage from './_BasePage';
 
 
 const BaseContent = (props: FetchContentResult) => {
@@ -20,17 +20,17 @@ const BaseContent = (props: FetchContentResult) => {
     }
 
     const typeDef = TypesRegistry.getContentType(meta.type);
-    const SelectedPageView = typeDef?.view;
+    const ContentTypeView = typeDef?.view;
 
-    if (SelectedPageView) {
+    if (ContentTypeView) {
         // there is a view defined for this type
-        return <SelectedPageView {...props}/>
+        return <ContentTypeView {...props}/>
     } else if (meta.canRender) {
-        // there is a page controller
-        return <RegionsView {...props} meta={meta!}/>
+        // can be rendered with a page
+        return <BasePage {...props}/>
     }
 
-    console.log(`BaseContent: can not render ${meta.type} at ${meta.path}: no next view or page controller defined`);
+    console.log(`BaseContent: can not render ${meta.type} at ${meta.path}: no content type or page view defined`);
     return null;
 }
 

@@ -59,6 +59,7 @@ export interface PageComponent {
     [key: string]: any; // keeps ts happy when accessing component data field by XP_COMPONENT_TYPE type
     type: XP_COMPONENT_TYPE;
     path: string;
+    page?: PageData;
     part?: PartData;
     layout?: LayoutData;
     fragment?: FragmentData;
@@ -91,6 +92,8 @@ export interface LayoutData {
 }
 
 export interface PageData {
+    descriptor: string;
+    template?: string | null;
     regions?: RegionTree;
 }
 

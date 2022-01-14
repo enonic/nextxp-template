@@ -360,6 +360,8 @@ function prefixLayoutPath(contentType: string, path: string): string {
 function buildPage(contentType: string, comps: PageComponent[] = []): PageData {
 
     let page: PageData = {
+        descriptor: '',
+        template: null,
         regions: {}
     };
     const tree = page.regions!;
@@ -367,7 +369,7 @@ function buildPage(contentType: string, comps: PageComponent[] = []): PageData {
         let region;
         if (cmp.path === '/' && cmp.type === XP_COMPONENT_TYPE.PAGE) {
             // add page values to page object
-            page = Object.assign(page, cmp);
+            page = Object.assign(page, cmp.page);
             // skip adding it as component
             return;
         } else {

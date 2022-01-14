@@ -13,13 +13,11 @@ export interface TypeDefinition {
     view?: React.FunctionComponent<any>
 }
 
-type SelectorName = "content" | "component" | "part" | "layout";
+type SelectorName = "contentType" | "page" | "component" | "part" | "layout";
 
 interface TypeDictionary {
     [type: string]: TypeDefinition;
 }
-
-export type ReactView = (props: any) => JSX.Element | null;
 
 //NB! Always return null or empty object from processor for next is unable to serialize undefined
 export type DataProcessor = (data: any, context?: Context) => Promise<Record<string, any>>;
@@ -42,15 +40,18 @@ export const CATCH_ALL_NAME = "*";
 
 export class TypesRegistry {
 
-    private static contents: TypeDictionary = {};
+    private static contentTypes: TypeDictionary = {};
+    private static pages: TypeDictionary = {};
     private static components: TypeDictionary = {};
     private static parts: TypeDictionary = {};
     private static layouts: TypeDictionary = {};
 
     private static getSelector(name: SelectorName): TypeDictionary {
         switch (name) {
-        case 'content':
-            return this.contents;
+        case 'contentType':
+            return this.contentTypes;
+        case 'page':
+            return this.pages;
         case 'component':
             return this.components;
         case 'layout':
@@ -78,11 +79,19 @@ export class TypesRegistry {
     }
 
     public static addContentType(name: string, obj: TypeDefinition): void {
-        return TypesRegistry.addType('content', name, obj);
+        return TypesRegistry.addType('contentType', name, obj);
     }
 
     public static getContentType(name: string): TypeDefinition | undefined {
-        return TypesRegistry.getType('content', name);
+        return TypesRegistry.getType('contentType', name);
+    }
+
+    public static addPage(name: string, obj: TypeDefinition): void {
+        return TypesRegistry.addType('page', name, obj);
+    }
+
+    public static getPage(name: string): TypeDefinition | undefined {
+        return TypesRegistry.getType('page', name);
     }
 
     public static addPart(name: string, obj: TypeDefinition): void {

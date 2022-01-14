@@ -12,6 +12,8 @@ import PersonInfo, {PERSONINFO_PART_NAME, personInfoProcessor} from './parts/Per
 import DefaultPartView from './parts/_Part';
 import DefaultView from './contentTypes/_DefaultView';
 import {SITE_CONTENTTYPE_NAME} from '../enonicAdapter/enonic-connection-config';
+import DefaultPageView from './pages/_Page';
+import DefaultPageViewImpl, {DEFAULT_PAGE_NAME} from './pages/Default';
 
 
 // Do the required enonic types registration
@@ -43,6 +45,18 @@ TypesRegistry.addContent(PERSON_CONTENTTYPE_NAME, {
 TypesRegistry.addContentType(MOVIE_CONTENTTYPE_NAME, {
     query: getMovie,
     view: MovieView,
+});
+
+/*
+*       Page Types
+*/
+TypesRegistry.addPage(DEFAULT_PAGE_NAME, {
+    view: DefaultPageViewImpl
+});
+
+
+TypesRegistry.addPage(CATCH_ALL_NAME, {
+    view: DefaultPageView
 });
 
 
