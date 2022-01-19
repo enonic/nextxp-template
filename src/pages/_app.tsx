@@ -19,8 +19,13 @@ function MyApp({Component, pageProps}: AppProps) {
     // Special case: in XP single-component rendering mode (used in edit mode when updating one targeted component without reloading the page),
     // only render the component surrounded by tags needed by post-processing in the proxy:
     // Same goes for empty output when there is no renderer or page controller defined for content type
-    if (pageProps.meta && (pageProps.meta.requestType === XP_REQUEST_TYPE.COMPONENT || !pageProps.meta.canRender)) {
-        return <details data-single-component-output="true"><Component {...pageProps} /></details>;
+    if (pageProps.meta) {
+        if (pageProps.meta.requestType === XP_REQUEST_TYPE.COMPONENT) {
+            return <details data-single-component-output="true"><Component {...pageProps} /></details>;
+        } else if (!pageProps.meta.canRender) {
+            // return empty page, status is set in [[...contentPath.tsx]]
+            return null;
+        }
     }
 
 

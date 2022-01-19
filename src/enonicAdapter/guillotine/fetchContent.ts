@@ -584,8 +584,12 @@ function createMetaData(contentType: string, contentPath: string, requestType: X
         meta.requestedComponent = components.find(cmp => cmp.path === requestedComponentPath);
     }
 
-    const hasController = regions && Object.keys(regions).length > 0;
-    meta.canRender = hasController || !!TypesRegistry.getContentType(contentType)?.view
+    const pageDesc = pageData?.descriptor;
+    const pageCustomized = regions && Object.keys(regions).length > 0;
+    const haveType = !!TypesRegistry.getContentType(contentType)?.view;
+    const havePage = !!pageDesc && !!TypesRegistry.getPage(pageDesc)?.view;
+
+    meta.canRender = haveType || pageCustomized && havePage;
 
     return meta;
 }
@@ -703,7 +707,7 @@ export const buildContentFetcher = <T extends EnonicConnectionConfig>(config: Fe
             const datas = await applyProcessors(componentDescriptors, contentResults, context);
 
             //  Unwind the data back to components
-            const content = datas[0];
+            const content = datas[0].status === 'fulfilled' ? datas[0].value : datas[0].reason;
             for (let i = 1; i < datas.length; i++) {
                 // component descriptors hold references to components
                 // that will later be used for creating page regions
