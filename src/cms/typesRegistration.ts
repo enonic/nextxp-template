@@ -1,6 +1,3 @@
-import getList, {getListVariables, LIST_CONTENTTYPE_NAME, processListPropsExample} from "./contentTypes/list/getList";
-import ListView from "./contentTypes/list/List";
-
 import getMovie, {MOVIE_CONTENTTYPE_NAME} from "./contentTypes/movie/getMovie";
 import MovieView from "./contentTypes/movie/Movie";
 import {CATCH_ALL_NAME, TypesRegistry} from '../enonicAdapter/TypesRegistry';
@@ -29,11 +26,11 @@ TypesRegistry.addContentType(SITE_CONTENTTYPE_NAME, {
 
 //TODO: move to comps files
 
-TypesRegistry.addContentType(LIST_CONTENTTYPE_NAME, {
+/*TypesRegistry.addContentType(LIST_CONTENTTYPE_NAME, {
     query: {query: getList, variables: getListVariables},         // or just:     query: [ getList, getListVariables ]
     props: processListPropsExample,
     view: ListView,
-});
+});*/
 /*
 TypesRegistry.addContent(PERSON_CONTENTTYPE_NAME, {
     query: getPerson,

@@ -585,11 +585,10 @@ function createMetaData(contentType: string, contentPath: string, requestType: X
     }
 
     const pageDesc = pageData?.descriptor;
-    const pageCustomized = regions && Object.keys(regions).length > 0;
     const haveType = !!TypesRegistry.getContentType(contentType)?.view;
     const havePage = !!pageDesc && !!TypesRegistry.getPage(pageDesc)?.view;
 
-    meta.canRender = haveType || pageCustomized && havePage;
+    meta.canRender = haveType || havePage;
 
     return meta;
 }

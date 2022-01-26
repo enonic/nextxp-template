@@ -3,7 +3,7 @@ import React from 'react';
 import {fetchContent, FetchContentResult} from "../enonicAdapter/guillotine/fetchContent";
 
 import MainView from "../enonicAdapter/views/_MainView";
-import {getPublicAssetUrl} from "../enonicAdapter/enonic-connection-config";
+import {getPublicAssetUrl, XP_RENDER_MODE} from "../enonicAdapter/enonic-connection-config";
 import {GetServerSideProps, GetServerSidePropsContext, GetServerSidePropsResult} from 'next';
 import {ParsedUrlQuery} from 'node:querystring';
 
@@ -34,7 +34,7 @@ export const getServerSideProps: GetServerSideProps = async (context: Context): 
     }
 
     // return 418 if not able to render
-    if (meta && !meta.canRender) {
+    if (meta && !meta.canRender && meta.renderMode != XP_RENDER_MODE.EDIT) {
         context.res.statusCode = 418;
     }
 
