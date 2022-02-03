@@ -1,13 +1,9 @@
 import type {AppProps} from 'next/app'
-
-
 import '../styles/globals.css'
-
 import React from 'react';
 import Head from "next/head";
 import Layout from "../components/blocks/Layout";
 import {XP_REQUEST_TYPE} from '../enonicAdapter/enonic-connection-config';
-
 
 /**
  * Wraps all rendered components
@@ -27,7 +23,6 @@ function MyApp({Component, pageProps}: AppProps) {
             return null;
         }
     }
-
 
     // MAIN RENDERING:
     return (
