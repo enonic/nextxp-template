@@ -1,14 +1,16 @@
 import React from 'react';
 
-import {fetchContent, FetchContentResult} from "../enonicAdapter/guillotine/fetchContent";
+import {fetchContent, FetchContentResult} from "../cmsAdapter/guillotine/fetchContent";
 
-import MainView from "../enonicAdapter/views/_MainView";
-import {getPublicAssetUrl, XP_RENDER_MODE} from "../enonicAdapter/enonic-connection-config";
+import MainView from "../cmsAdapter/views/_MainView";
+import {getPublicAssetUrl, XP_RENDER_MODE} from "../cmsAdapter/connection-config";
 import {GetServerSideProps, GetServerSidePropsContext, GetServerSidePropsResult} from 'next';
 import {ParsedUrlQuery} from 'node:querystring';
 
-// Register custom component types
-import "../cms/typesRegistration";
+// Register Standard Components
+import "../cmsAdapter/baseComponentRegistry";
+// Register Custom Components
+import "../componentMappings";
 
 export interface ServerSideParams
     extends ParsedUrlQuery {

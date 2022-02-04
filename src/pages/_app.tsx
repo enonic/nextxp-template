@@ -3,7 +3,7 @@ import '../styles/globals.css'
 import React from 'react';
 import Head from "next/head";
 import Layout from "../components/blocks/Layout";
-import {XP_REQUEST_TYPE} from '../enonicAdapter/enonic-connection-config';
+import {XP_REQUEST_TYPE} from '../cmsAdapter/connection-config';
 
 /**
  * Wraps all rendered components
@@ -12,9 +12,7 @@ import {XP_REQUEST_TYPE} from '../enonicAdapter/enonic-connection-config';
  */
 function MyApp({Component, pageProps}: AppProps) {
 
-    // Special case: in XP single-component rendering mode (used in edit mode when updating one targeted component without reloading the page),
-    // only render the component surrounded by tags needed by post-processing in the proxy:
-    // Same goes for empty output when there is no renderer or page controller defined for content type
+    // Supports component add/update (without full page refresh) when using Enonic's WYSIWYG editor
     if (pageProps.meta) {
         if (pageProps.meta.requestType === XP_REQUEST_TYPE.COMPONENT) {
             return <details data-single-component-output="true"><Component {...pageProps} /></details>;
@@ -32,7 +30,6 @@ function MyApp({Component, pageProps}: AppProps) {
                     <base href='/'/>
                 </Head>
             )}
-
             <Component {...pageProps} />
         </Layout>
     );
