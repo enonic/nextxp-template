@@ -1,4 +1,4 @@
-import {APP_NAME, APP_NAME_UNDERSCORED} from '../../../cmsAdapter/connection-config'
+import {APP_NAME_UNDERSCORED} from '../../../cmsAdapter/constants'
 
 export default `
 query($path:ID!){

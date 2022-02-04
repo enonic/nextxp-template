@@ -1,4 +1,4 @@
-import {APP_NAME} from './cmsAdapter/connection-config'
+import {APP_NAME} from './cmsAdapter/constants'
 import {CATCH_ALL, TypesRegistry} from './cmsAdapter/TypesRegistry';
 
 import DefaultView from './components/defaultView';
@@ -8,7 +8,7 @@ import Person from './components/contentTypes/person/Person';
 import MainPageView from './components/pages/Main';
 
 import ThreeColumnLayoutView from './components/layouts/ThreeColumnLayout';
-import CenteredLayoutView from './components/layouts/CenteredLayout';
+import CenteredLayoutView from './components/layouts/BoostLayout';
 import FallbackLayoutView from './components/parts/_Part';
 
 import PersonList, {PersonListQuery, personListProcessor} from './components/parts/person/PersonList';

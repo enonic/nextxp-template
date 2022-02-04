@@ -1,5 +1,5 @@
 import React from "react"
-import {PORTAL_REGION_ATTRIBUTE, XP_RENDER_MODE} from '../connection-config';
+import {PORTAL_REGION_ATTRIBUTE, XP_RENDER_MODE} from '../constants';
 
 import BaseComponent from "./_BaseComponent";
 import {MetaData, PageComponent, PageData} from "../guillotine/_getMetaData";
@@ -19,10 +19,7 @@ export interface RegionsProps {
     meta: MetaData;
 }
 
-
-// ------------------------------------------------------------
-
-/** One XP region */
+/** Single region */
 export const RegionView = (props: RegionProps) => {
     const {name, components, content, meta, className} = props;
     const regionAttrs: { [key: string]: string } = {
@@ -46,7 +43,7 @@ export const RegionView = (props: RegionProps) => {
 }
 
 
-/** Multiple XP regions, or only one if named in props.selected */
+/** Multiple regions, or only one if named in props.selected */
 const RegionsView = (props: RegionsProps) => {
     const {page, name, meta, content} = props;
     const regions = page?.regions;

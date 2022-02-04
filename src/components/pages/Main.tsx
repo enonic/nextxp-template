@@ -1,5 +1,5 @@
 import React from "react"
-import {APP_NAME} from '../../cmsAdapter/connection-config';
+import {APP_NAME} from '../../cmsAdapter/constants';
 import {PageProps} from './_Page';
 import RegionsView from '../../cmsAdapter/views/_Region';
 

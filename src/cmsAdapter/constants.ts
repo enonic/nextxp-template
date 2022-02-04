@@ -130,7 +130,7 @@ export const getPublicAssetUrl = (serverRelativeAssetPath: string, context: Cont
 
 // ---------------------------------------------------------------------------------------------------------------- Export
 
-const enonicConnectionConfig = {
+const adapterConstants = {
     IS_DEV_MODE,
 
     NEXT_DOMAIN,
@@ -157,11 +157,11 @@ const enonicConnectionConfig = {
 
 // Verify required values
 const NOT_REQUIRED = ['IS_DEV_MODE'];
-Object.keys(enonicConnectionConfig).forEach(key => {
+Object.keys(adapterConstants).forEach(key => {
     // @ts-ignore
-    if (NOT_REQUIRED.indexOf(key) === -1 && !enonicConnectionConfig[key]) {
-        throw Error(`enonic-connection-config.ts: Config value '${key}' is missing (from .env?)`);
+    if (NOT_REQUIRED.indexOf(key) === -1 && !adapterConstants[key]) {
+        throw Error(`constants.ts: Config value '${key}' is missing (from .env?)`);
     }
 })
 
-export default enonicConnectionConfig;
+export default adapterConstants;

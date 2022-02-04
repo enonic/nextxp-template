@@ -1,7 +1,7 @@
 import React from "react"
 import BaseComponent from './_BaseComponent';
 import {FragmentData, MetaData, PageComponent, PageData} from '../guillotine/_getMetaData';
-import {FRAGMENT_DEFAULT_REGION_NAME} from '../connection-config';
+import {FRAGMENT_DEFAULT_REGION_NAME} from '../constants';
 
 interface FragmentProps {
     page?: PageData;

@@ -1,6 +1,6 @@
 import React from "react";
 
-import {PORTAL_COMPONENT_ATTRIBUTE, XP_COMPONENT_TYPE, XP_RENDER_MODE} from "../connection-config";
+import {PORTAL_COMPONENT_ATTRIBUTE, XP_COMPONENT_TYPE, XP_RENDER_MODE} from "../constants";
 import {MetaData, PageComponent} from "../guillotine/_getMetaData";
 import {TypesRegistry} from '../TypesRegistry';
 

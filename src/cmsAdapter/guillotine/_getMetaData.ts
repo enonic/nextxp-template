@@ -1,4 +1,4 @@
-import {XP_COMPONENT_TYPE, XP_RENDER_MODE, XP_REQUEST_TYPE} from "../connection-config";
+import {XP_COMPONENT_TYPE, XP_RENDER_MODE, XP_REQUEST_TYPE} from "../constants";
 
 const COMPONENTS_QUERY = `
         type

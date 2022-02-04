@@ -3,7 +3,7 @@ import React from 'react';
 import {FetchContentResult} from "../guillotine/fetchContent";
 import SingleComponent from "./_SingleComponent";
 import BaseContent from "./_BaseContent";
-import {XP_REQUEST_TYPE} from '../connection-config';
+import {XP_REQUEST_TYPE} from '../constants';
 
 
 const _MainView = (props: FetchContentResult) => {

@@ -1,6 +1,6 @@
 import React from "react";
 
-import {IS_DEV_MODE} from "../../cmsAdapter/connection-config";
+import {IS_DEV_MODE} from "../../cmsAdapter/constants";
 
 import {MetaData, PageData} from "../../cmsAdapter/guillotine/_getMetaData";
 import DataDump from "../../cmsAdapter/views/DataDump";

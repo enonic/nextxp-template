@@ -1,5 +1,5 @@
 import Document, {DocumentContext, Head, Html, Main, NextScript} from 'next/document'
-import {PORTAL_COMPONENT_ATTRIBUTE} from '../cmsAdapter/connection-config';
+import {PORTAL_COMPONENT_ATTRIBUTE} from '../cmsAdapter/constants';
 
 class MyDocument
     extends Document {

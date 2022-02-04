@@ -3,12 +3,12 @@ import React from 'react';
 import {fetchContent, FetchContentResult} from "../cmsAdapter/guillotine/fetchContent";
 
 import MainView from "../cmsAdapter/views/_MainView";
-import {getPublicAssetUrl, XP_RENDER_MODE} from "../cmsAdapter/connection-config";
+import {getPublicAssetUrl, XP_RENDER_MODE} from "../cmsAdapter/constants";
 import {GetServerSideProps, GetServerSidePropsContext, GetServerSidePropsResult} from 'next';
 import {ParsedUrlQuery} from 'node:querystring';
 
 // Register Standard Components
-import "../cmsAdapter/baseComponentRegistry";
+import "../cmsAdapter/baseMappings";
 // Register Custom Components
 import "../componentMappings";
 

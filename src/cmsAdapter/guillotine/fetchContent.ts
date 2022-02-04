@@ -2,18 +2,18 @@ import {getMetaQuery, MetaData, PAGE_FRAGMENT, PageComponent, PageData, PageRegi
 
 import {Context} from "../../pages/[[...contentPath]]";
 
-import enonicConnectionConfig, {
+import adapterConstants, {
     FRAGMENT_CONTENTTYPE_NAME,
     FRAGMENT_DEFAULT_REGION_NAME,
     PAGE_TEMPLATE_CONTENTTYPE_NAME,
     XP_COMPONENT_TYPE,
     XP_RENDER_MODE,
     XP_REQUEST_TYPE,
-} from "../connection-config";
+} from "../constants";
 import {SelectedQueryMaybeVariablesFunc, TypeDefinition, TypesRegistry} from '../TypesRegistry';
 import {defaultVariables, LOW_PERFORMING_DEFAULT_QUERY} from './_getDefaultData';
 
-export type EnonicConnectionConfig = {
+export type adapterConstants = {
     APP_NAME: string,
     APP_NAME_DASHED: string,
     CONTENT_API_URL: string,
@@ -59,7 +59,7 @@ export type FetchContentResult = Result & {
 };
 
 
-type FetcherConfig<T extends EnonicConnectionConfig> = T & {
+type FetcherConfig<T extends adapterConstants> = T & {
     typesRegistry: typeof TypesRegistry
 };
 
@@ -609,11 +609,11 @@ function errorResponse(code: string = '500', message: string = 'Unknown error'):
 
 /**
  * Configures, builds and returns a general fetchContent function.
- * @param enonicConnectionConfig Object containing attributes imported from enonic-connecion-config.js: constants and function concerned with connection to the XP backend. Easiest: caller imports enonic-connection-config and just passes that entire object here as enonicConnectionConfig.
+ * @param adapterConstants Object containing attributes imported from enonic-connecion-config.js: constants and function concerned with connection to the XP backend. Easiest: caller imports enonic-connection-config and just passes that entire object here as adapterConstants.
  * @param typesRegistry TypesRegistry object from TypesRegistry.ts, holding user type mappings that are set in typesRegistration.ts file
  * @returns ContentFetcher
  */
-export const buildContentFetcher = <T extends EnonicConnectionConfig>(config: FetcherConfig<T>): ContentFetcher => {
+export const buildContentFetcher = <T extends adapterConstants>(config: FetcherConfig<T>): ContentFetcher => {
 
     const {
         APP_NAME,
@@ -763,7 +763,7 @@ export const buildContentFetcher = <T extends EnonicConnectionConfig>(config: Fe
  * @param context object from Next, contains .query info
  * @returns FetchContentResult object: {data?: T, error?: {code, message}}
  */
-export const fetchContent: ContentFetcher = buildContentFetcher<EnonicConnectionConfig>({
-    ...enonicConnectionConfig,
+export const fetchContent: ContentFetcher = buildContentFetcher<adapterConstants>({
+    ...adapterConstants,
     typesRegistry: TypesRegistry,
 });

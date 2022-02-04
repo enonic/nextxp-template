@@ -1,5 +1,5 @@
 import React from "react"
-import {APP_NAME} from "../../../cmsAdapter/connection-config";
+import {APP_NAME} from "../../../cmsAdapter/constants";
 import {PartProps} from '../_Part';
 import {Context} from '../../../pages/[[...contentPath]]';
 

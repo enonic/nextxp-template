@@ -3,7 +3,7 @@ import '../styles/globals.css'
 import React from 'react';
 import Head from "next/head";
 import Layout from "../components/blocks/Layout";
-import {XP_REQUEST_TYPE} from '../cmsAdapter/connection-config';
+import {XP_REQUEST_TYPE} from '../cmsAdapter/constants';
 
 /**
  * Wraps all rendered components
