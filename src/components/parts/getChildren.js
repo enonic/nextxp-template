@@ -1,4 +1,4 @@
-const getListQuery = `
+const getChildren = `
 query($path:ID!, $maxChildren:Int, $start:Int) {                   
   guillotine {
     get(key:$path) {
@@ -12,11 +12,12 @@ query($path:ID!, $maxChildren:Int, $start:Int) {
   }
 }`;
 
-export default getListQuery;
+export default getChildren;
 
+/*
 // fully qualified XP content-type name:
 export const LIST_CONTENTTYPE_NAME = `base:folder`;
-
+*/
 
 // Supplies $maxChildren and $start parameters to variables,
 // either with integers from the URI, or default values.
@@ -40,7 +41,6 @@ export const getListVariables = (path, context) => {
         start: startInt
     };
 } ;
-
 
 export const processListPropsExample = (props, context) => ({
     ...props,

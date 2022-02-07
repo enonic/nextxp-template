@@ -2,7 +2,7 @@ import React from "react"
 import {RegionView} from '../../cmsAdapter/views/_Region';
 import {LayoutProps} from './_Layout';
 
-const BoostLayoutView = (props: LayoutProps) => {
+const FocusLayoutView = (props: LayoutProps) => {
     const regions = props.layout.regions;
     const meta = props.meta;
 
@@ -17,4 +17,4 @@ const BoostLayoutView = (props: LayoutProps) => {
     );
 };
 
-export default BoostLayoutView;
+export default FocusLayoutView;

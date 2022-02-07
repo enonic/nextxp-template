@@ -1,4 +1,4 @@
-import {APP_NAME, APP_NAME_UNDERSCORED} from '../../cmsAdapter/connection-config'
+import {APP_NAME_UNDERSCORED} from '../../../cmsAdapter/constants'
 
 const getMovie = `
 query($path:ID!){
@@ -29,7 +29,7 @@ query($path:ID!){
                 data {
                   photos {
                     ... on media_Image {                                             
-                      imageUrl: imageUrl(type: absolute, scale: "block(100,100)")       
+                      imageUrl: imageUrl(type: absolute, scale: "block(200,200)")       
                       attachments {                                                 
                         name
                       }

@@ -1,8 +1,9 @@
 import React from "react"
 
 // Root component
-const MovieView = ({content}) => {
-    const {displayName, data = {}, parent = {}} = content;
+const MovieView = (obj) => {
+    console.log(obj);
+    const {displayName, data = {}, parent = {}} = obj.content;
     return (
         <>
             <div>
@@ -15,12 +16,13 @@ const MovieView = ({content}) => {
         </>
     );
 };
+
 export default MovieView;
 
 // Main movie info: release year, poster image and abstract text.
 const MovieInfo = ({data}) => {
     const posterPhoto = (data.photos || [])[0] || {};
-
+    console.log (data);
     return (
         <>
             { data.release && (

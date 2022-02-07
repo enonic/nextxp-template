@@ -110,7 +110,7 @@ export const fetchFromApi = async (
     let res;
     try {
         res = await fetch(apiUrl, options);
-    } catch (e) {
+    } catch (e:any) {
         console.warn(apiUrl, e);
         throw new Error(JSON.stringify({
             code: "API",
@@ -735,7 +735,7 @@ export const buildContentFetcher = <T extends adapterConstants>(config: FetcherC
 
             /////////////////////////////////////////////////////////////  Catch
 
-        } catch (e) {
+        } catch (e:any) {
             console.error(e);
 
             let error;

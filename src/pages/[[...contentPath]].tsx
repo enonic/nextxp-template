@@ -10,7 +10,7 @@ import {ParsedUrlQuery} from 'node:querystring';
 // Register Standard Components
 import "../cmsAdapter/baseMappings";
 // Register Custom Components
-import "../componentMappings";
+import "../components/mappings";
 
 export interface ServerSideParams
     extends ParsedUrlQuery {
