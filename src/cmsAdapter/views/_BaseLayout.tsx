@@ -2,6 +2,11 @@ import React from "react"
 import {LayoutData, MetaData, RegionTree} from "../guillotine/_getMetaData";
 import {TypesRegistry} from '../TypesRegistry';
 
+export interface LayoutProps {
+    layout: LayoutData;
+    content: any;
+    meta: MetaData;
+}
 
 interface BaseLayoutProps {
     component?: LayoutData;

@@ -1,6 +1,6 @@
 import React from "react"
 import {RegionView} from '../../cmsAdapter/views/_Region';
-import {LayoutProps} from './_Layout';
+import {LayoutProps} from '../../cmsAdapter/views/_BaseLayout';
 
 const ThreeColumnLayoutView = (props: LayoutProps) => {
     const regions = props.layout.regions;

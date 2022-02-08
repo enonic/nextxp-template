@@ -1,6 +1,6 @@
 import React from "react"
+import {LayoutProps} from '../../cmsAdapter/views/_BaseLayout'
 import {RegionView} from '../../cmsAdapter/views/_Region';
-import {LayoutProps} from './_Layout';
 
 const FocusLayoutView = (props: LayoutProps) => {
     const regions = props.layout.regions;

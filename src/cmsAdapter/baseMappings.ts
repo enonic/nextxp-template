@@ -4,6 +4,8 @@ import FragmentView from './views/_Fragment';
 import BasePart from './views/_BasePart';
 import BaseLayout from './views/_BaseLayout';
 import TextView from './views/_Text';
+import { LayoutDevView, PageDevView, PartDevView } from './views/_DevView';
+import {CATCH_ALL} from '../cmsAdapter/TypesRegistry';
 
 // Base Content Types
 
@@ -27,6 +29,18 @@ TypesRegistry.addComponent(XP_COMPONENT_TYPE.FRAGMENT, {
 
 TypesRegistry.addComponent(XP_COMPONENT_TYPE.TEXT, {
     view: TextView
+});
+
+TypesRegistry.addPage(CATCH_ALL, {
+    view: PageDevView
+});
+
+TypesRegistry.addPart(CATCH_ALL, {
+    view: PartDevView
+});
+
+TypesRegistry.addLayout(CATCH_ALL, {
+    view: LayoutDevView
 });
 
 console.info('Base components registered');

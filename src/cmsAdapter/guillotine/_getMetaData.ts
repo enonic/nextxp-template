@@ -5,6 +5,7 @@ const COMPONENTS_QUERY = `
         path
         page {
           descriptor
+          configAsJson
           template {
             _path
           }
@@ -81,18 +82,17 @@ export interface PageRegion {
 
 export interface PartData {
     descriptor: string;
-
     [customKeysFromQuery: string]: any;
 }
 
 export interface LayoutData {
     descriptor: string;
-
     [customKeysFromQuery: string]: any;
 }
 
 export interface PageData {
     descriptor: string;
+    configAsJson?: JSON;
     template?: string | null;
     regions?: RegionTree;
 }

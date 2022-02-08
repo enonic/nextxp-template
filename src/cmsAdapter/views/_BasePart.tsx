@@ -1,10 +1,15 @@
 import React from "react"
-
 import {MetaData, PartData} from "../guillotine/_getMetaData";
 import {TypesRegistry} from '../TypesRegistry';
 import {XP_RENDER_MODE} from '../constants';
 import Empty from './Empty';
 
+
+export interface PartProps {
+    part: PartData;
+    data?: any;
+    content?: any; // Content is passed down to componentviews. TODO: Use a react contextprovider instead?
+}
 
 interface BasePartProps {
     component?: PartData;

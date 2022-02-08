@@ -701,6 +701,8 @@ export const buildContentFetcher = <T extends adapterConstants>(config: FetcherC
             /////////////////    SECOND GUILLOTINE CALL FOR DATA   //////////////////////
             const contentResults = await fetchContentData(CONTENT_API_URL, contentPath, query, variables);
             /////////////////////////////////////////////////////////////////////////////
+            console.log('fetchContentData')
+            console.log(JSON.stringify(contentResults, null, 2));
 
             // Apply processors to every component
             const datas = await applyProcessors(componentDescriptors, contentResults, context);

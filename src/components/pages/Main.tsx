@@ -1,9 +1,6 @@
 import React from "react"
-import {APP_NAME} from '../../cmsAdapter/constants';
-import {PageProps} from './_Page';
+import { PageProps } from "../../cmsAdapter/views/_BasePage";
 import RegionsView from '../../cmsAdapter/views/_Region';
-
-export const DEFAULT_PAGE_NAME = `${APP_NAME}:default`;
 
 const MainPageView = (props: PageProps) => {
     const page = props.page;

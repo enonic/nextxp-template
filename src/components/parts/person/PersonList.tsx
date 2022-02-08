@@ -1,5 +1,5 @@
 import React from "react"
-import {PartProps} from '../_Part';
+import {PartProps} from '../../../cmsAdapter/views/_BasePart';
 import {Context} from '../../../pages/[[...contentPath]]';
 import {VariablesGetterResult} from '../../../cmsAdapter/TypesRegistry';
 
