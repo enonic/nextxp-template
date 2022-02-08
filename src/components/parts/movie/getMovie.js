@@ -1,5 +1,6 @@
 import {APP_NAME_UNDERSCORED} from '../../../cmsAdapter/constants'
 
+
 const getMovie = `
 query($path:ID!){
   guillotine {

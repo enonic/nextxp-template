@@ -10,7 +10,7 @@ import MainPageView from './pages/Main';
 import ThreeColumnLayoutView from './layouts/ThreeColumnLayout';
 import FocusLayoutView from './layouts/FocusLayout';
 
-import PersonList, {PersonListQuery, personListProcessor} from './parts/person/PersonList';
+import ChildList, {ChildListQuery, childListProcessor} from './parts/ChildList';
 import MovieDetails from './parts/movie/MovieDetails';
 import getMovie from './parts/movie/getMovie';
 import Heading from './parts/Heading';
@@ -36,17 +36,17 @@ TypesRegistry.addPage(`${APP_NAME}:default`, {
 
 
 // Parts
-TypesRegistry.addPart(`${APP_NAME}:person-list`, {
-    query: PersonListQuery,
-    props: personListProcessor,
-    view: PersonList
-});
 TypesRegistry.addPart(`${APP_NAME}:movie-details`, {
     query: getMovie,
     view: MovieDetails
 });
 TypesRegistry.addPart(`${APP_NAME}:heading`, {
     view: Heading
+});
+TypesRegistry.addPart(`${APP_NAME}:child-list`, {
+    query: ChildListQuery,
+    props: childListProcessor,
+    view: ChildList
 });
 
 

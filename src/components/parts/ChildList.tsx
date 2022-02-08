@@ -1,13 +1,15 @@
 import React from "react"
-import {PartProps} from '../../../cmsAdapter/views/_BasePart';
-import {Context} from '../../../pages/[[...contentPath]]';
-import {VariablesGetterResult} from '../../../cmsAdapter/TypesRegistry';
+import {PartProps} from '../../cmsAdapter/views/_BasePart';
+import {Context} from '../../pages/[[...contentPath]]';
+import {VariablesGetterResult} from '../../cmsAdapter/TypesRegistry';
 
-const PersonList = (props: PartProps) => {
+const ChildList = (props: PartProps) => {
+    console.log("Childprops");
+    console.log(props);
     const {data} = props;
-    const personsContent = data.get;
-    const displayName = `${data.getSite.displayName} - ${personsContent.displayName}`;
-    const children = personsContent.children;
+    const listContent = data.get;
+    const displayName = `${data.getSite.displayName} - ${listContent.displayName}`;
+    const children = listContent.children;
     return (
         <main style={{
             margin: `0 auto`,
@@ -31,9 +33,9 @@ const PersonList = (props: PartProps) => {
     );
 };
 
-export default PersonList;
+export default ChildList;
 
-export const PersonListQuery = {
+export const ChildListQuery = {
     query: `query ($parentKey: ID) {
               guillotine {
                 getSite {
@@ -42,7 +44,7 @@ export const PersonListQuery = {
                 get(key: $parentKey) {
                   displayName
                   children {
-                      _path
+                      _path(type: siteRelative)
                       _id
                       displayName
                   }
@@ -57,6 +59,6 @@ export const PersonListQuery = {
     }
 };
 
-export async function personListProcessor(content: any, context?: Context): Promise<any> {
+export async function childListProcessor(content: any, context?: Context): Promise<any> {
     return content;
 }

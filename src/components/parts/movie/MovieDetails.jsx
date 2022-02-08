@@ -1,9 +1,11 @@
 import React from "react"
+import {PartProps} from '../../../cmsAdapter/views/_BasePart'
 
 // Root component
-const MovieView = (obj) => {
-    console.log(obj);
-    const {displayName, data = {}, parent = {}} = obj.content;
+const MovieView = (props) => {
+    console.log("movieprops");
+    console.log(props);
+    const {displayName, data = {}, parent = {}} = props.content;
     return (
         <>
             <div>
@@ -22,7 +24,6 @@ export default MovieView;
 // Main movie info: release year, poster image and abstract text.
 const MovieInfo = ({data}) => {
     const posterPhoto = (data.photos || [])[0] || {};
-    console.log (data);
     return (
         <>
             { data.release && (
