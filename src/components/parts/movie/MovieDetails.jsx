@@ -1,11 +1,11 @@
 import React from "react"
-import {PartProps} from '../../../cmsAdapter/views/_BasePart'
 
 // Root component
-const MovieView = (props) => {
-    console.log("movieprops");
-    console.log(props);
-    const {displayName, data = {}, parent = {}} = props.content;
+const MovieView = (obj) => {
+    console.log('MovieView:')
+    console.log(JSON.stringify(obj, null, 2));
+    const data = obj.data?.data;
+    const {displayName, parent = {}} = obj.content;
     return (
         <>
             <div>

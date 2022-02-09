@@ -485,8 +485,8 @@ function collectPartDescriptors(components: PageComponent[],
             if (partDesc) {
                 const partTypeDef = typesRegistry.getPart(partDesc);
                 if (partTypeDef) {
-                    const partPath = `${xpContentPath}/_component${cmp.path}`;
-                    const partQueryAndVars = getQueryAndVariables(cmp.type, partPath, partTypeDef.query, context);
+                    // const partPath = `${xpContentPath}/_component${cmp.path}`;
+                    const partQueryAndVars = getQueryAndVariables(cmp.type, xpContentPath, partTypeDef.query, context);
                     partDescriptors.push({
                         component: cmp,
                         type: partTypeDef,
