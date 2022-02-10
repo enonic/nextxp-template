@@ -20,7 +20,7 @@ interface BasePartProps {
 }
 
 const BasePart = (props: BasePartProps) => {
-    const {component, error, meta} = props;
+    const {component, data, content, error, meta} = props;
 
     if (error) {
         console.warn(`BasePart: '${component?.descriptor}' error: ${error}`);
@@ -35,7 +35,10 @@ const BasePart = (props: BasePartProps) => {
     }
     const SelectedPartView = partSelection?.view;
     if (SelectedPartView) {
-        return <SelectedPartView {...props}/>;
+        return <SelectedPartView part={component}
+                                 data={data}
+                                 content={content}
+                                 meta={meta}/>;
     } else {
         console.warn(`BasePart: can not render part '${component?.descriptor}': no next view or catch-all defined`);
         return null;
