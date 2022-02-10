@@ -25,7 +25,7 @@ export type DataProcessor = (data: any, context?: Context) => Promise<Record<str
 // TODO: also access as arguments: dataAsJson, pageAsJson, configAsJson from the first (meta) call here?
 //  To allow content or component config values to affect the query?
 //  Another option could be to let the component or page controller pass those values to nextjs by a header
-export type VariablesGetter = (path: string, context?: Context) => VariablesGetterResult;
+export type VariablesGetter = (path: string, context?: Context, config?: any) => VariablesGetterResult;
 
 export type VariablesGetterResult = {
     path: string,

@@ -3,6 +3,8 @@ import {getMetaQuery, MetaData, PAGE_FRAGMENT, PageComponent, PageData, PageRegi
 import {Context} from "../../pages/[[...contentPath]]";
 
 import adapterConstants, {
+    APP_NAME,
+    APP_NAME_DASHED,
     FRAGMENT_CONTENTTYPE_NAME,
     FRAGMENT_DEFAULT_REGION_NAME,
     PAGE_TEMPLATE_CONTENTTYPE_NAME,
@@ -110,7 +112,7 @@ export const fetchFromApi = async (
     let res;
     try {
         res = await fetch(apiUrl, options);
-    } catch (e:any) {
+    } catch (e: any) {
         console.warn(apiUrl, e);
         throw new Error(JSON.stringify({
             code: "API",
@@ -383,8 +385,6 @@ function buildPage(contentType: string, comps: PageComponent[] = []): PageData {
         }
     });
 
-    // console.info("Page with components: " + JSON.stringify(page, null, 2));
-
     return page;
 }
 
@@ -478,6 +478,7 @@ function collectPartDescriptors(components: PageComponent[],
     const partDescriptors: ComponentDescriptor[] = [];
 
     for (const cmp of (components || [])) {
+        processComponentConfig(APP_NAME, APP_NAME_DASHED, cmp);
         // only look for parts
         // look for single part if it is a single component request
         if (XP_COMPONENT_TYPE.PART == cmp.type && (!requestedComponentPath || requestedComponentPath === cmp.path)) {
@@ -486,7 +487,7 @@ function collectPartDescriptors(components: PageComponent[],
                 const partTypeDef = typesRegistry.getPart(partDesc);
                 if (partTypeDef) {
                     // const partPath = `${xpContentPath}/_component${cmp.path}`;
-                    const partQueryAndVars = getQueryAndVariables(cmp.type, xpContentPath, partTypeDef.query, context);
+                    const partQueryAndVars = getQueryAndVariables(cmp.type, xpContentPath, partTypeDef.query, context, cmp.part?.config);
                     partDescriptors.push({
                         component: cmp,
                         type: partTypeDef,
@@ -507,22 +508,22 @@ function collectPartDescriptors(components: PageComponent[],
     return partDescriptors;
 }
 
-function processPartConfigs(appNameDashed: string, partDescriptors: ComponentDescriptor[]) {
-    partDescriptors.forEach(partDescriptor => {
-        const cmp = partDescriptor.component;
-        if (cmp?.part?.configAsJson) {
-            const [appName, partName] = (cmp.part.descriptor || "").split(':');
-            if (appName === appName && cmp.part.configAsJson[appNameDashed][partName]) {
-                cmp.part.__config__ = cmp.part!.configAsJson[appNameDashed][partName];
-            }
+function processComponentConfig(myAppName: string, myAppNameDashed: string, cmp: PageComponent) {
+    const type = cmp.type;
+    const cmpDef = cmp[type];
+    if (cmpDef?.descriptor && cmpDef?.configAsJson) {
+        const [appName, cmpName] = cmpDef.descriptor.split(':');
+        if (appName === myAppName && cmpDef.configAsJson[myAppNameDashed][cmpName]) {
+            cmpDef.config = cmpDef.configAsJson[myAppNameDashed][cmpName];
+            delete cmpDef.configAsJson;
         }
-    })
+    }
 }
 
 function getQueryAndVariables(type: string,
                               path: string,
                               selectedQuery?: SelectedQueryMaybeVariablesFunc,
-                              context?: Context): QueryAndVariables | undefined {
+                              context?: Context, config?: any): QueryAndVariables | undefined {
 
     let query, getVariables;
 
@@ -549,7 +550,7 @@ function getQueryAndVariables(type: string,
     if (query) {
         return {
             query,
-            variables: getVariables ? getVariables(path, context) : defaultVariables(path),
+            variables: getVariables ? getVariables(path, context, config) : defaultVariables(path),
         }
     }
 }
@@ -669,7 +670,11 @@ export const buildContentFetcher = <T extends adapterConstants>(config: FetcherC
 
             // Add the content type query at all cases
             const contentTypeDef = typesRegistry?.getContentType(type);
-            let contentQueryAndVars = getQueryAndVariables(type, contentPath, contentTypeDef?.query, context);
+            const pageCmp = (components || []).find(cmp => cmp.type === XP_COMPONENT_TYPE.PAGE);
+            if (pageCmp) {
+                processComponentConfig(APP_NAME, APP_NAME_DASHED, pageCmp);
+            }
+            let contentQueryAndVars = getQueryAndVariables(type, contentPath, contentTypeDef?.query, context, pageCmp?.page?.config);
             if (!contentQueryAndVars) {
                 contentQueryAndVars = {
                     query: LOW_PERFORMING_DEFAULT_QUERY,
@@ -682,12 +687,12 @@ export const buildContentFetcher = <T extends adapterConstants>(config: FetcherC
             });
 
             if (components?.length && typesRegistry) {
+                for (const cmp of (components || [])) {
+                    processComponentConfig(APP_NAME, APP_NAME_DASHED, cmp);
+                }
                 // Collect part queries if defined
                 const partDescriptors = collectPartDescriptors(components, typesRegistry, requestedComponentPath, contentPath, context);
                 if (partDescriptors.length) {
-                    //TODO: can be moved to part-wide propsProcessor when ready
-                    processPartConfigs(APP_NAME_DASHED, partDescriptors);
-
                     componentDescriptors.push(...partDescriptors);
                 }
             }
@@ -701,8 +706,6 @@ export const buildContentFetcher = <T extends adapterConstants>(config: FetcherC
             /////////////////    SECOND GUILLOTINE CALL FOR DATA   //////////////////////
             const contentResults = await fetchContentData(CONTENT_API_URL, contentPath, query, variables);
             /////////////////////////////////////////////////////////////////////////////
-            console.log('fetchContentData')
-            console.log(JSON.stringify(contentResults, null, 2));
 
             // Apply processors to every component
             const datas = await applyProcessors(componentDescriptors, contentResults, context);
@@ -737,7 +740,7 @@ export const buildContentFetcher = <T extends adapterConstants>(config: FetcherC
 
             /////////////////////////////////////////////////////////////  Catch
 
-        } catch (e:any) {
+        } catch (e: any) {
             console.error(e);
 
             let error;

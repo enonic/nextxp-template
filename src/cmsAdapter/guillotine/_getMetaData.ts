@@ -82,17 +82,21 @@ export interface PageRegion {
 
 export interface PartData {
     descriptor: string;
+    config: any;
+
     [customKeysFromQuery: string]: any;
 }
 
 export interface LayoutData {
     descriptor: string;
+    config?: any;
+
     [customKeysFromQuery: string]: any;
 }
 
 export interface PageData {
     descriptor: string;
-    configAsJson?: JSON;
+    config?: any;
     template?: string | null;
     regions?: RegionTree;
 }

@@ -49,10 +49,10 @@ export const ChildListQuery = {
                 }
               }
             }`,
-    variables: function (path: string, context?: Context): VariablesGetterResult {
+    variables: function (path: string, context?: Context, config?: any): VariablesGetterResult {
         return {
             path,
-            order: "displayName ASC"
+            order: config?.sorting
         }
     }
 };
