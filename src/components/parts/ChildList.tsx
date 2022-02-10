@@ -4,8 +4,6 @@ import {Context} from '../../pages/[[...contentPath]]';
 import {VariablesGetterResult} from '../../cmsAdapter/TypesRegistry';
 
 const ChildList = (props: PartProps) => {
-    console.log("Childprops");
-    console.log(props);
     const {data} = props;
     const listContent = data.get;
     const displayName = `${data.getSite.displayName} - ${listContent.displayName}`;
@@ -36,14 +34,14 @@ const ChildList = (props: PartProps) => {
 export default ChildList;
 
 export const ChildListQuery = {
-    query: `query ($parentKey: ID) {
+    query: `query($path:ID!, $order:String){
               guillotine {
                 getSite {
                   displayName
                 }
-                get(key: $parentKey) {
+                get(key:$path) {
                   displayName
-                  children {
+                  children(sort: $order) {
                       _path(type: siteRelative)
                       _id
                       displayName
@@ -54,7 +52,7 @@ export const ChildListQuery = {
     variables: function (path: string, context?: Context): VariablesGetterResult {
         return {
             path,
-            parentKey: "ff9e01f1-9284-453e-9900-9178104d3258"
+            order: "displayName ASC"
         }
     }
 };

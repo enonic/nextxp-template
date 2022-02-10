@@ -10,8 +10,8 @@ const MovieView = (obj) => {
         <>
             <div>
                 <h2>{displayName}</h2>
-                <MovieInfo data={data}/>
-                <Cast cast={data.cast}/>
+                {data && <MovieInfo data={data}/>}
+                {data?.cast && <Cast cast={data.cast}/>}
             </div>
 
             <BackLink parent={parent}/>

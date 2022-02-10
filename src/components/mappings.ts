@@ -25,8 +25,8 @@ TypesRegistry.addContentType(`${APP_NAME}:person`, {
 // TODO: Move to defaultMappings, change so CTY CATCH_ALL is executed after custom pages.
 /*TypesRegistry.addContentType(CATCH_ALL, {
     view: DevView,
-});*/
-
+});
+*/
 
 // Pages
 TypesRegistry.addPage(`${APP_NAME}:default`, {
