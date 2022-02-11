@@ -24,7 +24,7 @@ const BaseLayout = (props: BaseLayoutProps) => {
     }
     const SelectedLayoutView = layoutSelection?.view;
     if (SelectedLayoutView) {
-        return <SelectedLayoutView layout={{descriptor: component?.descriptor, regions: regions || {}}}
+        return <SelectedLayoutView layout={{descriptor: component?.descriptor, regions: regions || {}, config: component?.config}}
                                    content={content}
                                    meta={meta}/>;
     } else {
