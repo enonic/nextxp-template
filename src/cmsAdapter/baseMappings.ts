@@ -1,10 +1,13 @@
 import {TypesRegistry} from './TypesRegistry';
 import {FRAGMENT_CONTENTTYPE_NAME, XP_COMPONENT_TYPE} from './constants';
 import FragmentView from './views/_Fragment';
+import BasePage from './views/_BasePage';
 import BasePart from './views/_BasePart';
 import BaseLayout from './views/_BaseLayout';
 import TextView from './views/_Text';
-import { LayoutDevView, PageDevView, PartDevView } from './views/_DevView';
+import { PageDevView } from './views/_BasePage';
+import { PartDevView } from './views/_BasePart';
+import { LayoutDevView } from './views/_BaseLayout';
 import {CATCH_ALL} from '../cmsAdapter/TypesRegistry';
 
 // Base Content Types
@@ -14,6 +17,10 @@ TypesRegistry.addContentType(FRAGMENT_CONTENTTYPE_NAME, {
 });
 
 // Base Components
+
+TypesRegistry.addComponent(XP_COMPONENT_TYPE.PAGE, {
+    view: BasePage
+});
 
 TypesRegistry.addComponent(XP_COMPONENT_TYPE.PART, {
     view: BasePart

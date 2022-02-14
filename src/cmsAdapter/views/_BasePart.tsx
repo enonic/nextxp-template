@@ -2,6 +2,8 @@ import React from "react"
 import {MetaData, PartData} from "../guillotine/_getMetaData";
 import {TypesRegistry} from '../TypesRegistry';
 import {XP_RENDER_MODE} from '../constants';
+import {IS_DEV_MODE} from "../constants";
+import DataDump from "./DataDump";
 import Empty from './Empty';
 
 
@@ -45,6 +47,8 @@ const BasePart = (props: BasePartProps) => {
     }
 }
 
+export default BasePart;
+
 export const ErrorPart = ({descriptor, reason}: { descriptor?: string, reason: string }) => {
     return (
         <div style={{
@@ -57,4 +61,19 @@ export const ErrorPart = ({descriptor, reason}: { descriptor?: string, reason: s
     )
 }
 
-export default BasePart;
+
+
+const PartView = ({part}: PartProps) => (
+    <div className={`part`}
+         style={{marginTop: "2rem", padding: "10px", border: "2px solid lightgrey"}}>
+        <h6 style={{fontSize: ".7em", fontWeight:"normal", color:"#bbb", marginTop: "0", marginBottom: "0"}}>Part debug:</h6>
+        <h3 style={{marginTop: "0", marginBottom: "8px"}}>{part.descriptor}</h3>
+        <DataDump label="config" data={part.config} />
+    </div>
+);
+
+export const PartDevView = IS_DEV_MODE
+    ? PartView
+    : Empty;
+
+

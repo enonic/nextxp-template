@@ -1,6 +1,9 @@
 import React from "react"
 import {LayoutData, MetaData, RegionTree} from "../guillotine/_getMetaData";
 import {TypesRegistry} from '../TypesRegistry';
+import {IS_DEV_MODE} from "../constants";
+import DataDump from "./DataDump";
+import Empty from './Empty';
 
 export interface LayoutProps {
     layout: LayoutData;
@@ -34,3 +37,18 @@ const BaseLayout = (props: BaseLayoutProps) => {
 }
 
 export default BaseLayout;
+
+
+const LayoutView = ({layout}: LayoutProps ) => (
+    <div className={`layout`}
+        style={{marginTop: "2rem", padding: "10px", border: "2px solid lightgrey"}}>
+        <h6 style={{fontSize: ".7em", fontWeight: "normal", color: "#bbb", marginTop: "0", marginBottom: "0"}}>Layout debug:</h6>
+        <h3 style={{marginTop: "0", marginBottom: "8px"}}>{layout.descriptor}</h3>
+        <DataDump label="config" data={layout.config} />
+        <DataDump label="regions" data={layout.regions} />
+    </div>
+);
+
+export const LayoutDevView = IS_DEV_MODE
+    ? LayoutView
+    : Empty;
