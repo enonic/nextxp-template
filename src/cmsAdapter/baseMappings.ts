@@ -38,6 +38,8 @@ TypesRegistry.addComponent(XP_COMPONENT_TYPE.TEXT, {
     view: TextView
 });
 
+// Next Dev mode handling
+
 TypesRegistry.addPage(CATCH_ALL, {
     view: PageDevView
 });

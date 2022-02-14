@@ -2,8 +2,8 @@ import React from "react"
 
 // Root component
 const MovieView = (obj) => {
-    console.log('MovieView:')
-    console.log(JSON.stringify(obj, null, 2));
+//    console.log('MovieView:')
+//    console.log(JSON.stringify(obj, null, 2));
     const data = obj.data?.data;
     const {displayName, parent = {}} = obj.content;
     return (

@@ -1,7 +1,7 @@
 import {APP_NAME} from '../cmsAdapter/constants'
 import {CATCH_ALL, TypesRegistry} from '../cmsAdapter/TypesRegistry';
 
-import DevView from '../cmsAdapter/views/_DevView';
+import {ContentDevView} from '../cmsAdapter/views/_BaseContent';
 
 import getPerson from './contentTypes/person/getPerson';
 import Person from './contentTypes/person/Person';
@@ -22,9 +22,10 @@ TypesRegistry.addContentType(`${APP_NAME}:person`, {
     view: Person
 });
 
+/*
 // TODO: Move to defaultMappings, change so CTY CATCH_ALL is executed after custom pages.
-/*TypesRegistry.addContentType(CATCH_ALL, {
-    view: DevView,
+TypesRegistry.addContentType(CATCH_ALL, {
+    view: ContentDevView,
 });
 */
 
@@ -32,7 +33,6 @@ TypesRegistry.addContentType(`${APP_NAME}:person`, {
 TypesRegistry.addPage(`${APP_NAME}:default`, {
     view: MainPageView
 });
-
 
 
 // Parts
@@ -57,7 +57,7 @@ TypesRegistry.addLayout(`${APP_NAME}:3-column`, {
 });
 
 /*
-TypesRegistry.addLayout(`${APP_NAME}:layout-centered`, {
+TypesRegistry.addLayout(`${APP_NAME}:focus`, {
     view: FocusLayoutView
 });
 */

@@ -10,7 +10,7 @@ const FocusLayoutView = (props: LayoutProps) => {
         <div className="row boost">
             <RegionView className="col-md-8 col-md-offset-2" 
                 name="main" 
-                components={regions['main']?.components} 
+                components={regions['focus']?.components} 
                 content={props.content}
                 meta={meta}/>
         </div>
