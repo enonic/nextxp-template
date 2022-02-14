@@ -13,7 +13,7 @@ const PageView = ({page}: PageProps) => {
              style={{margin: "10px", padding: "10px", border: "2px solid lightgrey"}}>
             <h6 style={{fontSize: ".7em", fontWeight: "normal", color: "#bbb", marginTop: "0", marginBottom: "0"}}>Page debug:</h6>
             <h3 style={{marginTop: "0", marginBottom: "8px"}}>{page.descriptor}</h3>
-            <DataDump label="config" data={page.configAsJson} />
+            <DataDump label="config" data={page.config} />
             <DataDump label="regions" data={page.regions} />
         </div>);
 }
