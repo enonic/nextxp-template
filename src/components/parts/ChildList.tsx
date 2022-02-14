@@ -5,16 +5,13 @@ import {VariablesGetterResult} from '../../cmsAdapter/TypesRegistry';
 
 const ChildList = (props: PartProps) => {
     const {data} = props;
-    const listContent = data.get;
-    const displayName = `${data.getSite.displayName} - ${listContent.displayName}`;
-    const children = listContent.children;
+    const children = data.get.children;
     return (
-        <main style={{
+        <main style={{ 
             margin: `0 auto`,
             maxWidth: 960,
             padding: `0 1.0875rem`,
         }}>
-            <h2>{props.part?.config?.heading || displayName}</h2>
             {
                 children &&
                 <ul>{
