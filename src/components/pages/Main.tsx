@@ -2,7 +2,7 @@ import React from "react"
 import { PageProps } from "../../cmsAdapter/views/_BasePage";
 import RegionsView from '../../cmsAdapter/views/_Region';
 
-const MainPageView = (props: PageProps) => {
+const MainPage = (props: PageProps) => {
     const page = props.page;
     if (!page.regions || !Object.keys(page.regions).length) {
         page.regions = {
@@ -19,4 +19,4 @@ const MainPageView = (props: PageProps) => {
     );
 };
 
-export default MainPageView;
+export default MainPage;

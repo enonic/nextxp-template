@@ -1,21 +1,16 @@
 import {APP_NAME} from '../cmsAdapter/constants'
 import {CATCH_ALL, TypesRegistry} from '../cmsAdapter/TypesRegistry';
-
 import {ContentDevView} from '../cmsAdapter/views/_BaseContent';
-
 import getPerson from './contentTypes/person/getPerson';
 import Person from './contentTypes/person/Person';
-import MainPageView from './pages/Main';
-
-import ThreeColumnLayoutView from './layouts/ThreeColumnLayout';
-import FocusLayoutView from './layouts/FocusLayout';
-
+import MainPage from './pages/Main';
+import TwoColumnLayout from './layouts/TwoColumnLayout';
 import ChildList, {ChildListQuery, childListProcessor} from './parts/ChildList';
-import MovieDetails from './parts/movie/MovieDetails';
-import getMovie from './parts/movie/getMovie';
+import MovieDetails, {getMovie} from './parts/MovieDetails';
 import Heading from './parts/Heading';
 
-// Content Types
+
+// Content Type mappings
 
 TypesRegistry.addContentType(`${APP_NAME}:person`, {
     query: getPerson,
@@ -29,13 +24,18 @@ TypesRegistry.addContentType(CATCH_ALL, {
 });
 */
 
-// Pages
-TypesRegistry.addPage(`${APP_NAME}:default`, {
-    view: MainPageView
+// Page mappings
+TypesRegistry.addPage(`${APP_NAME}:main`, {
+    view: MainPage
+});
+
+// Layout mappings
+TypesRegistry.addLayout(`${APP_NAME}:2-column`, {
+    view: TwoColumnLayout
 });
 
 
-// Parts
+// Part mappings
 TypesRegistry.addPart(`${APP_NAME}:movie-details`, {
     query: getMovie,
     view: MovieDetails
@@ -49,12 +49,6 @@ TypesRegistry.addPart(`${APP_NAME}:child-list`, {
     view: ChildList
 });
 
-
-
-// Layouts
-TypesRegistry.addLayout(`${APP_NAME}:3-column`, {
-    view: ThreeColumnLayoutView
-});
 
 /*
 TypesRegistry.addLayout(`${APP_NAME}:focus`, {
