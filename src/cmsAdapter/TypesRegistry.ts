@@ -9,7 +9,7 @@ import {Context} from "../pages/[[...contentPath]]";
  */
 export interface TypeDefinition {
     query?: SelectedQueryMaybeVariablesFunc,
-    props?: DataProcessor,
+    processor?: DataProcessor,
     view?: React.FunctionComponent<any>
 }
 

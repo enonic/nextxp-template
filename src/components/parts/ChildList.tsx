@@ -30,7 +30,7 @@ const ChildList = (props: PartProps) => {
 
 export default ChildList;
 
-export const ChildListQuery = {
+export const getChildList = {
     query: `query($path:ID!, $order:String){
               guillotine {
                 getSite {
@@ -55,5 +55,6 @@ export const ChildListQuery = {
 };
 
 export async function childListProcessor(content: any, context?: Context): Promise<any> {
+    content.modifiedBy = 'childListProcessor';
     return content;
 }

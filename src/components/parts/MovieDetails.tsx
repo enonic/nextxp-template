@@ -1,5 +1,6 @@
 import React from "react"
 import {APP_NAME_UNDERSCORED} from '../../cmsAdapter/constants'
+import {PartProps} from '../../cmsAdapter/views/_BasePart';
 
 
 export const getMovie = `
@@ -52,52 +53,82 @@ query($path:ID!){
 
 
 // Root component
-const MovieView = (obj) => {
-//    console.log('MovieView:')
-//    console.log(JSON.stringify(obj, null, 2));
-    const data = obj.data?.data;
-    const {displayName, parent = {}} = obj.content;
+const MovieView = (props: PartProps) => {
+    console.log('MovieView:')
+    console.log(JSON.stringify(props, null, 2));
+    const data = props.data?.get.data as MovieInfoProps;
+    const {displayName, parent = {}} = props.content;
     return (
         <>
             <div>
                 <h2>{displayName}</h2>
-                {data && <MovieInfo data={data}/>}
+                {data && <MovieInfo {...data}/>}
                 {data?.cast && <Cast cast={data.cast}/>}
             </div>
 
-            <BackLink parent={parent}/>
+            <BackLink path={parent._path}/>
         </>
     );
 };
 
 export default MovieView;
 
+interface MovieInfoProps {
+    release: string;
+    subtitle: string;
+    abstract: string;
+    cast: CastMemberProps[],
+    photos: {
+        imageUrl: string;
+    }[];
+}
+
 // Main movie info: release year, poster image and abstract text.
-const MovieInfo = ({data}) => {
-    const posterPhoto = (data.photos || [])[0] || {};
+const MovieInfo = (props: MovieInfoProps) => {
+    const posterPhoto = (props.photos || [])[0] || {};
     return (
         <>
-            { data.release && (
-                <p>({ new Date(data.release).getFullYear() })</p>
+            {props.release && (
+                <p>({new Date(props.release).getFullYear()})</p>
             )}
-            { posterPhoto.imageUrl && (
+            {posterPhoto.imageUrl && (
                 <img src={posterPhoto.imageUrl}
-                     title={data.subtitle || movie.displayName}
-                     alt={data.subtitle || movie.displayName}
+                     title={props.subtitle}
+                     alt={props.subtitle}
                 />
             )}
-            <p>{data.abstract}</p>
+            <p>{props.abstract}</p>
         </>
     )
 }
 
+interface CastProps {
+    cast: CastMemberProps[];
+}
+
+interface CastMemberProps {
+    character: string;
+    actor: {
+        _path: string;
+        displayName: string;
+        data: {
+            photos: {
+                imageUrl: string;
+                attachments: {
+                    name: string
+                }[]
+            }[]
+        }
+    }
+}
+
 // List persons starring in the movie.
-const Cast = ({cast}) => !!(cast?.length) && (
+const Cast = (props: CastProps) => (
     <div>
         <h4>Cast</h4>
         <ul style={{listStyle: "none", display: "flex", flexFlow: "row wrap"}}>
-            {cast.map(
-                (person, i) => person && (
+            {props.cast.map(
+                (person: CastMemberProps, i: number) => person && (
                     <CastMember key={i} {...person} />
                 )
             )}
@@ -105,9 +136,10 @@ const Cast = ({cast}) => !!(cast?.length) && (
     </div>
 );
 
-const CastMember = (person) => {
-    const { character, actor={} } = person;
-    const { displayName, _path, data={} } = actor;
+
+const CastMember = (props: CastMemberProps) => {
+    const {character, actor} = props;
+    const {displayName, _path, data} = actor;
     const personPhoto = (data.photos || [])[0] || {};
 
     return (
@@ -129,6 +161,6 @@ const CastMember = (person) => {
 }
 
 // Link to parent item
-const BackLink = ({parent}) => parent && (
-    <p><a href={parent._path}>Back to Movies</a></p>
+const BackLink = ({path}: { path: string }) => (
+    <p><a href={path}>Back to Movies</a></p>
 );

@@ -1,11 +1,9 @@
 import {APP_NAME} from '../cmsAdapter/constants'
-import {CATCH_ALL, TypesRegistry} from '../cmsAdapter/TypesRegistry';
-import {ContentDevView} from '../cmsAdapter/views/_BaseContent';
-import getPerson from './contentTypes/person/getPerson';
-import Person from './contentTypes/person/Person';
+import {TypesRegistry} from '../cmsAdapter/TypesRegistry';
+import Person, {getPerson} from './contentTypes/Person';
 import MainPage from './pages/Main';
 import TwoColumnLayout from './layouts/TwoColumnLayout';
-import ChildList, {ChildListQuery, childListProcessor} from './parts/ChildList';
+import ChildList, {childListProcessor, getChildList} from './parts/ChildList';
 import MovieDetails, {getMovie} from './parts/MovieDetails';
 import Heading from './parts/Heading';
 
@@ -44,8 +42,8 @@ TypesRegistry.addPart(`${APP_NAME}:heading`, {
     view: Heading
 });
 TypesRegistry.addPart(`${APP_NAME}:child-list`, {
-    query: ChildListQuery,
-    props: childListProcessor,
+    query: getChildList,
+    processor: childListProcessor,
     view: ChildList
 });
 

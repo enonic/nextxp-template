@@ -240,11 +240,7 @@ const fetchContentData = async <T>(
     } else {
         return {
             // omit the aliases and return values
-            contents: Object.values(contentResults).map(content => {
-                // if there were just 1 query (meaning there is 1 key in response) then return its contents directly
-                const contentValues = Object.values(content);
-                return contentValues.length == 1 ? contentValues[0] : content;
-            }),
+            contents: Object.values(contentResults)
         }
     }
 };
@@ -454,7 +450,7 @@ async function applyProcessors(componentDescriptors: ComponentDescriptor[], cont
         // some of them might not have provided graphql requests
         // but we still need to run props processor for them
         // in case they want to fetch their data from elsewhere
-        const propsProcessor = desc.type?.props || NO_PROPS_PROCESSOR;
+        const propsProcessor = desc.type?.processor || NO_PROPS_PROCESSOR;
         let data;
         if (desc.queryAndVariables) {
             // if there is a query then there must be a result for it
@@ -711,7 +707,7 @@ export const buildContentFetcher = <T extends adapterConstants>(config: FetcherC
             const datas = await applyProcessors(componentDescriptors, contentResults, context);
 
             //  Unwind the data back to components
-            const content = datas[0].status === 'fulfilled' ? datas[0].value : datas[0].reason;
+            const content = datas[0].status === 'fulfilled' ? datas[0].value?.get : datas[0].reason;
             for (let i = 1; i < datas.length; i++) {
                 // component descriptors hold references to components
                 // that will later be used for creating page regions

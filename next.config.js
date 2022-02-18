@@ -2,5 +2,5 @@ var IS_DEV_MODE = ((process.env.MODE || process.env.NEXT_PUBLIC_MODE) === 'devel
 
 module.exports = {
     reactStrictMode: true,
-    assetPrefix: IS_DEV_MODE ? process.env.NEXT_DOMAIN : undefined
+    assetPrefix: process.env.NEXT_DOMAIN,
 }
