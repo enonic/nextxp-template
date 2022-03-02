@@ -23,8 +23,13 @@ export const APP_NAME_UNDERSCORED = (APP_NAME || '').replace(/\./g, '_')
 
 export const APP_NAME_DASHED = (APP_NAME || '').replace(/\./g, '-')
 
+// The URL of the deployment. Example: my-site-7q03y4pi5.vercel.app
+let vercelUrl = process.env.VERCEL_URL;
+if (vercelUrl) {
+    vercelUrl = 'https://' + vercelUrl;
+}
 /** The domain (full: with protocol and port if necessary) of this next.js server */
-export const NEXT_DOMAIN: string = (process.env.NEXT_DOMAIN || process.env.NEXT_PUBLIC_NEXT_DOMAIN) as string
+export const NEXT_DOMAIN: string = (vercelUrl || process.env.NEXT_DOMAIN || process.env.NEXT_PUBLIC_NEXT_DOMAIN) as string
 
 
 //////////////////////////////////////////////////////////////////////////  Hardcode-able constants
@@ -101,13 +106,6 @@ const publicPattern = new RegExp('^/*');
  * @returns {string} Fully qualified XP content path */
 export const getXpPath = (pageUrl: string): string => `/${SITE}/${pageUrl}`;
 
-/** Takes an XP _path string and returns a Next.js-server-ready URL for the corresponding content for that _path */
-export const getPageUrlFromXpPath = (xpPath: string, context: Context): string => (
-    isRequestFromXP(context)
-        ? xpPath.replace(siteNamePattern, `${NEXT_DOMAIN}/`)     // proxy-relative: should be absolute when served through the proxy
-        : xpPath.replace(siteNamePattern, '/')                   // site relative: should just start with slash when served directly
-);
-
 /** For '<a href="..."' link values in props when clicking the link should navigate to an XP content item page
  *  and the query returns the XP _path to the target content item:
  *  When viewed directly, the header will have a `<base href='/' />` (see src/pages/_app.tsx), and when viewed through an
@@ -147,7 +145,6 @@ const adapterConstants = {
     PORTAL_REGION_ATTRIBUTE,
 
     getXpPath,
-    getPageUrlFromXpPath,
     getContentLinkUrlFromXpPath,
     getPublicAssetUrl,
     getXPRequestType,
