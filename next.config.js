@@ -1,6 +1,10 @@
-var IS_DEV_MODE = ((process.env.MODE || process.env.NEXT_PUBLIC_MODE) === 'development');
+let vercelUrl = process.env.VERCEL_URL;
+if (vercelUrl) {
+    vercelUrl = 'https://' + vercelUrl;
+}
+const nextDomain = vercelUrl || process.env.NEXT_DOMAIN;
 
 module.exports = {
     reactStrictMode: true,
-    assetPrefix: IS_DEV_MODE ? process.env.NEXT_DOMAIN : undefined,
+    assetPrefix: nextDomain ? nextDomain : undefined,
 }
