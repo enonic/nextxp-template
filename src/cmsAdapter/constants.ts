@@ -24,12 +24,15 @@ export const APP_NAME_UNDERSCORED = (APP_NAME || '').replace(/\./g, '_')
 export const APP_NAME_DASHED = (APP_NAME || '').replace(/\./g, '-')
 
 // The URL of the deployment. Example: my-site-7q03y4pi5.vercel.app
-let vercelUrl = process.env.VERCEL_URL;
-if (vercelUrl) {
-    vercelUrl = 'https://' + vercelUrl;
+let nextDomain = process.env.NEXT_DOMAIN || process.env.NEXT_PUBLIC_NEXT_DOMAIN;
+if (!nextDomain) {
+    let vercelUrl = process.env.VERCEL_URL;
+    if (vercelUrl) {
+        nextDomain = 'https://' + vercelUrl;
+    }
 }
 /** The domain (full: with protocol and port if necessary) of this next.js server */
-export const NEXT_DOMAIN: string = (vercelUrl || process.env.NEXT_DOMAIN || process.env.NEXT_PUBLIC_NEXT_DOMAIN) as string
+export const NEXT_DOMAIN: string | undefined = nextDomain;
 
 
 //////////////////////////////////////////////////////////////////////////  Hardcode-able constants

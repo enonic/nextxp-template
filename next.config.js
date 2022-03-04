@@ -1,10 +1,12 @@
-let vercelUrl = process.env.VERCEL_URL;
-if (vercelUrl) {
-    vercelUrl = 'https://' + vercelUrl;
+let nextDomain = process.env.NEXT_DOMAIN || process.env.NEXT_PUBLIC_NEXT_DOMAIN;
+if (!nextDomain) {
+    let vercelUrl = process.env.VERCEL_URL;
+    if (vercelUrl) {
+        nextDomain = 'https://' + vercelUrl;
+    }
 }
-const nextDomain = vercelUrl || process.env.NEXT_DOMAIN;
 
 module.exports = {
     reactStrictMode: true,
-    assetPrefix: nextDomain ? nextDomain : undefined,
+    assetPrefix: nextDomain,
 }
