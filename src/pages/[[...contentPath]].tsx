@@ -1,16 +1,13 @@
 import React from 'react';
-
-import {fetchContent, FetchContentResult} from "../cmsAdapter/guillotine/fetchContent";
-
-import MainView from "../cmsAdapter/views/_MainView";
-import {getPublicAssetUrl, XP_RENDER_MODE} from "../cmsAdapter/constants";
+import {fetchContent, FetchContentResult} from "../_enonicAdapter/guillotine/fetchContent";
+import MainView from "../_enonicAdapter/views/MainView";
+import {RENDER_MODE} from "../_enonicAdapter/constants";
 import {GetServerSideProps, GetServerSidePropsContext, GetServerSidePropsResult} from 'next';
 import {ParsedUrlQuery} from 'node:querystring';
 
-// Register Standard Components
-import "../cmsAdapter/baseMappings";
-// Register Custom Components
-import "../components/mappings";
+// Register component mappings
+import "../_enonicAdapter/baseMappings";
+import "../components/_mappings";
 
 export interface ServerSideParams
     extends ParsedUrlQuery {
@@ -20,7 +17,7 @@ export interface ServerSideParams
 
 export type Context = GetServerSidePropsContext<ServerSideParams>;
 
-////////////////////////////////////////////////////////////////////////////////////////////// SSR:
+// SSR
 
 export const getServerSideProps: GetServerSideProps = async (context: Context): Promise<GetServerSidePropsResult<FetchContentResult>> => {
     const {
@@ -30,30 +27,22 @@ export const getServerSideProps: GetServerSideProps = async (context: Context): 
         page = null,
     } = await fetchContent(context.params?.contentPath || [], context);
 
-    // throw it to be handled by nextjs error page
+
+    // HTTP 500
     if (error && error.code === '500') {
         throw error
     }
 
-    // return 418 if not able to render
-    if (meta && !meta.canRender && meta.renderMode != XP_RENDER_MODE.EDIT) {
+    // HTTP 418 if CMS is not configured to render item yet
+    if (meta && !meta.canRender && meta.renderMode != RENDER_MODE.EDIT && meta.renderMode != RENDER_MODE.NEXT) {
         context.res.statusCode = 418;
     }
 
     return {
-        // tells nextjs to render 404 page
+        // HTTP 404
         notFound: (error && error.code === '404') || undefined,
         props: {
-            content: {
-                ...content,
-
-                // Injecting into props some values used in the header:
-                layoutProps: {
-                    title: content?.displayName || "Next.JS",
-                    logoUrl: getPublicAssetUrl('images/xp-shield.svg', context),
-                }
-
-            },
+            content,
             meta,
             error,
             page,

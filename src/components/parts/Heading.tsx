@@ -1,6 +1,6 @@
 import React from "react"
-import {APP_NAME} from "../../cmsAdapter/constants";
-import {PartData} from '../../cmsAdapter/guillotine/_getMetaData';
+import {APP_NAME} from "../../_enonicAdapter/constants";
+import {PartData} from '../../_enonicAdapter/guillotine/getMetaData';
 
 // fully qualified XP part name:
 export const HEADING_PART_NAME = `${APP_NAME}:heading`;

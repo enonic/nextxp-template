@@ -1,0 +1,111 @@
+= Setting up Next.js
+:toc: right
+:toclevels: 3
+:imagesdir: media/
+
+In this chapter we will create a front-end application that renders pages based on content in the CMS.
+
+== Next.js at a glance
+
+link:https://nextjs.org/[**Next.js**] runs on top of link:https://nodejs.org/en/[Node.js], and provides a shrink-wrapped approach to building sites using the link:https://reactjs.org/[React framework]). Next.js supports both client-side rendering and link:https://nextjs.org/docs/basic-features/pages#static-generation-recommended[Server side rendering], as well as pre-generation of static HTML files.
+
+
+== Task: Create the Next.js project
+
+Get the code by running the following command:
+
+[source,bash,options="nowrap"]
+----
+npx degit git@github.com:enonic/nextjs-enonic-starter.git
+----
+
+The "nextjs-enonic-starter" is based on link:https://nextjs.org/docs/getting-started[Next.js' own introduction app], so if you're familiar with that, you'll recognize the structure of the files.
+
+The template includes some boilerplate we will customize, and some additional code that facilitates and simplifies integration with Enonic - aka **"the Enonic adapter"**.
+
+=== Code overview
+
+The following file structure should now exist within your new project folder:
+
+.Next project files:
+[source,files]
+----
+next.config.js                          <!--1-->
+.env
+.env.production
+.env.development
+src/
+    cmsAdapter/                         <!--2-->
+    components/                         <!--3-->
+    pages/
+        [[...contentPath]].tsx          <!--4-->
+        _app.tsx                        <!--5-->
+        _document.tsx
+----
+
+<1> These are the standard Next configuration files, we will use these to connect Next with Enonic.
+<2> Contains the Enonic adapter - which is essentially a "black box", and you should not change any of these files. This will be released as an NPM in the future.
+<3> Place your custom code here - integrates with Enonic via the adapter.
+<4> The fallback next.js router, that enables dynamic rendering based on content in the CMS. `$$[$$$$[$$...contentPath$$]$$$$]$$.tsx` is the "magical" entry point. This is not a typo, but Next.js syntax that makes it catch all HTTP requests.
+<5> `$$_$$app.tsx` and `$$_$$document.tsx` are vanilla Next.js modules that structure every rendering. You can add you own common structures here (eg. containers, layouts, styling, `<head>` etc), but be careful not to remove functionality needed by the XP's preview, as you will see later.
+
+TIP: It's also possible to <<reference#download-to-existing-nextjs-project, add the Enonic adapter into an existing Next.js project>> instead of starting from scratch.
+
+
+== Task: Configure application
+
+Before we can boot the application, we need to let it know the location of the Content API.
+
+TODO: 
+Configure API + SITEPATH
+
+== Task: Boot the server
+
+Let's fire up Next and see if things are working
+
+NOTE: Make sure <<enonic-setup#hmdb, Enonic and the Headless Movie Database app is running on localhost:8080>> before you continue
+
+Start Next.js in  **dev mode** by running the following commands from within your next project folder:
+
+    npm install
+    npm run dev
+
+If Next boots without errors, point your browser to http://localhost:3000 to see the glorious result.
+
+image:render-default-hmdb.png[title="Application root page, showing the title Headless Movie Database",width=400px]
+
+[TIP]
+====
+Running Next in DEV mode normally works fine, should you experience strange issues - simply reboot it using `npm run dev`
+
+For more details on booting Next, check out the link:https://nextjs.org/docs/api-reference/cli[Next.js CLI docs].
+====
+
+
+== Next URL handling
+
+This integrations makes the URLs in Next.js 1-1 with their respective counterparts in the CMS. So, http://localhost:3000 is linked to the site which is located on `/hmdb` in Content Studio.
+
+By visiting http://localhost:3000/movies/se7en the Next server will lookup, fetch and return content found on the path '/hmdb/movies/se7en' in the CMS. 
+
+TODO (image showing both next and CS at the same time)
+.Default render: movie content item se7en
+image:render-default-godfather.png[title="Default render: movie content item The Godfather",width=512px]
+
+.Se7en as seen in Content Studio edit mode
+image:path-content-item.png[title="The Godfather content item in Content Studio edit mode",width=400px]
+
+### Task: Visit some more pages
+
+Give the default rendering a spin by trying out some other URLs, for example: +
+
+* http://localhost:3000/movies +
+* http://localhost:3000/persons +
+* http://localhost:3000/persons/brad-pitt
+
+...etc.
+
+
+**That's it for the basic Next.js setup.**
+
+In <<rendering-basics#, the next chapter>>, we'll get into how we can customize the rendering.

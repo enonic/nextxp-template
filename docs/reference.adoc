@@ -1,0 +1,716 @@
+= API and Reference
+:toc: right
+:imagesdir: media/
+
+API
+
+[[default-behaviour]]
+## The default behaviour
+
+What does the Enonic adapter do out of the box, before we modify anything?
+
+When _$$[$$$$[$$...contentPath$$]$$$$]$$.tsx_ gets a request and resolves the URL path, it tries to fetch data for, and render, that content data. The adapter pipeline (`fetchContent`) will call Guillotine once to establish the content type (the "meta call" in _<<reference#two-queries, $$_$$getMetaData.ts>>_). It then checks the _<<reference#types-registry, type registry>>_ to see if any query and/or react component is connected to that content type. The query is sent to Guillotine in a second call (the "data call"), and whatever data is returned from that is used as props - the react pipeline is then started and the react component is used to render the page with those props.
+
+But if nothing has been added to the type registry for the content type (which happens in _src/cms/typesRegistration.ts_), it selects **the default query and react component:**
+
+* _src/cms/queries/_{zwsp}**_<<reference#two-queries, $$_$$getDefaultData.ts>>_**: very general overview data (might be used as-is, but it's recommended to override it anyway for all content types)
+* _src/cms/contentTypes/_{zwsp}**_link:https://github.com/enonic/nextjs-enonic-starter/blob/master/src/cms/contentTypes/_DefaultView.tsx[$$_$$DefaultView.tsx]_**. This detects run mode, and in prod mode displays empty whitespace, and in dev mode JSON-dumps data from the selected query onto the screen  - a handy tool for seeing the props you're working with when developing react components:
+
+
+[[pageeditor-compatibility]]
+### Compatibility
+When using XP components with Next.js as described in <<page-editor#, the page editor chapter>>, remember that the Next.js-rendering proxy basically outsources the entire rendering to the frontend server - both in the preview and outside. **Pages rendered with the proxy are not compatible with the "regular" thymeleaf kind of XP components** and vice versa:
+
+* Next.js-oriented components should only be dropped into Next.js-rendered regions (ie. regions on pages that use the proxy for rendering).
+* And the other way around, Next.js-rendered regions are only able to render Next.js-oriented components (ie. the components must have some corresponding implementation on the Next.js side, or nothing will be rendered).
+** XP's built-in components such as link:https://developer.enonic.com/docs/xp/stable/cms/components#text[text] and link:https://developer.enonic.com/docs/xp/stable/cms/components#image[images] work fine, though.
+
+
+
+## Connection configuration
+
+
+### Common constants
+
+ `APP_NAME` is less strictly necessary, but a tool for defining the target app name in XP in one place and reuse it:
+
+.$$.$$env
+[source,properties,options="nowrap"]
+----
+APP_NAME=com.example.myproject
+----
+
+### Environment-specific constants
+
+.$$.$$env.development
+[source,properties,options="nowrap"]
+----
+# XP server domain
+API_DOMAIN=http://localhost:8080
+
+# Which root site content item this server communicates with
+SITE=hmdb
+
+# Full URL to the guillotine API
+CONTENT_API_URL=$API_DOMAIN/site/hmdb/draft/$SITE/api
+----
+
+$$.$$..and...
+
+.$$.$$env.production
+[source,properties,options="nowrap"]
+----
+# XP server domain
+API_DOMAIN=http://localhost:8080
+
+# Which root site content item this server communicates with
+SITE=hmdb
+
+# Full URL to the guillotine API
+CONTENT_API_URL=$API_DOMAIN/site/hmdb/master/$SITE/api
+----
+
+{zwsp} +
+
+
+On startup, _enonic-connection-config.js_ reads these and exposes them as JS-side constants with utility functions.
+
+{zwsp} +
+{zwsp} +
+
+
+
+
+
+[[code-overview]]
+## Understanding the Enonic adapter
+
+### Structure overview
+
+
+[NOTE]
+====
+We'll focus on the Enonic adapter code here, not the surrounding Next.js code, from eg. _create-react-app_. Refer to the
+
+Since it's easier to to use to give an impression of what's going on, we'll also focus on code from the branch _simple-boileroate_. There's also a link:https://github.com/enonic/nextjs-enonic-starter/blob/master[_master_ branch]in the repo, of course - which follows the exact same way of thinking
+====
+
+You now have a project with some basic code under the _src/_ folder. As mentioned, it's **based on a standard minimal Next.js setup**, and some **Enonic adapter code** on top.
+
+NOTE: We'll only look at the Enonic adapter code here, not the Next.js code from _create-react-app_. Refer to the link:https://nextjs.org/docs/getting-started[official guide] for that.
+
+The adapter code in your project should be (all of them under _src/_, except for link:https://github.com/enonic/nextjs-enonic-starter/blob/simple-boilerplate/next.config.js[next.config.js] at the root, which has some adaptations necessary for CS preview):
+
+.Enonic adapter files:
+[source,files]
+----
+next.config.js
+
+src/
+    enonic-connection-config.js         <!--1-->
+
+    pages/
+        [[...contentPath]].jsx          <!--2-->
+
+    selectors/
+        queries/
+            _getMetaData.js             <!--3-->
+            _getDefaultData.js
+        contentSelector.js                 <!--4-->
+
+    guillotine/
+        fetchContent.js                 <!--5-->
+
+    components/
+        BasePage.jsx                    <!--6-->
+----
+
+<1> <<#connection-config, _enonic-connection-config.js_>> is a config file for setting up the connection to XP and holding some central constants and functions for that.
+<2> <<#contentpath-pages, _pages/$$[$$$$[$$...contentPath$$]$$$$]$$.jsx_>> (not a typo, but magic Next.js folder/filename syntax) is the main entry component. This will receive _all HTTP requests to the frontend_; then unpack an XP-content-targeting path from the URL, call the fetch-content function with that path, and pass the result down to the main renderer `BasePage`. It can be overridden on specific URLs, if needed.
+<3> <<#two-queries, Two guillotine queries>> for fetching data from XP:
+** _selectors/queries/$$_$$getMetaData.js_ fetches metadata (most importantly: "which XP content type is at this chosen path from the URL?"),
+** _selectors/queries/$$_$$getMetaData.js_ is the default, generic contentdata-fetcher (for every content type that _hasn't_ been set up with a specialized query),
+<4> <<#types-registry, _selectors/contentSelector.js_>> contains/exports an object `contentSelector`. This is where you map your XP content types to ways of handling them; mainly which guillotine query to run to fetch data, and which react component to render that with. See also the <<type-rendering#, usage chapter>>.
+<5> <<#fetchcontent, _guillotine/fetchContent.js_>> contains/exports a function `fetchContent`, which wraps all the heavy lifting for communicating with XP and normalizing the data (see <<#nextjs-flow, the figure below>>).
+<6> <<#basepage, _components/BasePage.jsx_>> is a helper react component used by _$$[$$$$[$$...contentPath$$]$$$$]$$.jsx_. It tries to select a react Page component for the content type (or falls back to a default Page), and passes the `content` data from XP into the selected Page (as its `props`) - or renders an error Page if needed.
+
+{zwsp} +
+
+[[nextjs-flow]]
+Or if you want an overview of the **interconnections and flow**, we can zoom in a little <<#nextjs-xp-flow, in the figure above>>:
+
+.Main flow (numbers here are just execution order):
+image:nextjs-flow.png[title="Main flow",width=912px]
+
+This figure will be <<#fetchcontent-explained, explained in more detail under `fetchContent`>>, since that does most of the work in the Enonic adapter. But let's look at the modules in an order that makes more sense, same as the order above.
+
+TIP: Each module has a link to the source code on github - so you can download the Enonic adapter separately to an existing Next.js project.
+
+{zwsp} +
+
+[[connection-config]]
+### 1. enonic-connection-config
+
+[TIP]
+====
+Source on github (link:https://github.com/enonic/nextjs-enonic-starter/blob/simple-boilerplate/src/[simple-boilerplate]): +
+**link:https://github.com/enonic/nextjs-enonic-starter/blob/simple-boilerplate/src/enonic-connection-config.js[enonic-connection-config.js]**
+====
+
+This mainly holds constants (and closely related functions) about the XP backend: server domain, API url, app name to communicate with, and which root site item to look below for data. It's the main place where <<#connection-config-setup, you configure the Next.js frontend's communication with XP>> (we'll look specifically at that later).
+
+[[connection-multiple]]
+[NOTE]
+====
+The config values are fixed with XP domain, project/layer, site name and branch. The consequence is that **this Next.js app will be bound to the values set here**. This is by design: it simplifies the communication between Next and XP, and makes an easy conceptual mapping between the root URL on the frontend, and a site item in the XP content hierarchy.
+
+For rendering with data from multiple branches, sites etc, a new Next.js app with different settings must be fired up for each of them. Starting a new Next.js app on an independent port (if running simultaneously in the same environment) is straightforward. Example for port 4242:
+
+[source, bash]
+----
+npx next start -p 4242
+----
+
+See link:https://nextjs.org/docs/api-reference/cli[the Next.js CLI reference]
+====
+
+{zwsp} +
+
+[[contentpath-pages]]
+### 2. $$[$$$$[$$...contentPath$$]$$$$]$$
+
+[TIP]
+====
+Source on github (link:https://github.com/enonic/nextjs-enonic-starter/blob/simple-boilerplate/src/[simple-boilerplate]): +
+pages/**link:https://github.com/enonic/nextjs-enonic-starter/blob/simple-boilerplate/src/pages/%5B%5B$$.$$$$.$$$$.$$contentPath%5D%5D.jsx[[[$$.$$$$.$$$$.$$contentPath]]]link:https://github.com/enonic/nextjs-enonic-starter/blob/simple-boilerplate/src/pages/%5B%5B$$.$$$$.$$$$.$$contentPath%5D%5D.jsx[.jsx]**
+====
+
+**_pages/$$[$$$$[$$...contentPath$$]$$$$]$$.jsx_** is a link:https://nextjs.org/docs/routing/dynamic-routes#catch-all-routes[catch-all route] in Next.js - a top-level rendering react component that not only handles requests at _one_ particular URL, but _all_ of them.
+
+This is the "main entry" of the Enonic adapter - it cooperates with `fetchContent` and `BasePage` to look for XP content corresponding to that path, and render it (or some error output).
+
+It's set up to link:https://nextjs.org/docs/basic-features/data-fetching#getserversideprops-server-side-rendering[server-side render] a first HTML response (Next.js picks up the `getServerSideProps` method). During this, it resolves the server-relative path from the URL, sends that to `fetchContent` and gets `{content, meta}` back, or `{error}`. It sends that result to `BasePage`, which decides the rest of the rendering.
+
+[NOTE]
+====
+Other react components under _pages/_ that enter into Next.js' link:https://nextjs.org/docs/basic-features/pages[regular Page routing] will **take priority** and override _$$[$$$$[$$...contentPath$$]$$$$]$$.jsx_.
+
+For example, if you have a file _pages/hello.jsx_ in your Next.js project alongside the Enonic adapter code, then http://localhost:3000/hello will be rendered by _hello.jsx_ while other pages are rendered by _$$[$$$$[$$...contentPath$$]$$$$]$$.jsx_. And if you have a file _pages/index.jsx_, it will take over at the root URL. And so on.
+====
+
+[TIP]
+====
+Wonder how a catch-all route works in isolation? If you temporarily _replace_ that file in your project with this one instead (or create it in a clean create-next-app), called _pages/$$[$$$$[$$...differentPath$$]$$$$]$$.jsx_...
+
+.Catch-all route demo: pages/$$[$$$$[$$...differentPath$$]$$$$]$$.jsx
+[source,javascript,options="nowrap"]
+----
+export const getServerSideProps = (context) => ({
+    props: {
+        path: context.params.differentPath
+    }
+});
+export default (props) => <pre>{ JSON.stringify(props) }</pre>;
+----
+...and <<#startup, start the Next.js server>> and navigate to http://localhost:3000/ or any path below it, you'll see that it serverside-renders a Page that just dumps its `props` to screen - where `context.params.differentPath` has caught the server-relative path from the URL (as an array). This is the first step of everything that happens in the Enonic adapter.
+
+Now remember to remove _$$[$$$$[$$...differentPath$$]$$$$]$$.jsx_ and reinstate _pages/$$[$$$$[$$...contentPath$$]$$$$]$$.jsx_...
+====
+
+{zwsp} +
+
+
+[[two-queries]]
+### 3. Two queries: meta and default
+
+[TIP]
+====
+Source on github (link:https://github.com/enonic/nextjs-enonic-starter/blob/simple-boilerplate/src/[simple-boilerplate]): +
+selectors/queries/**link:https://github.com/enonic/nextjs-enonic-starter/blob/simple-boilerplate/src/selectors/queries/$$_$$getMetaData.js[$$_$$getMetaData.js]** +
+selectors/queries/**link:https://github.com/enonic/nextjs-enonic-starter/blob/simple-boilerplate/src/selectors/queries/$$_$$getDefaultData.js[$$_$$getDefaultData.js]**
+====
+
+`fetchContent` makes two calls to the guillotine API with two separate guillotine queries (marked in blue in the <<#nextjs-flow, flow overview>> above):
+
+* The first call with the query in **_selectors/queries/_getMetaData.js_**, is a "meta" call primarily to get the content `type` on the content item on that path.
+
+* The second call is a "content" call, with a query selected from `contentSelector` with the content `type`. Whenever no query was found there for the content `type`, `fetchContent` will use the generic default query - the one in **_selectors/queries/_getDefaultData.js_**.
+
+[[recommend-custom-query]]
+NOTE: A strong recommendation is written into the source: `_getDefaultData` is a **development tool** - a fallback when nothing was selected by type, and useful during development to view some basic content before expanding the query. But it's a badly-scaling query - so instead of using it in production, you should add your own queries and hook them in with `contentSelector`. This is the focus of the <<type-rendering#, next chapter>>.
+
+NOTE: Both these queries are <<enonic-setup#variables, parameterized with `$path`>>: they target a content item in XP based on its content path (or here, `$path`). How this works? Behind the scenes,  `fetchContent` automatically sends to the guillotine API a `variables` object (with the content `path` derived from _$$[$$$$[$$...contentPath$$]$$$$]$$.jsx_ auto-filled in), along with the selected query.
+
+{zwsp} +
+
+
+[[types-registry]]
+### 4. The type selector
+
+[TIP]
+====
+Source on github (link:https://github.com/enonic/nextjs-enonic-starter/blob/simple-boilerplate/src/[simple-boilerplate]): +
+selectors/**link:https://github.com/enonic/nextjs-enonic-starter/blob/simple-boilerplate/src/selectors/contentSelector.js[contentSelector.js]**
+====
+
+This is a file that at the base of it, only exports an object: the `contentSelector`. This is used by both `fetchContent` and `BasePage`.
+
+**Typeselector.js is intended for you to modify!** The `contentSelector` object maps XP content-type strings to an object with handlers for that content type - in other words, use it to select which of your own queries, props-handling and react objects go with which XP content types from the backend.
+
+TIP: The upshot is that once this is set up, you only need to populate XP with content items, and Next will use the URL to route to them, and use the content type to render them as custom Pages with their data from the specified query.
+
+[[type-selection]]
+The overall shape of the `contentSelector` object is:
+
+[source, options="no-wrap"]
+----
+contentSelector = {
+    "contentTypeString": {query?, page?, props?},
+    "anotherContentType": {query?, page?, props?},
+
+    ...etc
+}
+----
+
+The content type keys map to a **"type selection"** value, which is an object: `{query?, page?, props?}`. This means it should have at least one of the attributes <<#selector-query, `query`>>, <<#selector-page, `page`>>, and/or <<#selector-props, `props`>>. Without any of them, defaults are used (so it won't break, but there's no point either).
+
+
+
+
+[[type-selector-key]]
+#### Keys: content type strings
+
+The content type keys must be _full XP content type_ strings, with app name and type name - e.g. `"base:folder"`, `"com.example.myproject:my-content-type"`, etc.
+
+Or, when importing the app name to keep that defined in one place:
+
+[source,javascript,options="no-wrap"]
+----
+import { appName } from "../enonic-connection-config";
+
+contentSelector = {
+    [`${appName}:my-content-type`]: {       <!--1-->
+
+        // ...
+    },
+}
+----
+<1> Resolving a key value where the app name was imported from _enonic-connection-config.js_
+
+TIP: Each of the the XP content types you want Next.js to handle by type, should be added in `contentSelector`. They may of course share queries, pages etc between them, that's up to you, but they need their own entry in `contentSelector` to be handled.
+
+
+[[selector-query]]
+#### query
+The `query` attribute (in the <<#type-selection, "type selection">> value object) is the query that will be used when fetching content (but not meta) from an XP content item of that content type - instead of the <<#two-queries, default query>>. In this simple form, `query` is just the <<enonic-setup#queries, guillotine-format query string>>.
+
+NOTE: This simple form is suitable for queries that only declare the `$path` parameter (as shown <<enonic-setup#variables, before>>). If you add more parameters in your query, the `variables` object (that's automatically sent along with the query to the guillotine API) must contain values for those parameters too. In order to add that, use the <<#selector-variables, composite form of `query`>> to add a variables-resolving function.
+
+##### query simple example:
+
+[source,javascript,options="no-wrap"]
+----
+import { appName } from "../enonic-connection-config";
+
+const getDisplayName = `                            <!--1-->
+    query($path:ID!){
+      guillotine {
+        get(key:$path) {
+          displayName
+    } } }
+`;
+
+contentSelector = {
+    [`${appName}:my-content-type`]: {
+        query: getDisplayName,                      <!--2-->
+    },
+}
+----
+<1> A simple custom guillotine query, only requesting the displayname of the target content item in XP (at the parameterized `$path` - so no extra variables are needed for this query: `path` is handled automatically).
+<2> Using the `getDisplayName` string as the `query` value for all items of `my-content-type` in the XP app.
+
+
+[[selector-variables]]
+#### query + variables
+
+Alternatively, the `query` attribute _may also add_ an override function to resolve the `variables` object that the Enonic adapter sends to the guillotine API along with the query string. This is necessary when the query declares more/other <<enonic-setup#variables, parameters>> than `$path`: those values are needed in the `variables` object.
+
+This function has the general form `(path, context) => variables`
+
+...where
+
+* `path` is the full XP content path (already resolved by the Enonic adapter), +
+* `context` is a link:https://nextjs.org/docs/api-reference/data-fetching/getInitialProps#context-object[Next.js context object], and +
+* `variables` is an output object with attributes that match the query's parameters (remember: parameters start with `$` in the query, but not in the `variables` object).
+
+The query and the variables function are kept under the same `query` key because they are so tightly connected, and because a custom variables function requires a custom query.
+
+So in addition to the simple `string` format described <<#selector-query, above>>, `query` can also supply a `variables` function using one of these 2 formats:
+
+* `{query, variables}`: an object, with its own `query` attribute (where the value is the query string) and a `variables` attribute (where the value is the variables-resolving function),
+* `[string, function]`: Or as a shorthand, an array where the query string is first and the variables-resolving function comes second.
+
+NOTE: Vice versa: if your query only declares a `$path` parameter, no `variables` function is needed. Use the <<#selector-query, simple form of `query`>> instead.
+
+##### variables usage example:
+
+[source,javascript,options="no-wrap"]
+----
+import { appName } from "../enonic-connection-config";
+
+const getSomeItemsBelowFolder = `                   <!--1-->
+    query($path:ID!,$maxChildren:Int){
+      guillotine {
+        get(key:$path) {
+          displayName
+            ...on base_Folder {
+            children(first:$maxChildren) {          <!--1-->
+                displayName
+                _path
+            }
+          }
+        }
+      }
+    }
+`;
+
+const resolveVariables = (path, context) => ({       <!--2-->
+    path: path,
+    maxChildren: 1000
+});
+
+
+contentSelector = {
+    'base:folder': {
+        query: {
+            query: getSomeItemsBelowFolder,         <!--3-->
+            variables: resolveVariables
+        }
+    },
+
+    [`${appName}:custom-folder-type`]: {
+        query: [ getSomeItemsBelowFolder, resolveVariables ]     <!--4-->
+    }
+}
+----
+<1> This query has a bit more complexity than in the previous example. In addition to the the `base_Folder` <<enonic-setup#introspection, introspection>>, it has an extra `$maxChildren` parameter (which dynamically controls the number of child items to fetch). So it needs a variables object that supplies `maxChildren` in addition to `path`...
+<2> ...and the `resolveVariables` function returns that object. Just hardcoding 1000 here to keep it simple, but using the link:https://nextjs.org/docs/api-reference/data-fetching/getInitialProps#context-object[`context` object], there's a lot it can resolve dynamically.
+<3> First format: `query` is an object with a `query` and a `variables` attribute. `query.query` is the query string, and `query.variables` is the variables-resolving function. Now `fetchContent` will pick up that function to resolve the actual variables, and send them with the query.
+<4> Alternative shorter syntax: `query` is an array where the query string comes first, and the variables-resolving function last.
+
+
+[[selector-props]]
+#### props
+
+The `props` attribute (in the <<#type-selection, "type selection">> value object) is a way to preprocess the data returned from a successful guillotine API call. Adding a function here will change the `content` output from `fetchContent` for all content items of the target content type.
+
+The function has the general form `(oldContent, context) => newContent`
+
+...where
+
+* `oldContent` is the object that would otherwise be returned as `content` from `fetchContent`, +
+* `context` is a link:https://nextjs.org/docs/api-reference/data-fetching/getInitialProps#context-object[Next.js context object], and +
+* `newContent` is the object that will now be returned as `content` from `fetchContent` - and will become the props object of the <<#selector-page, selected react Page>> component (as well as inline props in the server side rendered HTML etc).
+
+##### props usage example:
+
+[source,javascript,options="no-wrap"]
+----
+import { appName } from "../enonic-connection-config";
+
+const getDisplayName = `
+    query($path:ID!){
+      guillotine {
+        get(key:$path) {
+          displayName                               <!--1-->
+    } } }
+`;
+
+const getMyName = (content, context) => ({          <!--2-->
+    name:  content.displayName,
+    catchPhrase: "Hi! My name is Slim " + content.displayName
+});
+
+contentSelector = {
+    [`${appName}:my-content-type`]: {
+        query: getDisplayName,
+        props: getMyName,                           <!--3-->
+    },
+}
+----
+<1> This query is hooked in for the content type `my-content-type`. It would usually cause `fetchContent` to return a `content` value of `{ displayName: "some displayName of the item in XP" }`, for that content type,
+<2> A function `getMyName` takes `content.displayName` and returns that in an object with both `name` and `catchPhrase` instead (and no `displayName`),
+<3> So since `contentSelector` for that content type adds `getMyName` as the `props` preprocessor, the entire `content` is replaced before before being returned from `fetchContent`.
+
+[[selector-page]]
+#### page
+
+The `page` attribute (in the <<#type-selection, "type selection">> value object) is used by `BasePage` (not by `fetchContent` like `query` and `props` are), to select which react component should render the page. This react component will use the `content` it gets from `fetchContent` as props - _after_ any <<#selector-props, preprocessor from `props`>> may have handled it.
+
+##### page usage example:
+
+[source,javascript,options="no-wrap"]
+----
+import { appName } from "../enonic-connection-config";
+
+const RenderName = (props) => (                     <!--1-->
+    <>
+        <h1>{props.displayName}</h1>                <!--2-->
+        <p>I am a {props.type}</p>
+    </>
+);
+
+contentSelector = {
+    [`${appName}:my-content-type`]: {
+        page: RenderName,                           <!--2-->
+    },
+}
+----
+<1> Regular React component...
+<2> ...receiving the `content` from `fetchContent` as props. We're skipping the `query` here and just leaning on the <<#two-queries, default query>> (and again, <<#recommend-custom-query, don't do this at home>>), which will provide `displayName` and `type` in `content`. So the props are ready for the `RenderName` component by default...
+<3> ...and all we need is to add it as `page` here.
+
+
+{zwsp} +
+
+[[fetchcontent]]
+### 5. fetchContent
+
+[TIP]
+====
+Source on github (link:https://github.com/enonic/nextjs-enonic-starter/blob/simple-boilerplate/src/[simple-boilerplate]): +
+guillotine/**link:https://github.com/enonic/nextjs-enonic-starter/blob/simple-boilerplate/src/guillotine/fetchContent.js[fetchContent.js]**
+====
+
+`fetchContent` does most of the heavy lifting in the Enonic adapter code. It's a bit complex, but can be boiled down to a function with a simple usage:
+
+[source,options="no-wrap"]
+----
+fetchContent = path => contentToRender
+----
+
+A bit more precisely, it takes `contentPath` and an optional link:https://nextjs.org/docs/api-reference/data-fetching/getInitialProps#context-object[Next.js `context` object], and returns either the `content` and some `meta` data (where you'll find the content type) - _or_ an `error`, if any is caught:
+
+[source,options="no-wrap"]
+----
+fetchContent = (contentPath, context) => {content, meta}
+
+...or...
+
+fetchContent = (contentPath, context) => {error}
+----
+
+`fetchContent` is called in <<#contentpath-pages, _$$[$$$$[$$...contentPath$$]$$$$]$$.jsx_>>, which gets this result back and then then leaves it to `BasePage` to render the output of that:
+
+* `content`: the content data that was fetched from the guillotine API. This will be used as `props` in the Page components that visualize the content.
+* `meta`: metadata object about the fetching and the result - notably this contains a content `type` field with the XP content type (`BasePage` uses this to select a Page react component for rendering)
+* `error`: errors that happen during fetching are gathered here. `BasePage` will handle these too.
+
+[[fetchcontent-explained]]
+#### Flow details
+
+Looking a bit deeper at the flow of things in `fetchContent`: it's probably best explained with a glance at the "map" we saw before, so here it is again.
+
+.Overview: fetchContent in the Enonic adapter flow
+image:nextjs-flow.png[title="Main flow",width=912px]
+
+Overview, including details that are not in the figure (size constraints):
+
+<1> `fetchContent` receives a `contentPath` (Next.js' resolved server-relative path from the request URL - from the filename of <<#contentpath-pages, _$$[$$$$[$$...contentPath$$]$$$$]$$.jsx_>>) and the optional `context` argument (containing request data and more),
+<2> It resolves the actual XP content `path`, and performs the <<#two-queries, $$_$$getMetaData>> API call to XP to fetch the content `type` of the content item targeted by the path,
+<3> The `type` is used to look for a "<<#type-selection, type selection>>" object in the `contentSelector`. It uses that to get the type's <<#selector-query, `query`>> (or if none: the <<#two-queries, $$_$$getDefaultData>> query) and <<#selector-variables, `variables`>>-resolving function. A `variables` object is created from that function - or just a default `variables` with `path`.
+<4> The `query` and `variables` (which by now _should_ contain the `path`, but if you override the <<#selector-variables, `variables`>> that's up to you and your query) are sent to the API in a second "content call". The returned result is checked/normalized/parsed into a `content` object. If the type selection object from before contained a <<#selector-props, `props`>> preprocessor function, `content` is now passed through that. `type` is packed into a `meta` object, and `{content, meta}` or `{error}` is returned (back to <<#contentpath-pages, _$$[$$$$[$$...contentPath$$]$$$$]$$.jsx_>> before `BasePage`, of course).
+
+In addition: error catching along the way, and before any of this, `fetchContent` is "loaded up" with the constants from <<#connection-config, _enonic-connection-config.js_>>.
+
+{zwsp} +
+
+[[basepage]]
+### 6. BasePage
+
+[TIP]
+====
+Source on github (link:https://github.com/enonic/nextjs-enonic-starter/blob/simple-boilerplate/src/[simple-boilerplate]): +
+components/**link:https://github.com/enonic/nextjs-enonic-starter/blob/simple-boilerplate/src/components/BasePage.jsx[BasePage.jsx]**
+====
+
+The final piece in the puzzle: `BasePage` receives `{content, meta}` (where `meta` contains `type` and more) or `{error}` from `fetchContent` (passed in via <<#contentpath-pages, `$$[$$$$[$$...contentPath$$]$$$$]$$.jsx`>> where `fetchContent` was called). `BasePage` uses `{content, meta, error}` to determine the rendering:
+
+* `ErrorPage` if any `error`. Or, if no error:
+* Use `meta.type` to select a <<#selector-page, `page`>> react component from `contentSelector`
+** ...or if none was found there, select the `DefaultPage` component included in _BasePage.jsx_,
+* Render the selected component with `content` as its props.
+
+{zwsp} +
+
+[[basepage-output]]
+The server-side rendered response is finally sent to the browser: HTML, inline CSS, clientside JS - including the `props` inlined by Next.js for activating the react component in the browser: link:https://reactjs.org/docs/react-dom.html[React.hydrate] performs a **re-rendering in the browser**, which will also use any API calls set up.
+
+.Recap: the rendered output, in context:
+image:nextjs-xp-flow.png[title="Flow figure: the rendered output sent back to the user",width=812px]
+
+
+[[download-to-existing-nextjs-project]]
+## Insert the Enonic adapter into any existing Next.js project
+It's also possible to **add the Enonic adapter into an existing Next.js project** instead of starting from scratch. To do that, go to link:https://github.com/enonic/nextjs-enonic-starter/tree/master[the repo on github] and:
+
+* Download everything in the folder **_src/enonicAdapter_**
+* Download (or merge with what you already have) 4 files at the project **root**:
+** _next.config.js_,
+** _.env_,
+** _.env.production_ and
+** _.env.development_
+* Download (or merge) 3 files under the folder **_pages/_**:
+** _$$_$$app.tsx_,
+** _$$_$$document.tsx_ and
+** _$$[$$$$[$$...contentPath$$]$$$$]$$.tsx_
+* Depending on how you set up what to render (which should be clearer from the rest of this guide), you may also need to download (or at least look into and customize for yourself) some files from **below _src/cms/_**:
+** _typesRegistration.ts_
+** _queries/$$_$$getDefaultData.ts_
+** _contentTypes/$$_$$DefaultView.tsx_
+** _components/$$_$$Text.tsx_
+** _parts/$$_$$Part.tsx_
+** _layouts/$$_$$Layout.tsx_
+
+
+
+[[adapter-files]]
+.Enonic adapter files:
+[source,files]
+----
+next.config.js                          <!--1-->
+.env                                    <!--2-->
+.env.production
+.env.development
+
+src/
+
+    enonicAdapter/                          <!--2-->
+        enonic-connection-config.ts     <!--3-->
+        guillotine/
+            fetchContent.ts             <!--4-->
+        views/                          <!--5-->
+            _MainXpView.tsx
+            _Region.tsx
+        ...
+
+    cms/                           <!--6-->
+        queries/                        <!--7-->
+            _getMetaData.ts
+            _getDefaultData.ts
+        components/                     <!--8-->
+            _Image.tsx
+            _Text.tsx
+        contentTypes/
+            _DefaultView.tsx
+        parts/
+            _Part.tsx
+
+        contentSelector.ts              <!--9-->
+        componentSelector.ts
+        partSelector.ts
+
+    pages/
+        [[...contentPath]].tsx          <!--10-->
+        _app.tsx                        <!--11-->
+        _document.tsx
+
+    components/
+        errors/                         <!--12-->
+            404.tsx
+            500.tsx
+            Error.tsx
+
+----
+_Filename links_ below point to where they are explained in further depth, in the <<reference#, API and reference>> chapter:
+
+<1> **At the root, there are some project config files**:
+** _next.config.js_ is part of a normal Next.js setup (not specifically the Enonic adapter as such), but just mentioning an adjustment here that helps <<preview#, XP Content Studio preview>> to work.
+** _.env, .env.production_ and _.env.development_ are config files with constants for <<#connection-config-setup, setting up the connection to XP>>. They are runmode-specific, meant to connect dev and prod mode at Next.js to the draft and master branches at XP, respectively.
++
+{zwsp} +
+<2> **The folder _src/enonicAdapter_ contains the core functionality of the Enonic adapter**. It's editable of course, but meant to be more or less static - only fairly advanced projects should need to edit anything in here.
++
+A few cogs in the machinery worth knowing about are:
+<3> _src/enonicAdapter/<<reference#, enonic-connection-config.ts>>_: collects the constants from the _.env$$*$$_ files and exposes them to the JS modules below, as well as some handy connection-specific util functions often derived from those constants.
+<4> _src/enonicAdapter/guillotine/<<reference#fetchcontent, fetchContent.ts>>_ contains/exports a function `fetchContent`, which wraps all the heavy lifting for communicating with XP and normalizing the data into a returned format ready to be passed on as react props.
+<5> The _src/enonicAdapter/views_ folder contains several react components that are early in the rendering chain, receiving basic props from `fetchContent` and handling them. In total, they decide the main structure to be rendered depending on the data structure from XP. Most notable here are _$$_$$MainXpView.tsx_ (which is the first component in the chain) and _$$_$$Region.tsx_ (which can be imported into custom components that are meant to display an XP page editor structure: parts, layouts, texts, images etc).
++
+{zwsp} +
+<6> **The folder _src/cms_ is intended for editing/adding your own XP-related stuff**. It already contains some default-behavior files, which are marked by names starting with an underscore: `$$_$$...`. You can of course edit these, but then you'll get the same behavior everywhere. Instead, the idea is to add your own customized queries and react components here, and add rules for when they should override the defaults.
++
+The most noteworthy out-of-the-box files here are:
+<7> _src/cms/queries_ contains two default guillotine queries, for fetching data from XP (this might also be a place to add your own custom queries, unless you prefer to keep your queries closer to the react components that use them):
+** _src/cms/queries/<<reference#two-queries, $$_$$getMetaData.ts>>_ fetches metadata: _"Which XP content type is at this chosen path from the URL? Does the content item come with a structure from the page editor?"_,
+** _src/cms/queries/<<reference#two-queries, $$_$$getDefaultData.ts>>_ is the default, generic data-fetcher for every content type that _hasn't_ been set up with a specialized query. Plugging in custom queries in the _contentSelector_ (see below) will override this query.
+<8> Still under _src/cms_, some folders that correspond to XP structures and contain default-view react components for visualizing them:
+** The _contentTypes/_ folder focuses on <<type-rendering#, rendering content based on the targeted item's content type>>. This is controlled in _contentSelector.ts_ (see below), and has a _DefaultView.tsx_ for rendering any "un-selected" type,
+** The _components/_ and _parts/_ folders contain default react components for <<page-editor#, visualizing XP stuff that's been dragged into a region>> in Content Studio (visualized with _Region.tsx_ here). _components/_ is for prebuilt XP components like image and text, and _parts/_ is for XP parts.
+<9> At the root of the _src/cms/_ folder are also three **"selector" files**. These are consumed by both `fetchContent` and the react structure in _src/enonicAdapter/view_. This is where you <<reference#types-registry, customize rules>> for which query (for fetching custom data structures) and react components (for visualizing the fetched data) to pick under what conditions:
+** _contentSelector.ts_ connects content types from XP to a query string and a react component,
+** _componentSelector.ts_ is a selector for the built-in components of XP, images and text components,
+** _partSelector.ts_ does the same thing for custom parts from XP that are in a region on the page.
++
+{zwsp} +
+<10> The rest is more general Next.js code, but set up with some important connections to the Enonic adapter:
++
+**_src/pages/<<reference#contentpath-pages, $$[$$$$[$$...contentPath$$]$$$$]$$.tsx>>_ is the main entry component.** That filename is not a typo, but magic Next.js folder/filename syntax. It makes this component catch _all_ HTTP requests to the frontend so it can delegate things onward from there:
++
+** It unpacks an XP-content-targeting path from the URL,
+** calls the `fetchContent` function with that path,
+** and passes on the resulting data as `props` to the main renderer _$$_$$MainXpView.tsx_ (in _src/enonicAdapter/views_), which handles the rest.
+<11> But before that's directly rendered and returned, Next.js offers two intermediary components that are used here:
+** _$$_$$app.tsx_ is the "main wrapper". Here, the `props` from _$$[$$$$[$$...contentPath$$]$$$$]$$.tsx_ enters as `pageProps` and is passed on to the main `<Component>` (which is _$$_$$MainXpView.tsx_). This "middle man" step is important for two reasons: it detects XP edit-mode and single-component rendering (necessary for parts etc to update while editing in XP). And it's where you'd wrap _everything_ that's rendered in a common surrounding react structure (for example having a common header and footer, perform dynamic changes to the `<head>` section of your page, etc.)
+** _$$_$$document.tsx_ is a static wrapper that generally shapes the output HTML document, and adds some extra properties to it that makes it all work in XP.
+<12> Finally, some error components that are rendered by _$$_$$MainXpView.tsx_ if anything goes awry.
+
+
+
+[[workflow]]
+## Workflow
+
+Overall, the examples here illustrate a simple and fast workflow (and of course, adaptable far beyond this scenario), once <<enonic-setup#xp-setup, XP>> and <<nextjs-setup#setup, the adapter>> are set up:
+
+1. Create a link:https://developer.enonic.com/docs/content-studio/stable/content-types[**content type**] in code in the XP app, with appropriate fields for defining the link:https://developer.enonic.com/docs/xp/stable/cms/input-types[data structure] you need. No other views, controllers, or other XP-side code is needed for now.
++
+Make a note of the full content type name: a colon-separated string with both <<enonic-setup#new-project, app>> and <<enonic-setup#xp-content, type>> name, for example `'com.example.myproject:my-content-type'`.
++
+<<enonic-setup#xp-setup, Redeploy>> the XP app.
++
+TIP: Remember, you can also look up the `type` value with the <<nextjs-setup#hierarchy, Content Viewer>>.
++
+TIP: Now is also a good time to log in to XP link:https://developer.enonic.com/docs/content-studio/stable/navigator[Content Studio] and **create a first link:https://developer.enonic.com/docs/content-studio/stable/actions#new[new content item]** of your new type with some values - both to verify the content type and to have an example data point as you proceed.
++
+{zwsp} +
+
+2. In the Next.js app, write a <<enonic-setup#queries, **guillotine query**>> string to fetch props for the content type. Ideally, _each_ content type should have a query string specialized for its data strucure (for example resolving deeper references to images and other content, etc). The aim is to end up with a useful data shape for the front end: the `props` of the coming custom Page.
+{zwsp} +
+
+3. **Connect the query to the content type** name by adding a <<nextjs-setup#selector-query, `query` entry>> for the type in `contentSelector`. You can also add a <<nextjs-setup#selector-props, `props` preprocessor>> for the content type if you want to manipulate the result from the query before it's passed in as `props`.
++
+If you're not running Next.js in <<nextjs-setup#startup, dev mode>>, rebuild and **redeploy** the Next.js app now.
++
+TIP: You can now **verify and inspect the output of the query**: navigate to the <<nextjs-setup#paths, Next.js URL of a content item of the new type>>. `DefaultPage` in _BasePage.jsx_ renderer will display the data fetched by the query.
++
+{zwsp} +
+
+4. Write a **Page to render the content data**. It should be a regular react component that follows the link:https://nextjs.org/docs/basic-features/pages[Next.js Page pattern] and uses the `content` from `fetchContent` as its `props` (as displayed by `DefaultPage`).
++
+{zwsp} +
+
+5. Back in `contentSelector`, **connect the react component content type to the Page**, by adding a <<nextjs-setup#selector-page, `page` attribute>> to the content type entry.
++
+Again, rebuild and **redeploy** the Next.js app if needed.
++
+{zwsp} +
+
+Now the Next.js frontend should **use the new query and page component to render all content items of the new type**. So from there on, handling existing and new web pages of that type is easy in XP Content Studio.
+
+There are of course some more details and possibilities here, we'll look at that later.
+
+[TIP]
+====
+Type selection isn't really mandatory, and all subfields in the entry like `query` and `page` are optional and independent. Anything not found in `contentSelector` will cause the boilerplate to fall back to the <<nextjs-setup#default-render, default behavior>>.
+
+But **it's _highly recommended_ to write custom handling** - not just for visuals, but a good guillotine query scales better than the default query, and allows much more data depth in a single request.
+====

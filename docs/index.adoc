@@ -1,0 +1,47 @@
+= WYSIWYG moderns stack website with Next.js + Enonic
+This is a step-by-step tutorial for setting up a Next.js site, powered by Enonic, and providing editors with full WYSIWTYG page editing capabilities.
+
+:toc: right
+:imagesdir: media/
+
+image:nextjs.svg[title="React4xp logo",width=312px]
+
+
+[NOTE]
+====
+This guide assumes you are already somewhat familiar with link:https://nextjs.org/[Next.js]. Experience with Enonic is recommended, but not required. 
+
+Please check out these tutorials before you continue:
+
+- link:https://nextjs.org/learn/basics/create-nextjs-app[Next.js Tutorial]
+- link:https://developer.enonic.com/templates/headless-cms/[Headless CMS Primer]
+====
+
+== Introduction
+
+In this tutorial we will demonstrate a powerful approach where the structure and content in the CMS determines the URLs and content available in the front-end. This is possible as Enonic (unlike many other Headless CMS') supports tree-structures. 
+
+This setup basically provide editors with a CMS experience they are accustomed to, and developers get a front-end that is cleanly separated from the CMS. The headless architecture ensures the content can be accessed and used by other clients as well - ofcourse.
+
+[[nextjs-xp-flow]]
+image:nextjs-xp-flow.png[title="User performs a request to the Next.js app, which resolves the URL path, then queries Enonic for content matching that path in the CMS. The response is passed as props to the react component, which renders it and returns the HTML response to the user.",width=912px]
+
+== Overview
+
+You will complete the following steps:
+
+* Setup an Enonic app using a template
+* Run queries against the Headless API
+* Create a Next.js app using a next template
+* Setting up preview in Enonic
+* Rendering content based on its type
+* Building and creating WYSIWYG landing pages
+* Deploying to production 
+
+
+[[tldr]]
+== TLDR;
+
+The impatient may skip directly to the end of this tutorial by following the instructions below. If you want to learn what is really happening, head on to the <<TODO, first chapter of this tutorial>>
+
+

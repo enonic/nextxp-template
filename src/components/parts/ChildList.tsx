@@ -1,7 +1,8 @@
 import React from "react"
-import {PartProps} from '../../cmsAdapter/views/_BasePart';
+import {PartProps} from '../../_enonicAdapter/views/BasePart';
 import {Context} from '../../pages/[[...contentPath]]';
-import {VariablesGetterResult} from '../../cmsAdapter/TypesRegistry';
+import {VariablesGetterResult} from '../../_enonicAdapter/TypesRegistry';
+import {getUrl} from '../../_enonicAdapter/constants'
 
 const ChildList = (props: PartProps) => {
     const {data} = props;
@@ -17,7 +18,7 @@ const ChildList = (props: PartProps) => {
                 <ul>{
                     children.map((child: any, i: number) => (
                         <li key={i}>
-                            <a href={child._path}>
+                            <a href={getUrl(child._path)}>
                                 {child.displayName}
                             </a>
                         </li>

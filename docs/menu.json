@@ -1,0 +1,40 @@
+{
+    "menuItems": [
+        {
+            "title": "1 - Enonic setup",
+            "document": "enonic-setup"
+        },
+        {
+            "title": "2 - Next.js setup",
+            "document": "nextjs-setup"
+        },
+        {
+            "title": "3 - Rendering basics",
+            "document": "rendering-basics"
+        },
+        {
+            "title": "4 - Preview",
+            "document": "preview"
+        },
+        {
+            "title": "6 - Custom pages",
+            "document": "pages"
+        },
+        {
+            "title": "7 - Parts and layouts",
+            "document": "components"
+        },
+        {
+            "title": "8 - Page templates",
+            "document": "templates"
+        },
+        {
+            "title": "9 - Deployment",
+            "document": "deployment"
+        },
+        {
+            "title": "Appendix",
+            "document": "reference"
+        }
+    ]
+}

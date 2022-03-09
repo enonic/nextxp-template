@@ -1,6 +1,6 @@
 import React from "react"
-import { PageProps } from "../../cmsAdapter/views/_BasePage";
-import RegionsView from '../../cmsAdapter/views/_Region';
+import { PageProps } from "../../_enonicAdapter/views/BasePage";
+import RegionsView from '../../_enonicAdapter/views/Region';
 
 const MainPage = (props: PageProps) => {
     const page = props.page;

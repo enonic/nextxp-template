@@ -10,3 +10,4 @@ module.exports = {
     reactStrictMode: true,
     assetPrefix: nextDomain,
 }
+    

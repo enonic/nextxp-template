@@ -1,6 +1,6 @@
 import React from "react"
-import {RegionView} from '../../cmsAdapter/views/_Region';
-import {LayoutProps} from '../../cmsAdapter/views/_BaseLayout';
+import {RegionView} from '../../_enonicAdapter/views/Region';
+import {LayoutProps} from '../../_enonicAdapter/views/BaseLayout';
 
 const TwoColumnLayout = (props: LayoutProps) => {
     const regions = props.layout.regions;

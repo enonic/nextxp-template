@@ -1,0 +1,196 @@
+= Page templates
+:toc: right
+:imagesdir: media/
+
+So far, rendering has been based on content types - hardcoded by the developer. In this chaper we will enable editors to compose their own pages.
+
+## Task: The Movie details component
+
+In this task, we'll focus on rendering of movies - this time however, we'll register the view and query in a different way.
+
+. **Add the `movie-details` part** to the Enonic app
++
+TODO
++
+. **Register the Movie query and view** in the Next app
++
+.src/cms/contentTypes/Movie.jsx
+[source,JavaScript]
+----
+import React from "react"
+import {APP_NAME, APP_NAME_UNDERSCORED, getContentLinkUrlFromXpPath} from '../../enonicAdapter/enonic-connection-config'
+
+// fully qualified XP content-type name:
+export const MOVIE_CONTENTTYPE_NAME = `${APP_NAME}:movie`;
+
+// -------------------------------------- Query:
+export const movieQuery = `
+query($path:ID!){
+  guillotine {
+    get(key:$path) {
+      type
+      displayName
+      ... on ${APP_NAME_UNDERSCORED}_Movie {
+        data {
+          subtitle
+          abstract
+          trailer
+          release
+          photos {
+            ... on media_Image {
+              imageUrl: imageUrl(type: absolute, scale: "width(1000)")
+              attachments {
+                name
+              }
+            }
+          }
+          cast {
+            character
+            actor {
+              ... on ${APP_NAME_UNDERSCORED}_Person {
+                _path
+                displayName
+                data {
+                  photos {
+                    ... on media_Image {
+                      imageUrl: imageUrl(type: absolute, scale: "block(200,200)")
+                      attachments {
+                        name
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+        parent {
+            displayName
+            _path
+        }
+      }
+    }
+  }
+}`;
+
+// -------------------------------------- React main entry component:
+const MovieView = ({content}) => {
+    const {displayName, data = {}, parent = {}} = content;
+    return (
+        <>
+            <div>
+                <h2>{displayName}</h2>
+                <MovieInfo data={data}/>
+                <Cast cast={data.cast}/>
+            </div>
+
+            <BackLink parent={parent}/>
+        </>
+    );
+};
+
+// Main movie info: release year, poster image and abstract text.
+// data = movie.data (object from MovieView)
+const MovieInfo = ({data}) => {
+    const posterPhoto = (data.photos || [])[0] || {};
+
+    return (
+        <>
+            { data.release && (
+                <p>({ new Date(data.release).getFullYear() })</p>
+            )}
+
+            { posterPhoto.imageUrl && (
+                <img src={posterPhoto.imageUrl}
+                     title={data.subtitle || movie.displayName}
+                     alt={data.subtitle || movie.displayName}
+                     width="350"
+                />
+            )}
+
+            <p>{data.abstract}</p>
+        </>
+    )
+}
+
+// List persons starring in the movie.
+// cast = movie.data.cast (array from MovieView)
+const Cast = ({cast}) => !!(cast?.length) && (
+    <div>
+        <h4>Cast</h4>
+        <ul style={{listStyle: "none", display: "flex", flexFlow: "row wrap"}}>
+            {cast.map(
+                (person, i) => person && (
+                    <CastMember key={i} {...person} />
+                )
+            )}
+        </ul>
+    </div>
+);
+
+// Person in the cast list:
+// person = an item in the movie.data.cast array (from Cast)
+const CastMember = (person) => {
+    const { character, actor={} } = person;
+    const { displayName, _path, data={} } = actor;
+    const personPhoto = (data.photos || [])[0] || {};
+
+    return (
+        <li style={{marginRight: "15px"}}>
+            {
+                personPhoto.imageUrl &&
+                <img src={personPhoto.imageUrl}
+                     title={`${displayName} as ${character}`}
+                     alt={`${displayName} as ${character}`}
+                     width="100"
+                />
+            }
+            <div>
+                <p>{character}</p>
+                <p><a href={getContentLinkUrlFromXpPath(_path)}>
+                    {displayName}
+                </a></p>
+            </div>
+        </li>
+    );
+}
+
+// "Back to Movies" link at the bottom
+// parent = movie.parent (object from MovieView)
+const BackLink = ({parent}) => parent && (
+    <p><a href={getContentLinkUrlFromXpPath(parent._path)}>
+        Back to {parent.displayName}
+    </a></p>
+);
+
+export default MovieView;
+----
++
+This component is similar to the person component, but rather than registering it to handle all movies, we will register it as a part.
++
+. **Register movie handlers**
++
+Add the following section to the file:
++
+.src/cms/typesRegistrations.ts
+[source,javascript,options="nowrap"]
+----
+// (...other type registrations...),
+
+TypesRegistry.addContentType('com.example.myproject:movie', {
+    query: movieQuery,
+    view: MovieView,
+});
+----
++
+. Setup a customized page rendering for the "Matrix" movie, and add the new part to the empty region:
++
+.\http://localhost:3000/movies/the-matrix:
+image:render-movie-thematrix-fullcustom.png[title="Movie page for The Matrix rendered with images and working links",width=850px]
++
+Even the links should be working at this point.
+
+
+== Task: Create a template from the page
+
+. TODO

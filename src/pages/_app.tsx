@@ -1,9 +1,9 @@
 import type {AppProps} from 'next/app'
 import '../styles/globals.css'
 import React from 'react';
-import Head from "next/head";
-import Layout from "../components/blocks/Layout";
-import {XP_REQUEST_TYPE} from '../cmsAdapter/constants';
+import Header from "../views/Header";
+import Footer from "../views/Footer";
+import {getUrl, XP_REQUEST_TYPE} from "../_enonicAdapter/constants";
 
 /**
  * Wraps all rendered components
@@ -12,7 +12,7 @@ import {XP_REQUEST_TYPE} from '../cmsAdapter/constants';
  */
 function MyApp({Component, pageProps}: AppProps) {
 
-    // Supports component add/update (without full page refresh) when using Enonic's WYSIWYG editor
+    // Component rendering - for component updates in Content Studio without reloading page
     if (pageProps.meta) {
         if (pageProps.meta.requestType === XP_REQUEST_TYPE.COMPONENT) {
             return <details data-single-component-output="true"><Component {...pageProps} /></details>;
@@ -22,17 +22,22 @@ function MyApp({Component, pageProps}: AppProps) {
         }
     }
 
-    // MAIN RENDERING:
-    return (
-        <Layout {...pageProps?.content?.layoutProps}>
-            {!pageProps.meta?.requestType && (
-                <Head>
-                    <base href='/'/>
-                </Head>
-            )}
+    return (          
+    <>
+        <Header 
+            title="Enonic <3 Next.js" 
+            logoUrl={getUrl('images/xp-shield.svg')}/>
+        <main style={{
+            margin: `0 auto`,
+            maxWidth: 960,
+            padding: `0 1.0875rem`,
+        }}>
             <Component {...pageProps} />
-        </Layout>
+        </main>
+        <Footer/>
+    </>
     );
+
 }
 
 export default MyApp

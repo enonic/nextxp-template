@@ -1,6 +1,6 @@
 import React from "react"
-import {APP_NAME_UNDERSCORED} from '../../cmsAdapter/constants'
-import {PartProps} from '../../cmsAdapter/views/_BasePart';
+import {APP_NAME_UNDERSCORED, getUrl} from '../../_enonicAdapter/constants'
+import {PartProps} from '../../_enonicAdapter/views/BasePart';
 
 
 export const getMovie = `
@@ -9,6 +9,9 @@ query($path:ID!){
     get(key:$path) {
       type
       displayName
+      parent {
+        _path(type: siteRelative)
+      }
       ... on ${APP_NAME_UNDERSCORED}_Movie {
         data {
           subtitle
@@ -43,9 +46,6 @@ query($path:ID!){
             }
           }
         }
-        parent {
-            _path(type: siteRelative)
-        }
       }
     }
   }
@@ -55,7 +55,9 @@ query($path:ID!){
 // Root component
 const MovieView = (props: PartProps) => {
     const data = props.data?.get.data as MovieInfoProps;
-    const {displayName, parent = {}} = props.content;
+    console.log(props);
+    const {displayName, parent = {}} = props.data.get;
+    console.log(parent);
     return (
         <>
             <div>
@@ -63,8 +65,9 @@ const MovieView = (props: PartProps) => {
                 {data && <MovieInfo {...data}/>}
                 {data?.cast && <Cast cast={data.cast}/>}
             </div>
-
-            <BackLink path={parent._path}/>
+            <p>
+              <a href={getUrl(parent._path)}>Back to Movies</a>
+            </p>
         </>
     );
 };
@@ -150,15 +153,10 @@ const CastMember = (props: CastMemberProps) => {
             }
             <div>
                 <p>{character}</p>
-                <p><a href={_path}>
+                <p><a href={getUrl(_path)}>
                     {displayName}
                 </a></p>
             </div>
         </li>
     );
 }
-
-// Link to parent item
-const BackLink = ({path}: { path: string }) => (
-    <p><a href={path}>Back to Movies</a></p>
-);

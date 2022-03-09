@@ -1,0 +1,47 @@
+= Deploying to production
+:toc: right
+:imagesdir: media/
+
+Todo
+
+* Enonic cloud sign up
+* CMS essentials
+* 
+* Routes
+* Vercel: https://nextjs.org/learn/basics/deploying-nextjs-app/github
+
+Links for how to deploy
+
+[[connection-config-setup]]
+== Task: Configure the connection to XP
+
+So the values in the `.env*` files must reflect the actual location of your Enonic server. _.env_ has common values, while _.env.development_ and _.env.production_ are runmode-specific. The most important difference is that they can point to different sites and branches (drafts or published items) of your Enonic server.
+
+. **Verify configuration files** - the default values should match the settings we need in this tutorial:
+
+..env* config values (example for dev mode):
+[source,properties,options="nowrap"]
+----
+# Common value in .env:
+APP_NAME=com.example.myproject                                      <!--1-->
+
+# Runtime-specific values, here dev mode (.env.development):
+SITE=hmdb                                                           <!--3-->
+CONTENT_API_URL=$API_DOMAIN/site/hmdb/draft/$SITE/api               <!--4-->
+NEXT_DOMAIN=http://localhost:3000                                   
+
+----
+<1> `APP_NAME` should match your enonic app name e.g. `com.example.myproject`.
+<3> `SITE` refers to the relative location of your site within Enonic, as you can see directly in Content Studio.
++
+image:xp-cs-sitename.png[title="Looking up the siteName in XP content studio",width=500px]
+<4> `CONTENT_API_URL` is the _full URL_ to where both this Next.js-instance and the react components in the browser will contact the guillotine API for data. This should in the end be the same URL that you used when testing <<enonic-setup#setup-guillotine-api, GraphQL playground>> earlier.
+
+[NOTE]
+====
+**`CONTENT_API_URL` is link:https://developer.enonic.com/docs/xp/stable/deployment/vhosts[vhost]-sensitive**.
+
+For example, let's say you've locally vhosted `hmdb-draft` to point to `/site/hmdb/draft/hmdb`, and changed the API mapping in site.xml from `/api` to `/_guillotine` (actually, vhosting is one area where that gets important). Then you could just set `API_DOMAIN=http://hmdb-draft:8080` and `CONTENT_API_URL=$API_DOMAIN/_guillotine`.
+
+You still need to set and export `SITE` though, it's used elsewhere.
+====
