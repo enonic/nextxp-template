@@ -1,12 +1,12 @@
 import {APP_NAME} from '../_enonicAdapter/utils'
-import {TypesRegistry, CATCH_ALL} from '../_enonicAdapter/ComponentRegistry';
+import {TypesRegistry} from '../_enonicAdapter/ComponentRegistry';
 import Person from './views/Person';
 import getPerson from './queries/getPerson';
 import MainPage from './pages/Main';
-import TwoColumnLayout from './layouts/TwoColumnLayout';
 import ChildList, {childListProcessor, getChildList} from './parts/ChildList';
-import MovieDetails, {getMovie} from './parts/MovieDetails';
 import Heading from './parts/Heading';
+import MovieDetails, {getMovie} from './parts/MovieDetails';
+import TwoColumnLayout from './layouts/TwoColumnLayout';
 
 
 // Content type mappings

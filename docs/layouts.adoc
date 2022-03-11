@@ -1,0 +1,70 @@
+= Layouts
+:toc: right
+:imagesdir: media/
+:sourcedir: ../src
+
+Layouts are essentially parts, with an extra trick up their sleve. Regions. This means that layouts provide an additional way of organizing parts within a page.
+
+== Task: Add layout to Enonic
+
+Adding layouts is performed more or less identically to pages and parts. Simply follow the steps below: 
+
+. **Add the `2-column` layout** to the Enonic app
++
+.src/main/resources/site/layouts/2-column/2-column.xml
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<layout xmlns="urn:enonic:xp:model:1.0">
+    <display-name>2 columns</display-name>
+    <description>Provides left and right regions</description>
+    <form/>
+    <regions>
+        <region name="left"/>
+        <region name="right"/>
+    </regions>
+</layout>
+----
++
+. **Add the preview controller file**
++
+.src/main/resources/site/parts/child-list/child-list.js
+[source,JavaScript]
+----
+var proxy = require('/lib/nextjs-proxy/proxy');
+
+exports.get = proxy.get;
+----
+
+When completed, as always redeploy the Enonic app.
+
+
+== Task: Setup layout rendering in Next
+
+Moving over to the the Next app, we must add the the component that will render the layout.
+
+. **Add the layout component**
++
+.src/components/layouts/TwoColumnLayout.tsx
+[source,JavaScript]
+----
+include::{sourcedir}/components/layouts/TwoColumnLayout.tsx[]
+----
++
+. **Register the components** in _mappings.ts:
++
+Add these new lites to the _mappings.ts file:
++
+.src/components/_mappings.ts
+[source,javascript,options="nowrap"]
+----
+import TwoColumnLayout from './layouts/TwoColumnLayout';
+
+...
+
+TypesRegistry.addLayout(`${APP_NAME}:2-column`, {
+    view: TwoColumnLayout
+});
+----
+
+That completes the introduction to parts and layouts, in the next chapter we will look into <<templates#, reuse of page compositions>> across content items.

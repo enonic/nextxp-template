@@ -21,15 +21,19 @@
             "document": "pages"
         },
         {
-            "title": "7 - Parts and layouts",
-            "document": "components"
+            "title": "7 - Parts",
+            "document": "parts"
         },
         {
-            "title": "8 - Page templates",
+            "title": "8 - Layouts",
+            "document": "layouts"
+        },
+        {
+            "title": "9 - Page templates",
             "document": "templates"
         },
         {
-            "title": "9 - Deployment",
+            "title": "10 - Deployment",
             "document": "deployment"
         },
         {

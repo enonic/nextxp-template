@@ -32,7 +32,7 @@ NOTE: <version> must be replaced by the current version. Visit the library on li
 +
 In this step, we will activate Content Studio's preview to use the proxy
 +
-Update the `site.xml` , https://developer.enonic.com/docs/xp/stable/cms/mappings[mappings] section to look like this:
+Update the `site.xml` , https://developer.enonic.com/docs/xp/stable/components/mappings[mappings] section to look like this:
 +
 .src/main/resources/site/site.xml
 [source, xml]
@@ -65,5 +65,4 @@ From Content Studio, select (or edit) any item in the content hierarchy, and it 
 +
 image:morgan-freeman-preview.png[title="Next.js-rendered preview in Content Studio",width=1072px]
 
-TODO: update
-In the <<page-editor#, next chapter>>, we'll use proxy-connected _page controllers_ instead of type mapping. **This, together with corresponding Next.js-side code, allows using the Content Studio page editor.**
+That completes the preview setup, moving forward, we'll make it possible to <<pages#, build pages editorially>>.

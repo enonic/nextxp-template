@@ -15,7 +15,7 @@ TODO
 +
 . **Register the Movie query and view** in the Next app
 +
-.src/cms/contentTypes/Movie.jsx
+.src/components/contentTypes/Movie.jsx
 [source,JavaScript]
 ----
 import React from "react"
@@ -173,7 +173,7 @@ This component is similar to the person component, but rather than registering i
 +
 Add the following section to the file:
 +
-.src/cms/typesRegistrations.ts
+.src/components/typesRegistrations.ts
 [source,javascript,options="nowrap"]
 ----
 // (...other type registrations...),

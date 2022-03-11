@@ -1,0 +1,121 @@
+= Parts
+:toc: right
+:imagesdir: media/
+:sourcedir: ../src
+
+Enonic offers a type of highly customizable component - called link:https://developer.enonic.com/docs/xp/stable/components/components#part[parts]. Similar to page components parts must be defined in both Enonic and Next in order to fullt work.
+
+== Task: Add parts to Enonic
+We'll start off by adding a component that lists child items in the tree structure.
+
+. **Add the `child-list` part** to the Enonic app
++
+.src/main/resources/site/parts/child-list/child-list.xml
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<part xmlns="urn:enonic:xp:model:1.0">
+  <display-name>Children</display-name>
+  <description>Lists child items</description>
+</part>
+----
++
+To work seamlessly with Content Studio's WYSIWYG page editor, parts in Enonic need a special controller file that assists the preview to load changes to the component, without refreshing the entire page.
++
+. **Add the preview controller file** for the child-list part
++
+.src/main/resources/site/parts/child-list/child-list.js
+[source,JavaScript]
+----
+var proxy = require('/lib/nextjs-proxy/proxy');
+
+exports.get = proxy.get;
+----
++
+Now, lets repeat this procedure for the heading part as well:
++
+. **Add the `heading` part files** to the Enonic app
++
+This part definition includes a form, with an link:https://developer.enonic.com/docs/xp/stable/components/input-types[input field] called `heading`. This makes it possible for editors to override the heading (aka displayName) coming from the content item.
++
+.src/main/resources/site/parts/heading/heading.xml
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<part xmlns="urn:enonic:xp:model:1.0">
+    <display-name>Heading</display-name>
+    <description>Demo heading</description>
+    <form>
+        <input type="TextLine" name="heading">
+            <label>Override heading</label>
+        </input>
+    </form>
+</part>
+----
++
+.src/main/resources/site/parts/heading/heading.js
+[source,JavaScript]
+----
+var proxy = require('/lib/nextjs-proxy/proxy');
+
+exports.get = proxy.get;
+----
++
+. **Build and deploy your Enonic app** once more to make the new part accessible to from Content Studio.
++
+. **Add parts to the page**
++
+After re-deploying the app, head over to Content Studio, this time, lets edit the Persons page. Drag'n drop the new parts into the region (`right-click -> Insert`, or drag-n-drop from the `Insert panel`` on the right).
++
+TIP: As you can see, the parts appear without making any changes to Next, this is because the CMS adapter contains fallback part rendering when Next is running in DEV mode.
++
+TODO: Update?
+image:cs-part-default.png[title="Next.js-rendered text component with an image",width=700px]
++
+TIP: As usual, you can navigate to http://localhost:3000/persons to verify it directly from Next.js.
+
+== Task: Configure part rendering in Next
+
+Moving over to the Next.js, we must add new components that support actual rendering of these parts.
+
+. **Add the part handlers to the Next app**
++
+.src/components/parts/Heading.tsx
+[source,JavaScript]
+----
+include::{sourcedir}/components/parts/Heading.tsx[]
+----
++
+.src/components/parts/ChildList.tsx
+[source,JavaScript]
+----
+include::{sourcedir}/components/parts/Heading.tsx[]
+----
++
+. Finally, **register the components** in _mappings.ts:
++
+Update _mappings.ts with the following new lines:
++
+.src/components/_mappings.ts
+[source,javascript,options="nowrap"]
+----
+import ChildList, {childListProcessor, getChildList} from './parts/ChildList';
+import Heading from './parts/Heading';
+
+...
+
+TypesRegistry.addPart(`${APP_NAME}:child-list`, {
+    query: getChildList,
+    processor: childListProcessor,
+    view: ChildList
+});
+TypesRegistry.addPart(`${APP_NAME}:heading`, {
+    view: Heading
+});
+----
+Next.js will now use the new views and queries to render the parts. Try overriding the heading, and see what happens.
++
+TODO: Update this image
+image:cs-part-nextjsviewed.png[title="Next.js-rendered text component with an image",width=700px]
+
+With parts completed, in the next chapter we will make page composition even more interesting by <<layouts#, introducing layouts>>. 

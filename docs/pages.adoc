@@ -1,4 +1,4 @@
-= Pages and parts
+= Custom pages
 :toc: right
 :imagesdir: media/
 :sourcedir: ../src
@@ -32,7 +32,7 @@ Redploy the Enonic app to register the page component.
 . **Configure page rendering in Next**
 On the Next side of things, rendering a page is similar to rendering a content type. Add the following file to your Next project.
 +
-.src/cms/pages/Main.tsx
+.src/components/pages/Main.tsx
 [source,JavaScript]
 ----
 include::{sourcedir}/components/pages/Main.tsx[]
@@ -42,7 +42,7 @@ NOTE: Notice the <RegionsView> element, referring to the 'main' region
 +
 Finally, register it in the component mappings by adding the following lines to _mappings.ts
 +
-.src/cms/pages/Main.tsx
+.src/components/pages/Main.tsx
 [source,JavaScript]
 ----
 import MainPage from './pages/Main';
@@ -84,6 +84,6 @@ image:text-component.png[title="Next.js-rendered text component with an image",w
 +
 . After saving, visit the Next.js rendering directly on http://localhost:3000/movies to see the result.
 +
-. You may also click the `Preview` button in Content Studio for a full screen version.
+. You may also click the `Preview` button in Content Studio for a full screen version, rendered via the proxy.
 
-That completes the introduction to page rendering, in the next chapter we will add some more <<components#, dynamic components>> to play with.
+That completes the introduction to page rendering, coming up we'll add <<part#, dynamic page components>> to play with.

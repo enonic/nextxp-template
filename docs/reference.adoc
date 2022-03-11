@@ -13,8 +13,8 @@ When _$$[$$$$[$$...contentPath$$]$$$$]$$.tsx_ gets a request and resolves the UR
 
 But if nothing has been added to the type registry for the content type (which happens in _src/cms/typesRegistration.ts_), it selects **the default query and react component:**
 
-* _src/cms/queries/_{zwsp}**_<<reference#two-queries, $$_$$getDefaultData.ts>>_**: very general overview data (might be used as-is, but it's recommended to override it anyway for all content types)
-* _src/cms/contentTypes/_{zwsp}**_link:https://github.com/enonic/nextjs-enonic-starter/blob/master/src/cms/contentTypes/_DefaultView.tsx[$$_$$DefaultView.tsx]_**. This detects run mode, and in prod mode displays empty whitespace, and in dev mode JSON-dumps data from the selected query onto the screen  - a handy tool for seeing the props you're working with when developing react components:
+* _src/components/queries/_{zwsp}**_<<reference#two-queries, $$_$$getDefaultData.ts>>_**: very general overview data (might be used as-is, but it's recommended to override it anyway for all content types)
+* _src/components/contentTypes/_{zwsp}**_link:https://github.com/enonic/nextjs-enonic-starter/blob/master/src/cms/contentTypes/_DefaultView.tsx[$$_$$DefaultView.tsx]_**. This detects run mode, and in prod mode displays empty whitespace, and in dev mode JSON-dumps data from the selected query onto the screen  - a handy tool for seeing the props you're working with when developing react components:
 
 
 [[pageeditor-compatibility]]
@@ -23,11 +23,9 @@ When using XP components with Next.js as described in <<page-editor#, the page e
 
 * Next.js-oriented components should only be dropped into Next.js-rendered regions (ie. regions on pages that use the proxy for rendering).
 * And the other way around, Next.js-rendered regions are only able to render Next.js-oriented components (ie. the components must have some corresponding implementation on the Next.js side, or nothing will be rendered).
-** XP's built-in components such as link:https://developer.enonic.com/docs/xp/stable/cms/components#text[text] and link:https://developer.enonic.com/docs/xp/stable/cms/components#image[images] work fine, though.
+** XP's built-in components such as link:https://developer.enonic.com/docs/xp/stable/cms/components#text[text] 
 
-
-
-## Connection configuration
+## Configuration
 
 
 ### Common constants
@@ -640,9 +638,9 @@ A few cogs in the machinery worth knowing about are:
 <6> **The folder _src/cms_ is intended for editing/adding your own XP-related stuff**. It already contains some default-behavior files, which are marked by names starting with an underscore: `$$_$$...`. You can of course edit these, but then you'll get the same behavior everywhere. Instead, the idea is to add your own customized queries and react components here, and add rules for when they should override the defaults.
 +
 The most noteworthy out-of-the-box files here are:
-<7> _src/cms/queries_ contains two default guillotine queries, for fetching data from XP (this might also be a place to add your own custom queries, unless you prefer to keep your queries closer to the react components that use them):
-** _src/cms/queries/<<reference#two-queries, $$_$$getMetaData.ts>>_ fetches metadata: _"Which XP content type is at this chosen path from the URL? Does the content item come with a structure from the page editor?"_,
-** _src/cms/queries/<<reference#two-queries, $$_$$getDefaultData.ts>>_ is the default, generic data-fetcher for every content type that _hasn't_ been set up with a specialized query. Plugging in custom queries in the _contentSelector_ (see below) will override this query.
+<7> _src/components/queries_ contains two default guillotine queries, for fetching data from XP (this might also be a place to add your own custom queries, unless you prefer to keep your queries closer to the react components that use them):
+** _src/components/queries/<<reference#two-queries, $$_$$getMetaData.ts>>_ fetches metadata: _"Which XP content type is at this chosen path from the URL? Does the content item come with a structure from the page editor?"_,
+** _src/components/queries/<<reference#two-queries, $$_$$getDefaultData.ts>>_ is the default, generic data-fetcher for every content type that _hasn't_ been set up with a specialized query. Plugging in custom queries in the _contentSelector_ (see below) will override this query.
 <8> Still under _src/cms_, some folders that correspond to XP structures and contain default-view react components for visualizing them:
 ** The _contentTypes/_ folder focuses on <<type-rendering#, rendering content based on the targeted item's content type>>. This is controlled in _contentSelector.ts_ (see below), and has a _DefaultView.tsx_ for rendering any "un-selected" type,
 ** The _components/_ and _parts/_ folders contain default react components for <<page-editor#, visualizing XP stuff that's been dragged into a region>> in Content Studio (visualized with _Region.tsx_ here). _components/_ is for prebuilt XP components like image and text, and _parts/_ is for XP parts.
