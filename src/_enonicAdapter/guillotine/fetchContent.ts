@@ -12,9 +12,9 @@ import adapterConstants, {
     RENDER_MODE,
     XP_REQUEST_TYPE,
     setXpBaseUrl
-} from "../constants";
-import {SelectedQueryMaybeVariablesFunc, TypeDefinition, TypesRegistry} from '../TypesRegistry';
-import {defaultVariables, defaultQuery} from '../../components/content/_defaultQuery';
+} from "../utils";
+import {SelectedQueryMaybeVariablesFunc, TypeDefinition, TypesRegistry} from '../ComponentRegistry';
+import {defaultVariables, defaultQuery} from '../../components/queries/_defaultQuery';
 
 export type adapterConstants = {
     APP_NAME: string,

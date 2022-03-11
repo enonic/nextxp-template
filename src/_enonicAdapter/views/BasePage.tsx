@@ -1,8 +1,8 @@
 import React from "react"
-import {TypesRegistry} from '../TypesRegistry';
+import {TypesRegistry} from '../ComponentRegistry';
 import {FetchContentResult} from '../guillotine/fetchContent';
 import {MetaData, PageData} from "../guillotine/getMetaData";
-import {IS_DEV_MODE} from "../constants";
+import {IS_DEV_MODE} from "../utils";
 import DataDump from "./DataDump";
 import Empty from './Empty';
 

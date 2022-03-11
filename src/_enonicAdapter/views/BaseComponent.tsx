@@ -1,8 +1,8 @@
 import React from "react";
 
-import {PORTAL_COMPONENT_ATTRIBUTE, XP_COMPONENT_TYPE, RENDER_MODE} from "../constants";
+import {PORTAL_COMPONENT_ATTRIBUTE, XP_COMPONENT_TYPE, RENDER_MODE} from "../utils";
 import {MetaData, PageComponent} from "../guillotine/getMetaData";
-import {TypesRegistry} from '../TypesRegistry';
+import {TypesRegistry} from '../ComponentRegistry';
 
 
 export type BaseComponentProps = {

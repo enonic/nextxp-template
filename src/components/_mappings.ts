@@ -1,6 +1,7 @@
-import {APP_NAME} from '../_enonicAdapter/constants'
-import {TypesRegistry, CATCH_ALL} from '../_enonicAdapter/TypesRegistry';
-import Person, {getPerson} from './content/Person';
+import {APP_NAME} from '../_enonicAdapter/utils'
+import {TypesRegistry, CATCH_ALL} from '../_enonicAdapter/ComponentRegistry';
+import Person from './views/Person';
+import getPerson from './queries/getPerson';
 import MainPage from './pages/Main';
 import TwoColumnLayout from './layouts/TwoColumnLayout';
 import ChildList, {childListProcessor, getChildList} from './parts/ChildList';
@@ -8,7 +9,8 @@ import MovieDetails, {getMovie} from './parts/MovieDetails';
 import Heading from './parts/Heading';
 
 
-// Content Type mappings
+// Content type mappings
+
 TypesRegistry.addContentType(`${APP_NAME}:person`, {
     query: getPerson,
     view: Person
@@ -19,7 +21,7 @@ TypesRegistry.addPage(`${APP_NAME}:main`, {
     view: MainPage
 });
 
-/*
+
 // Layout mappings
 TypesRegistry.addLayout(`${APP_NAME}:2-column`, {
     view: TwoColumnLayout
@@ -34,7 +36,7 @@ TypesRegistry.addPart(`${APP_NAME}:movie-details`, {
 TypesRegistry.addPart(`${APP_NAME}:heading`, {
     view: Heading
 });
-*/
+
 TypesRegistry.addPart(`${APP_NAME}:child-list`, {
     query: getChildList,
     processor: childListProcessor,

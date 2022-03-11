@@ -1,6 +1,7 @@
 = Page templates
 :toc: right
 :imagesdir: media/
+:sourcedir: ../src
 
 So far, rendering has been based on content types - hardcoded by the developer. In this chaper we will enable editors to compose their own pages.
 

@@ -1,7 +1,7 @@
 import React from "react"
 import {LayoutData, MetaData, RegionTree} from "../guillotine/getMetaData";
-import {TypesRegistry} from '../TypesRegistry';
-import {IS_DEV_MODE} from "../constants";
+import {TypesRegistry} from '../ComponentRegistry';
+import {IS_DEV_MODE} from "../utils";
 import DataDump from "./DataDump";
 import Empty from './Empty';
 

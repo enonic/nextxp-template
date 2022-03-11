@@ -1,6 +1,7 @@
 = Parts and layouts
 :toc: right
 :imagesdir: media/
+:sourcedir: ../src
 
 With custom page rendering setup, we are ready to add more components to the page.
 

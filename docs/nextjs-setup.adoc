@@ -30,34 +30,39 @@ The following file structure should now exist within your new project folder:
 .Next project files:
 [source,files]
 ----
-next.config.js                          <!--1-->
+next.config.js <!--1-->
 .env
 .env.production
 .env.development
 src/
-    cmsAdapter/                         <!--2-->
-    components/                         <!--3-->
+    _enonicAdapter/ <!--2-->
+    components/ <!--3-->
     pages/
-        [[...contentPath]].tsx          <!--4-->
-        _app.tsx                        <!--5-->
-        _document.tsx
+        [[...contentPath]].tsx <!--4-->
+        _app.tsx <!--5-->
+        _document.tsx <!--6-->
 ----
 
-<1> These are the standard Next configuration files, we will use these to connect Next with Enonic.
-<2> Contains the Enonic adapter - which is essentially a "black box", and you should not change any of these files. This will be released as an NPM in the future.
-<3> Place your custom code here - integrates with Enonic via the adapter.
-<4> The fallback next.js router, that enables dynamic rendering based on content in the CMS. `$$[$$$$[$$...contentPath$$]$$$$]$$.tsx` is the "magical" entry point. This is not a typo, but Next.js syntax that makes it catch all HTTP requests.
-<5> `$$_$$app.tsx` and `$$_$$document.tsx` are vanilla Next.js modules that structure every rendering. You can add you own common structures here (eg. containers, layouts, styling, `<head>` etc), but be careful not to remove functionality needed by the XP's preview, as you will see later.
-
-TIP: It's also possible to <<reference#download-to-existing-nextjs-project, add the Enonic adapter into an existing Next.js project>> instead of starting from scratch.
+<1> Standard Next configuration files
+<2> Contains the essential logic and functionality to communicate with the CMS and perform rendering. you should not need to change any of these files. This will be released as a separate NPM in the future.
+<3> Your Next implementation of CMS components can be placed here
+<4> The fallback next.js router, that enables dynamic rendering based on content in the CMS. File name is not a typo, but Next.js syntax that makes it catch all HTTP requests.
+<5> Invoked on every request. Add common structures here (eg. `<head>` etc), but be careful not to remove functionality needed by Content Studio
+<6> Vanilla Next.js file that outlines the document structure of all pages.
 
 
 == Task: Configure application
 
-Before we can boot the application, we need to let it know the location of the Content API.
+Before booting the application, you need to provide some configuration variables.
 
-TODO: 
-Configure API + SITEPATH
+. Update the settings in your `.env.development` file as follows:
+
+CONTENT_API_URL=http://localhost:8080/site/hmdb/draft/hmdb/api:: Absolute url to the Content API
+SITEPATH=/hmdb:: Path to the site, as seen in Content Studio 
+NEXT_DOMAIN=localhost:3000:: Current server domain 
+
+TIP: Configuration values can be overridden when deplying your app to a live server later.
+
 
 == Task: Boot the server
 
@@ -84,7 +89,7 @@ For more details on booting Next, check out the link:https://nextjs.org/docs/api
 
 == Next URL handling
 
-This integrations makes the URLs in Next.js 1-1 with their respective counterparts in the CMS. So, http://localhost:3000 is linked to the site which is located on `/hmdb` in Content Studio.
+This integrations make the URLs in Next.js 1-1 with their respective counterparts in the CMS. Meaning, http://localhost:3000 is linked to the root element aka "the site" which is located on `/hmdb` in Content Studio.
 
 By visiting http://localhost:3000/movies/se7en the Next server will lookup, fetch and return content found on the path '/hmdb/movies/se7en' in the CMS. 
 
@@ -108,4 +113,4 @@ Give the default rendering a spin by trying out some other URLs, for example: +
 
 **That's it for the basic Next.js setup.**
 
-In <<rendering-basics#, the next chapter>>, we'll get into how we can customize the rendering.
+Next, well have a closer look at <<rendering-basics#, how to customize the rendering>>.

@@ -1,4 +1,4 @@
-import {XP_COMPONENT_TYPE, RENDER_MODE, XP_REQUEST_TYPE} from "../constants";
+import {XP_COMPONENT_TYPE, RENDER_MODE, XP_REQUEST_TYPE} from "../utils";
 
 const COMPONENTS_QUERY = `
         type

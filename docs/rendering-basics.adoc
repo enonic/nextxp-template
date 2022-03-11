@@ -5,107 +5,139 @@
 
 In this chapter we will look into the basic rendering mechanisms, and add some custom rendering to our app as well.
 
-
-By defining custom queries and react components tailored for each content type, we can customise how the different items are rendered - but first some basics
-
 == Dev mode fallback rendering
 
-As you have seen during the setup of Next, econtent item automatically render a page listing the props that are passed to the React components on first render. These props are automatically fetched by the Enonic Adapter.
+As you have seen during the setup of Next, each content item automatically render a page, listing available props. These props are automatically fetched by the Enonic Adapter.
 
-As we move forward, we will start by overriding, and then later remove the default rendering alltogether.
+By defining custom queries and react components tailored for each content type, we can customise the props passed to the view, and which view is actually being used.
 
-== Task: Render persons
+== Task: Get person content
 
-With that sorted out, let's throw some custom rendering into the mix - starting with content of the type "person":
+With that sorted out, let's get customizing - starting with content of the type "person":
 
-NOTE: If you created the Enonic app according to instructions, the full name of your content type will be "com.example.myproject:person". 
+NOTE: The full name of your content type should now be "com.example.myproject:person" If you used a different name when creating the Enonic app, update the `.env` in your Next app to reflect this.
 
-If you used a different name, update this This comes from the application name. The code examples of this tutorial will fail if you have used a different name for your application.
-
-. **Register a query** by adding the following file to your Next application
+. **Add query** by creating the following file in your Next application
 +
-.src/components/contentTypes/Person.tsx
+.src/components/queries/getPerson.ts
 [source,TypeScript]
 ----
-include::{sourcedir}/components/contentTypes/Person.tsx[]
+include::{sourcedir}/components/queries/getPerson.ts[]
 ----
 +
-What's going on here?
+This file defines a graphQL query 'getPerson' that will fetch data from the Enonic API. 
 +
-This file defines a graphQL query 'getPerson' that will fetch data from the Enonic API, and a React template `Person`` that will render the data returned from the query. 
-+
-TIP: You may validate the query by copying it to the GraphQL playground. Remember to specify query variables, try this for instance:
+TIP: You may validate the query by copying it to the GraphQL playground. Replace `APP_NAME_UNDERSCORED` with `com_example_myproject` and set a query variable, try this for instance:
   `{"path": "/hmdb/persons/brad-pitt"}``
 +
-. **Register the query** by adding the following lines to the mappings file:
+. **Register the query** by adding the following lines to the component mappings file:
 +
-.src/components/mappings.tsx
+.src/components/_mappings.ts
 [source,JavaScript]
 ----
-TypesRegistry.addContentType(`${APP_NAME}:person`, {
-    query: getPerson,
-});
-----
-+
-. **View at the result**
-+
-By visiting a person item - for instance `http://localhost:3000/persons/brad-pitt` you should now see a different set of props being listed by the renderer.
-+
-image:render-person-marlonbrando-getperson.png[title="Default render: persons data from updated query",width=650px]
-+
-. **Register Person view** to make things a bit more interesting
-+
-.src/cms/contenttypes/person/personView.jsx
-[source,JavaScript]
-----
-TypesRegistry.addContentType(`${APP_NAME}:person`, {
-    query: getPerson,
-    view: Person
-});
+import getPerson from './queries/getPerson';
 
+....
+
+TypesRegistry.addContentType(`${APP_NAME}:person`, {
+    query: getPerson,
+});
+----
++
+. **View the result**
++
+By visiting a person item - for instance `http://localhost:3000/persons/brad-pitt` you should now see a different set of props being listed by the default view.
++
+image:missing image[title="Development view showing person data from query",width=650px]
++
+.
+
+== Task: Add custom person rendering
+
+With fresh content available, it's time to make things shine:
+
+. **Add view** by creating the following file in your Next application
++
+.src/components/views/Person.tsx
+[source,TypeScript]
+----
+include::{sourcedir}/components/views/Person.tsx[]
+----
++
+This file defines a react view 'Person' that will use the props from the query to render the person. 
++
+. **Register Person view** in the mapping by adding the following lines to the component mappings:
++
+.src/components/_mappings.ts
+[source,JavaScript]
+----
+import Person from './views/Person';
+
+....
+
+TypesRegistry.addContentType(`${APP_NAME}:person`, {
+    view: Person,
+});
 ----
 +
 . **View the result** - The page should automatically reload once the change has been saved
-image:render-person-marlonbrando-fullcustom.png[title="Person-type rendering with custom query and view",width=650px]
 +
-By registering a content type mapping, this rendering will apply to every person-type content item within the site, regardless of it's location. Try looking at some other persons, eg. http://localhost:3000/persons/uma-thurman
+image:morgan-freeman-plain.png[title="Person rendering with query and view",width=1069px]
+
+The content type mapping applies to every `person` content item in the site, regardless of it's location in the hierarchy. Try looking at some other persons, eg. http://localhost:3000/persons/uma-thurman
 
 
 == Task: Add custom header and footer
 
-Adding some styles, a header and a footer will make our site more interesting visually. Next provides a handy solution to this problem. 
+Adding some styles, a header and a footer will make the site more interesting visually. Next provides a handy solution to this problem.
 
-The file `src/pages/_app.tsx` initializes the React pipeline, and by modifying it we can inject the same header and footer components to all pages generated by Next.
+The `_app.tsx` file initializes the React pipeline, and by modifying it we can inject the same header and footer components to all pages generated by Next. 
 
-**Add a layout** to your app file 
+Sample header and footer views are already included in the starter under /`src/components/views`, so all we need to do is put them to work.
 
-.src/pages/_app.tsx
+Update `src/pages/_app.tsx`` with the following changes:
+
+. **Add these imports**
++
 [source,TypeScript]
 ----
-include::{sourcedir}/pages/_app.tsx[]
+import Header from "../components/views/Header";
+import Footer from "../components/views/Footer";
+import {getUrl} from "../_enonicAdapter/utils";
+----
++
+. And **replace this line**:
++
+[source,TypeScript]
+----
+return <Component {...pageProps} />;
+----
++
+with this:
++
+[source,TypeScript]
+----
+return (          
+<>
+  <Header 
+    title="Enonic <3 Next.js" 
+    logoUrl={getUrl('images/xp-shield.svg')}/>
+    <main style={{
+      margin: `0 auto`,
+      maxWidth: 960,
+      padding: `0 1rem`,
+      }}>
+      <Component {...pageProps} />
+    </main>
+  <Footer/>
+</>
+);
 ----
 
-== Error handling
+Morgan Freeman's page should now look like this
 
-Proper rendering is great, but handling errors in your application is also important.
+image:morgan-freeman-header-footer.png[title="Rendering with header and footer",width=1068px]
 
-Standard error handling has been built into the CMS adapter, configured to use the standard Next errorpages located in 'src/components/errors/'.
-
-Trying visiting a URL with no matching content - this should return a 404...
-
-.Movie content that's not in HMDB
-image:render-error-404.png[title="Rendered error 404: movie content that's not in HMDB",width=400px]
-
-...or what if you try shutting down the Enonic back-end:
-
-.Backend not available
-image:render-error-api-ECONNREFUSED.png[title="Rendered API communication error",width=400px]
-
-...and so on.
-
-NOTE: With Next, you may also customize the error messages and displays to your own requirements.
-
-
-With the basic rendering done, in the next chapter, well add <<preview#, preview in Content Studio>> into the mix.
+With the basic rendering done, in the next chapter, well add <<preview#, Content Studio preview>> into the mix.
 
 

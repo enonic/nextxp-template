@@ -1,6 +1,6 @@
 import React from "react"
 import {FetchContentResult} from '../../_enonicAdapter/guillotine/fetchContent';
-import {APP_NAME_UNDERSCORED, getUrl} from '../../_enonicAdapter/constants'
+import {getUrl} from '../../_enonicAdapter/utils'
 
 const Person = (props: FetchContentResult) => {
     const {displayName, data, parent} = props.content as any;
@@ -31,29 +31,3 @@ const Person = (props: FetchContentResult) => {
 }
 
 export default Person;
-
-export const getPerson = `
-query($path:ID!){
-  guillotine {
-    get(key:$path) {
-      displayName
-      ... on ${APP_NAME_UNDERSCORED}_Person {
-        data {
-          bio
-          dateofbirth
-          photos {
-           ... on media_Image {                                             
-              imageUrl: imageUrl(type: absolute, scale: "width(500)")       
-              attachments {                                                 
-                name
-              }
-            }
-          }
-        }
-      }
-      parent {
-        _path(type: siteRelative)                                                           
-      }
-    }
-  }
-}`;

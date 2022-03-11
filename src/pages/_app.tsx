@@ -1,9 +1,10 @@
 import type {AppProps} from 'next/app'
 import '../styles/globals.css'
 import React from 'react';
-import Header from "../views/Header";
-import Footer from "../views/Footer";
-import {getUrl, XP_REQUEST_TYPE} from "../_enonicAdapter/constants";
+import {XP_REQUEST_TYPE} from "../_enonicAdapter/utils";
+import Header from "../components/views/Header";
+import Footer from "../components/views/Footer";
+import {getUrl} from "../_enonicAdapter/utils";
 
 /**
  * Wraps all rendered components
@@ -21,7 +22,7 @@ function MyApp({Component, pageProps}: AppProps) {
             return null;
         }
     }
-
+/*    return <Component {...pageProps} />; */
     return (          
     <>
         <Header 
@@ -30,7 +31,7 @@ function MyApp({Component, pageProps}: AppProps) {
         <main style={{
             margin: `0 auto`,
             maxWidth: 960,
-            padding: `0 1.0875rem`,
+            padding: `0 1rem`,
         }}>
             <Component {...pageProps} />
         </main>

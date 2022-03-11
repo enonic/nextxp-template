@@ -1,5 +1,5 @@
 import React from "react"
-import {APP_NAME_UNDERSCORED, getUrl} from '../../_enonicAdapter/constants'
+import {APP_NAME_UNDERSCORED, getUrl} from '../../_enonicAdapter/utils'
 import {PartProps} from '../../_enonicAdapter/views/BasePart';
 
 

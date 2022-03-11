@@ -1,8 +1,9 @@
 = Pages and parts
 :toc: right
 :imagesdir: media/
+:sourcedir: ../src
 
-So far, rendering has been based on content types - hardcoded by the developer. In this chaper we will enable editors to compose their own pages.
+So far, rendering has been based on hardcoded content type mappings made by the developer. In this chaper we will enable editors to compose their own pages.
 
 == Task: Setup page rendering
 
@@ -24,77 +25,65 @@ Content types need to exist in Enonic before an editor can create content. Simil
 </page>
 ----
 +
-NOTE: Thanks to the definition of the region, Content Studio editors may start adding components to the page. 
+NOTE: With the definition of the region `main`, Content Studio editors can start adding components to the page. 
 +
-Once built and redeployed, the Enonic app is now capable to request rendering of this specific page from the Next server.
+Redploy the Enonic app to register the page component.
 +
 . **Configure page rendering in Next**
-On the Next.js side of things, rendering a page is similar to rendering a content type. Add the following file to your Next project.
+On the Next side of things, rendering a page is similar to rendering a content type. Add the following file to your Next project.
 +
-TODO: Need a new file below
-
-.src/cms/pages/default.tsx
+.src/cms/pages/Main.tsx
 [source,JavaScript]
 ----
-import React from "react"
-import {APP_NAME} from '../../enonicAdapter/enonic-connection-config';
-import {PageProps} from './_Page';
-import RegionsView from '../../enonicAdapter/views/_Region';
-
-export const DEFAULT_PAGE_NAME = `${APP_NAME}:default`;
-
-const DefaultPageView = (props: PageProps) => {
-    const page = props.page;
-    if (!page.regions || !Object.keys(page.regions).length) {
-        page.regions = {
-            main: {
-                name: 'main',
-                components: [],
-            }
-        }
-    }
-    return (
-        <>
-            <RegionsView {...props} name="main"/>
-        </>
-    );
-};
-
-export default DefaultPageView;
+include::{sourcedir}/components/pages/Main.tsx[]
 ----
 +
-NOTE: As you can see from the bottom of the file, it registers itself as a page component in the type registry.
+NOTE: Notice the <RegionsView> element, referring to the 'main' region
 +
-With both the CMS, and Next ready, we can start building custom pages.
+Finally, register it in the component mappings by adding the following lines to _mappings.ts
 +
+.src/cms/pages/Main.tsx
+[source,JavaScript]
+----
+import MainPage from './pages/Main';
+
+...
+
+TypesRegistry.addPage(`${APP_NAME}:main`, {
+    view: MainPage
+});
+----
+
+Both Enonic and Next is now able to handle custom pages.
+
+== Task: Create your first page
+
+Its time to build a custom page.
+
 . **Make a page for the movies folder**
 +
 From Content Studio, select and edit the `hmdb/movies` content item. From the edit view, activate the page editor by clicking the monitor icon in the top right corner.
 +
 You should now see the following:
 +
-image:add-page-controller.png[title="Start by adding a page controller with the dropdown menu in the preview panel",width=650px]
+image:page-setup.png[title="Selecting the page component in the page view",width=1440px]
 +
-Select the `Default` controller we created earlier.
+Select the `Main` component we created earlier.
+You should the see a page with a single "dropzone" inside (this is the region we specified earlier).
 +
-After selecting, you should see a page with a region "dropzone" inside.
+image:page-rendered.png[title="Active page controller rendering an empty region visualized by a placeholder",width=1440px]
+
+== Task: Using the text component
+
+Content Studio's ships with a built-in Text component which is handy when composing pages.
+
+. From the Insert tab (on the right hand side), drag a Text component into the region. 
+. Text mode will now be activated, and you can use the link:https://developer.enonic.com/docs/content-studio/stable/editor/component-types#text_component[rich-text editor] to write and format text, but also insert images.
 +
-image:render-pagecontroller-emptyregion.png[title="Active page controller rendering an empty region visualized by a placeholder",width=650px]
+image:text-component.png[title="Next.js-rendered text component with an image",width=1440px]
++
+. After saving, visit the Next.js rendering directly on http://localhost:3000/movies to see the result.
++
+. You may also click the `Preview` button in Content Studio for a full screen version.
 
-== Task: The text component
-
-With the page editor open, we can try out Content Studio's built-in Text component. 
-
-From the Insert tab, drag a Text component into the region. Now you can use the link:https://developer.enonic.com/docs/content-studio/stable/editor/component-types#text_component[rich-text editor] to write and format text, but also insert images.
-
-image:add-text-component.png[title="A text component with an image, in the main region",width=650px]
-
-To fully verify the Next.js rendering, visit the content directly on http://localhost:3000/movies. You may also click the `Preview` button in Content Studio for a full screen version.
-
-image:nextjs-text-component.png[title="Next.js-rendered text component with an image",width=370px]
-
-Now we've verified that we have a working region with Next.js rendering. But despite a bit of rich-text flexibility, Text components are too static for what we're aiming for here. Let's move on to add a more data-driven component or two.
-
-
-
-That completes the introduction to page rendering, in the next chapter we will look into reusing pages and components.
+That completes the introduction to page rendering, in the next chapter we will add some more <<components#, dynamic components>> to play with.

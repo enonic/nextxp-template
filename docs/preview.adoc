@@ -2,7 +2,7 @@
 :toc: right
 :imagesdir: media/
 
-In this chapter, we'll enable editors to preview the Next rendering directly within Content Studio.
+In this chapter, we'll enable editors to preview the Next rendering directly from Content Studio.
 
 ## Task: Enable preview 
 
@@ -10,11 +10,11 @@ To get preview working, we need to make a few changes to the Enonic application:
 
 Follow the steps below to get it working:
 
-. Add a proxy controller, that can fetch rendered HTML and assets from the Next server
+. **Add a proxy controller**, that can fetch rendered HTML and assets from the Next server
 +
 Rather than implementing this ourselves, we'll simply add the https://github.com/enonic/lib-nextjs-proxy[Nextjs proxy library] to the Enonic application we created earlier. 
 +
-The proxy is optimized for Next, as it performs some special handling and processing related to Next assets and the _next endpoint.
+The proxy is optimized for Next, as it performs some special handling and processing related to assets and the /_next path.
 +
 .Add the include line below to your project's build.gradle file
 [source, groovy, options="nowrap"]
@@ -26,18 +26,16 @@ dependencies {
 }
 ----
 +
-TODO version handling
-+
-NOTE: <version> must be replaced by the actual version. Visit the library on link:https://market.enonic.com/vendors/enonic/nextjs-proxy-lib[Enonic Market]. Click `Get started` and choose the latest version.
+NOTE: <version> must be replaced by the current version. Visit the library on link:https://market.enonic.com/vendors/enonic/nextjs-proxy-lib[Enonic Market]. Click `Get started` and choose the latest version.
 +
 . *Add a controller mapping*
 +
-In this step, we will make Content Studio's preview use the proxy
+In this step, we will activate Content Studio's preview to use the proxy
 +
-Update your _site.xml_ , https://developer.enonic.com/docs/xp/stable/cms/mappings[mappings] section to look like this:
+Update the `site.xml` , https://developer.enonic.com/docs/xp/stable/cms/mappings[mappings] section to look like this:
 +
 .src/main/resources/site/site.xml
-[source, xml, options="nowrap"]
+[source, xml]
 ----
 ...
   <mappings>
@@ -51,9 +49,11 @@ Update your _site.xml_ , https://developer.enonic.com/docs/xp/stable/cms/mapping
 ...
 ----
 +
-This removes the preview that shipped with the HMDB app, and replaces it with the proxy. All requests that do not go to /api will now be be handled by the proxy instead - as you can see from the `/.*` pattern, which essentially means "catch all" URL patterns.
+This effectively replaces the preview that shipped with the app, with the proxy. All requests excluding `/api` (which contains the headless API) will now be be handled by the proxy instead - as you can see from the `/.*` pattern, which essentially means "catch all" URL patterns.
 +
-Redeploy the Enonic app by running the following command from your project folder once more:
+NOTE: If the current headless API mapping conflicts with your Next.js app, you can always change the mapping right here
++
+Redeploy the Enonic app after saving the changes:
 +
     enonic project deploy
 +
@@ -61,9 +61,9 @@ Redeploy the Enonic app by running the following command from your project folde
 +
 By default, the proxy is configured to lookup the server on localhost:3000, later we will look into how this can be changed - but essentially this means everything should be working instantly.
 +
-From Content Studio, mark (or edit) any item in the content hierarchy,and it should be rendered by Next.js and visible in the preview panel on the right:
+From Content Studio, select (or edit) any item in the content hierarchy, and it should be rendered by Next.js and visible in the preview panel on the right:
 +
-image:render-cs-preview-marlonbrando.png[title="Next.js-rendered preview in Content Studio",width=800px]
+image:morgan-freeman-preview.png[title="Next.js-rendered preview in Content Studio",width=1072px]
 
 TODO: update
 In the <<page-editor#, next chapter>>, we'll use proxy-connected _page controllers_ instead of type mapping. **This, together with corresponding Next.js-side code, allows using the Content Studio page editor.**
