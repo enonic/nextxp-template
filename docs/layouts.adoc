@@ -3,11 +3,11 @@
 :imagesdir: media/
 :sourcedir: ../src
 
-Layouts are essentially parts, with an extra trick up their sleve. Regions. This means that layouts provide an additional way of organizing parts within a page.
+Layouts are essentially parts, with an extra trick up their sleve. Regions. This means that layouts may host other components, and build rich page structures.
 
 == Task: Add layout to Enonic
 
-Adding layouts is performed more or less identically to pages and parts. Simply follow the steps below: 
+Adding layouts is more or less identical to pages and parts. Simply follow the steps below: 
 
 . **Add the `2-column` layout** to the Enonic app
 +
@@ -26,6 +26,8 @@ Adding layouts is performed more or less identically to pages and parts. Simply 
 </layout>
 ----
 +
+NOTE: Just like a page, layouts may declare named regions.
++
 . **Add the preview controller file**
 +
 .src/main/resources/site/parts/child-list/child-list.js
@@ -35,13 +37,12 @@ var proxy = require('/lib/nextjs-proxy/proxy');
 
 exports.get = proxy.get;
 ----
-
++
 When completed, as always redeploy the Enonic app.
-
 
 == Task: Setup layout rendering in Next
 
-Moving over to the the Next app, we must add the the component that will render the layout.
+Moving over to the the Next app, you must add the the component that will render the layout.
 
 . **Add the layout component**
 +
@@ -53,7 +54,7 @@ include::{sourcedir}/components/layouts/TwoColumnLayout.tsx[]
 +
 . **Register the components** in _mappings.ts:
 +
-Add these new lites to the _mappings.ts file:
+Add these new lites to the _mappings.ts file.
 +
 .src/components/_mappings.ts
 [source,javascript,options="nowrap"]
@@ -66,5 +67,15 @@ TypesRegistry.addLayout(`${APP_NAME}:2-column`, {
     view: TwoColumnLayout
 });
 ----
++
+NOTE: this specific layout does not need any additional data - hence no query or processor:
++
+After completing these steps, you should be able to add the layout to a page, and then add components inside the layout. It might look something like this:
++
+TODO: Update this image
+image:cs-part-nextjsviewed.png[title="Layout placed to the front page",width=700px]
+TODO: Update this image
+image:cs-part-nextjsviewed.png[title="Layout with components placed inside",width=700px]
+
 
 That completes the introduction to parts and layouts, in the next chapter we will look into <<templates#, reuse of page compositions>> across content items.
