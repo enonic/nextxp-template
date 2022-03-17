@@ -23,17 +23,6 @@ export const APP_NAME_UNDERSCORED = (APP_NAME || '').replace(/\./g, '_')
 
 export const APP_NAME_DASHED = (APP_NAME || '').replace(/\./g, '-')
 
-// The URL of the deployment. Example: my-site-7q03y4pi5.vercel.app
-let nextDomain = process.env.NEXT_DOMAIN || process.env.NEXT_PUBLIC_NEXT_DOMAIN;
-if (!nextDomain) {
-    let vercelUrl = process.env.VERCEL_URL;
-    if (vercelUrl) {
-        nextDomain = 'https://' + vercelUrl;
-    }
-}
-/** The domain (full: with protocol and port if necessary) of this next.js server */
-export const NEXT_DOMAIN: string | undefined = nextDomain;
-
 
 //////////////////////////////////////////////////////////////////////////  Hardcode-able constants
 
@@ -124,8 +113,7 @@ export const getXpPath = (pageUrl: string): string => `${SITEPATH}/${pageUrl}`;
 
 let xpBaseUrl: string = "";
 export const setXpBaseUrl = (context: Context | undefined): void => {
-    const value = ((context?.req?.headers || {})[XP_BASE_URL_HEADER] || "") as string;
-    xpBaseUrl = value || xpBaseUrl;
+    xpBaseUrl = ((context?.req?.headers || {})[XP_BASE_URL_HEADER] || "") as string;
 };
 
 /**
@@ -134,27 +122,18 @@ export const setXpBaseUrl = (context: Context | undefined): void => {
  * @returns absolute URL string (clientside) 
  */
 export const getUrl = (resourcePath: string): string => {
-    return (xpBaseUrl || '/') + resourcePath;
-}
 
-/**
- * If the request stems from XP (the CS-preview proxy), assets under the /public/ folder needs to have their URL prefixed with the running domain of this next.js server. If not, prefix only with a slash.
- * @param serverRelativeAssetPath Regular next.js asset path
- * @param context nextjs context
- * @returns {string}
- */
-/* export const getPublicAssetUrl = (serverRelativeAssetPath: string, context: Context): string => (
-    isRequestFromXP(context)
-        ? serverRelativeAssetPath.replace(publicPattern, `${NEXT_DOMAIN}/`)
-        : serverRelativeAssetPath.replace(publicPattern, `/`)
-);*/
+    //TODO: workaround for XP pattern controller mapping not picked up in edit mode
+    const xpSiteUrlWithoutEditMode = (xpBaseUrl || '/').replace(/\/edit\//, '/inline/');
+
+    return xpSiteUrlWithoutEditMode + resourcePath;
+}
 
 // ---------------------------------------------------------------------------------------------------------------- Export
 
 const adapterConstants = {
     IS_DEV_MODE,
 
-    NEXT_DOMAIN,
     SITEPATH,
     CONTENT_API_URL,
 
