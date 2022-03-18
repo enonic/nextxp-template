@@ -1,10 +1,9 @@
 import type {AppProps} from 'next/app'
 import '../styles/globals.css'
 import React from 'react';
-import {XP_REQUEST_TYPE} from "../_enonicAdapter/utils";
+import {getUrl, XP_REQUEST_TYPE} from "../_enonicAdapter/utils";
 import Header from "../components/views/Header";
 import Footer from "../components/views/Footer";
-import {getUrl} from "../_enonicAdapter/utils";
 
 /**
  * Wraps all rendered components
@@ -18,6 +17,7 @@ function MyApp({Component, pageProps}: AppProps) {
         if (pageProps.meta.requestType === XP_REQUEST_TYPE.COMPONENT) {
             return <details data-single-component-output="true"><Component {...pageProps} /></details>;
         } else if (!pageProps.meta.canRender) {
+            console.info('Not able to render: returning early')
             // return empty page, status is set in [[...contentPath.tsx]]
             return null;
         }

@@ -8,12 +8,13 @@ import {Context} from "../pages/[[...contentPath]]";
  *          - 'view' (used in BasePage.tsx) is a react component: top-level content-type-specific rendering with the props first fetched from guillotine (and then optionally preprocessed with the function in 'props').
  */
 export interface TypeDefinition {
+    catchAll?: boolean; // will be set automatically depending on the binding
     query?: SelectedQueryMaybeVariablesFunc,
     processor?: DataProcessor,
     view?: React.FunctionComponent<any>
 }
 
-type SelectorName = "contentType" | "page" | "component" | "part" | "layout";
+export type SelectorName = "contentType" | "page" | "component" | "part" | "layout";
 
 interface TypeDictionary {
     [type: string]: TypeDefinition;
@@ -64,9 +65,12 @@ export class TypesRegistry {
     private static getType(selectorName: SelectorName, typeName: string, useCatchAll: boolean = true): TypeDefinition | undefined {
         const selector = TypesRegistry.getSelector(selectorName);
         let type = selector[typeName];
-        if (!type && useCatchAll) {
+        if (type) {
+            type.catchAll = false;
+        } else if (!type && useCatchAll) {
             type = selector[CATCH_ALL];
             if (type) {
+                type.catchAll = true;
                 console.log(`TypeRegistry: using catch-all view for ${selectorName} '${typeName}': ${type.view?.name}`)
             }
         }

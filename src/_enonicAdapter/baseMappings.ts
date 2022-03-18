@@ -1,14 +1,10 @@
-import {TypesRegistry} from './ComponentRegistry';
+import {CATCH_ALL, TypesRegistry} from './ComponentRegistry';
 import {FRAGMENT_CONTENTTYPE_NAME, XP_COMPONENT_TYPE} from './utils';
 import FragmentView from './views/Fragment';
-import BasePage from './views/BasePage';
-import BasePart from './views/BasePart';
-import BaseLayout from './views/BaseLayout';
+import BasePage, {PageDevView} from './views/BasePage';
+import BasePart, {PartDevView} from './views/BasePart';
+import BaseLayout, {LayoutDevView} from './views/BaseLayout';
 import TextView from './views/Text';
-import { PageDevView } from './views/BasePage';
-import { PartDevView } from './views/BasePart';
-import { LayoutDevView } from './views/BaseLayout';
-import {CATCH_ALL} from './ComponentRegistry';
 import {ContentDevView} from './views/BaseContent';
 
 // Base Content Types
@@ -55,12 +51,9 @@ TypesRegistry.addLayout(CATCH_ALL, {
     view: LayoutDevView
 });
 
-/*
-// TODO This view be enabled to run _AFTER_ content and page rendering, rename to addFallback()?
 TypesRegistry.addContentType(CATCH_ALL, {
     view: ContentDevView,
 });
-*/
 
 
 console.info('Base components registered');

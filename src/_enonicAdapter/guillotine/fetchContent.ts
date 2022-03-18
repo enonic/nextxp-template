@@ -8,13 +8,13 @@ import adapterConstants, {
     FRAGMENT_CONTENTTYPE_NAME,
     FRAGMENT_DEFAULT_REGION_NAME,
     PAGE_TEMPLATE_CONTENTTYPE_NAME,
-    XP_COMPONENT_TYPE,
     RENDER_MODE,
-    XP_REQUEST_TYPE,
-    setXpBaseUrl
+    setXpBaseUrl,
+    XP_COMPONENT_TYPE,
+    XP_REQUEST_TYPE
 } from "../utils";
 import {SelectedQueryMaybeVariablesFunc, TypeDefinition, TypesRegistry} from '../ComponentRegistry';
-import {defaultVariables, defaultQuery} from '../../components/queries/_defaultQuery';
+import {defaultQuery, defaultVariables} from '../../components/queries/_defaultQuery';
 
 export type adapterConstants = {
     APP_NAME: string,
@@ -575,8 +575,6 @@ function createMetaData(contentType: string, contentPath: string, requestType: X
         requestType: requestType,
         renderMode: renderMode
     }
-
-    const regions = pageData?.regions;
 
     if (requestedComponentPath) {
         meta.requestedComponent = components.find(cmp => cmp.path === requestedComponentPath);
