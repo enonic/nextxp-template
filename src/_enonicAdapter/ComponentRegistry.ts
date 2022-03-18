@@ -79,7 +79,8 @@ export class TypesRegistry {
 
     private static addType(selectorName: SelectorName, name: string, obj: TypeDefinition): void {
         const selector = TypesRegistry.getSelector(selectorName);
-        selector[name] = obj;
+        const curr = selector[name];
+        selector[name] = curr ? Object.assign(curr, obj) : obj;
     }
 
     public static addContentType(name: string, obj: TypeDefinition): void {
