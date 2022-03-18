@@ -59,14 +59,13 @@ Before booting the application, you need to provide some configuration variables
 
 CONTENT_API_URL=http://localhost:8080/site/hmdb/draft/hmdb/api:: Absolute url to the Content API
 SITEPATH=/hmdb:: Path to the site, as seen in Content Studio 
-NEXT_DOMAIN=localhost:3000:: Current server domain 
 
-TIP: Configuration values can be overridden when deplying your app to a live server later.
+TIP: These configuration values can be overridden when deplying your app to a live server later.
 
 
 == Task: Boot the server
 
-Let's fire up Next and see if things are working
+Let's fire up Next and see if things are working as planned...
 
 NOTE: Make sure <<enonic-setup#hmdb, Enonic and the Headless Movie Database app is running on localhost:8080>> before you continue
 
@@ -81,17 +80,17 @@ image:render-default-hmdb.png[title="Application root page, showing the title He
 
 [TIP]
 ====
-Running Next in DEV mode normally works fine, should you experience strange issues - simply reboot it using `npm run dev`
+Running Next in DEV mode normally works fine, should you however experience "strange issues" - try deleting the `.next/` folder and reboot
 
-For more details on booting Next, check out the link:https://nextjs.org/docs/api-reference/cli[Next.js CLI docs].
+For more details on starting Next, check out the link:https://nextjs.org/docs/api-reference/cli[Next.js CLI docs].
 ====
 
 
 == Next URL handling
 
-This integrations make the URLs in Next.js 1-1 with their respective counterparts in the CMS. Meaning, http://localhost:3000 is linked to the root element aka "the site" which is located on `/hmdb` in Content Studio.
+The URL structure of your Next site will mirror the structure of the content in the CMS. Meaning, http://localhost:3000/ will be mounted to the root element aka "the site" in Content Studio. In our case, the site is located at `/hmdb`.
 
-By visiting http://localhost:3000/movies/se7en the Next server will lookup, fetch and return content found on the path '/hmdb/movies/se7en' in the CMS. 
+Child items like http://localhost:3000/movies/se7en will lookup, fetch and return content found on the path '/hmdb/movies/se7en' in the CMS. 
 
 TODO (image showing both next and CS at the same time)
 .Default render: movie content item se7en

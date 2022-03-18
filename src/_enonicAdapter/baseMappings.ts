@@ -17,12 +17,7 @@ TypesRegistry.addContentType(FRAGMENT_CONTENTTYPE_NAME, {
     view: FragmentView,
 });
 
-// TODO Must be enabled to run _AFTER_ page, rename to addFallback()?
-/*
-TypesRegistry.addContentType(CATCH_ALL, {
-    view: ContentDevView,
-});
-*/
+
 
 // Base Components
 
@@ -59,5 +54,13 @@ TypesRegistry.addPart(CATCH_ALL, {
 TypesRegistry.addLayout(CATCH_ALL, {
     view: LayoutDevView
 });
+
+/*
+// TODO This view be enabled to run _AFTER_ content and page rendering, rename to addFallback()?
+TypesRegistry.addContentType(CATCH_ALL, {
+    view: ContentDevView,
+});
+*/
+
 
 console.info('Base components registered');

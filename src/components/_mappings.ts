@@ -11,6 +11,8 @@ import TwoColumnLayout from './layouts/TwoColumnLayout';
 
 // Content type mappings
 
+
+
 TypesRegistry.addContentType(`${APP_NAME}:person`, {
     query: getPerson,
     view: Person

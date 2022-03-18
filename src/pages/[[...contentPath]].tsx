@@ -33,6 +33,7 @@ export const getServerSideProps: GetServerSideProps = async (context: Context): 
         throw error
     }
 
+    // TODO: Drop? 404 handling should be sufficient for CS
     // HTTP 418 if CMS is not configured to render item yet
     if (meta && !meta.canRender && meta.renderMode != RENDER_MODE.EDIT && meta.renderMode != RENDER_MODE.NEXT) {
         context.res.statusCode = 418;

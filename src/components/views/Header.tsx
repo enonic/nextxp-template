@@ -28,7 +28,7 @@ const Header = ({title, logoUrl}: HeaderProps) => {
             {title && (
                 <h1 style={{margin: 0}}>
                     <Link
-                        href= {getUrl('')}>
+                        href={getUrl('')}>
                         <a style={{
                             color: `white`,
                             textDecoration: `none`,
