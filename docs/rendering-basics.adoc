@@ -39,7 +39,7 @@ import getPerson from './queries/getPerson';
 
 ....
 
-TypesRegistry.addContentType(`${APP_NAME}:person`, {
+ComponentRegistry.addContentType(`${APP_NAME}:person`, {
     query: getPerson,
 });
 ----
@@ -75,7 +75,7 @@ import Person from './views/Person';
 
 ....
 
-TypesRegistry.addContentType(`${APP_NAME}:person`, {
+ComponentRegistry.addContentType(`${APP_NAME}:person`, {
     view: Person,
 });
 ----

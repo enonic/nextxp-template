@@ -1,4 +1,4 @@
-import {CATCH_ALL, TypesRegistry} from './ComponentRegistry';
+import {CATCH_ALL, ComponentRegistry} from './ComponentRegistry';
 import {FRAGMENT_CONTENTTYPE_NAME, XP_COMPONENT_TYPE} from './utils';
 import FragmentView from './views/Fragment';
 import BasePage, {PageDevView} from './views/BasePage';
@@ -9,7 +9,7 @@ import {ContentDevView} from './views/BaseContent';
 
 // Base Content Types
 
-TypesRegistry.addContentType(FRAGMENT_CONTENTTYPE_NAME, {
+ComponentRegistry.addContentType(FRAGMENT_CONTENTTYPE_NAME, {
     view: FragmentView,
 });
 
@@ -17,41 +17,41 @@ TypesRegistry.addContentType(FRAGMENT_CONTENTTYPE_NAME, {
 
 // Base Components
 
-TypesRegistry.addComponent(XP_COMPONENT_TYPE.PAGE, {
+ComponentRegistry.addComponent(XP_COMPONENT_TYPE.PAGE, {
     view: BasePage
 });
 
-TypesRegistry.addComponent(XP_COMPONENT_TYPE.PART, {
+ComponentRegistry.addComponent(XP_COMPONENT_TYPE.PART, {
     view: BasePart
 });
 
-TypesRegistry.addComponent(XP_COMPONENT_TYPE.LAYOUT, {
+ComponentRegistry.addComponent(XP_COMPONENT_TYPE.LAYOUT, {
     view: BaseLayout
 });
 
-TypesRegistry.addComponent(XP_COMPONENT_TYPE.FRAGMENT, {
+ComponentRegistry.addComponent(XP_COMPONENT_TYPE.FRAGMENT, {
     view: FragmentView
 });
 
-TypesRegistry.addComponent(XP_COMPONENT_TYPE.TEXT, {
+ComponentRegistry.addComponent(XP_COMPONENT_TYPE.TEXT, {
     view: TextView
 });
 
 // Next Dev mode handling
 
-TypesRegistry.addPage(CATCH_ALL, {
+ComponentRegistry.addPage(CATCH_ALL, {
     view: PageDevView
 });
 
-TypesRegistry.addPart(CATCH_ALL, {
+ComponentRegistry.addPart(CATCH_ALL, {
     view: PartDevView
 });
 
-TypesRegistry.addLayout(CATCH_ALL, {
+ComponentRegistry.addLayout(CATCH_ALL, {
     view: LayoutDevView
 });
 
-TypesRegistry.addContentType(CATCH_ALL, {
+ComponentRegistry.addContentType(CATCH_ALL, {
     view: ContentDevView,
 });
 

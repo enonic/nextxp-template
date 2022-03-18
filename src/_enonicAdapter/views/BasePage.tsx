@@ -1,5 +1,5 @@
 import React from "react"
-import {TypesRegistry} from '../ComponentRegistry';
+import {ComponentRegistry} from '../ComponentRegistry';
 import {FetchContentResult} from '../guillotine/fetchContent';
 import {MetaData, PageData} from "../guillotine/getMetaData";
 import {IS_DEV_MODE} from "../utils";
@@ -32,7 +32,7 @@ const BasePage = (props: FetchContentResult) => {
     const desc = props.page?.descriptor;
     let pageDef;
     if (desc) {
-        pageDef = TypesRegistry.getPage(desc);
+        pageDef = ComponentRegistry.getPage(desc);
     }
     const PageView = pageDef?.view;
     if (PageView) {

@@ -1,8 +1,8 @@
 import React from "react";
 
-import {PORTAL_COMPONENT_ATTRIBUTE, XP_COMPONENT_TYPE, RENDER_MODE} from "../utils";
+import {PORTAL_COMPONENT_ATTRIBUTE, RENDER_MODE, XP_COMPONENT_TYPE} from "../utils";
 import {MetaData, PageComponent} from "../guillotine/getMetaData";
-import {TypesRegistry} from '../ComponentRegistry';
+import {ComponentRegistry} from '../ComponentRegistry';
 
 
 export type BaseComponentProps = {
@@ -18,7 +18,7 @@ const BaseComponent = ({component, meta, content}: BaseComponentProps) => {
         [PORTAL_COMPONENT_ATTRIBUTE]: type
     };
 
-    const ComponentView = TypesRegistry.getComponent(type)?.view || (() => {
+    const ComponentView = ComponentRegistry.getComponent(type)?.view || (() => {
         console.error(`Missing view for component type '${type}'`);
         return <></>;
     });

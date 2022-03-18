@@ -49,7 +49,7 @@ import MainPage from './pages/Main';
 
 ...
 
-TypesRegistry.addPage(`${APP_NAME}:main`, {
+ComponentRegistry.addPage(`${APP_NAME}:main`, {
     view: MainPage
 });
 ----

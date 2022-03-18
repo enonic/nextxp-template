@@ -1,8 +1,7 @@
 import React from "react"
 import {MetaData, PartData} from "../guillotine/getMetaData";
-import {TypesRegistry} from '../ComponentRegistry';
-import {RENDER_MODE} from '../utils';
-import {IS_DEV_MODE} from "../utils";
+import {ComponentRegistry} from '../ComponentRegistry';
+import {IS_DEV_MODE, RENDER_MODE} from '../utils';
 import DataDump from "./DataDump";
 import Empty from './Empty';
 
@@ -33,7 +32,7 @@ const BasePart = (props: BasePartProps) => {
 
     let partSelection;
     if (component) {
-        partSelection = TypesRegistry.getPart(component.descriptor);
+        partSelection = ComponentRegistry.getPart(component.descriptor);
     }
     const SelectedPartView = partSelection?.view;
     if (SelectedPartView) {

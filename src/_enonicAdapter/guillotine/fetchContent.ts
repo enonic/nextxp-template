@@ -13,7 +13,7 @@ import adapterConstants, {
     XP_COMPONENT_TYPE,
     XP_REQUEST_TYPE
 } from "../utils";
-import {SelectedQueryMaybeVariablesFunc, TypeDefinition, TypesRegistry} from '../ComponentRegistry';
+import {ComponentDefinition, ComponentRegistry, SelectedQueryMaybeVariablesFunc} from '../ComponentRegistry';
 import {defaultQuery, defaultVariables} from '../../components/queries/_defaultQuery';
 
 export type adapterConstants = {
@@ -50,7 +50,7 @@ type ContentResult = Result & {
 };
 
 interface ComponentDescriptor {
-    type?: TypeDefinition;
+    type?: ComponentDefinition;
     component?: PageComponent;
     queryAndVariables?: QueryAndVariables;
 }
@@ -63,7 +63,7 @@ export type FetchContentResult = Result & {
 
 
 type FetcherConfig<T extends adapterConstants> = T & {
-    typesRegistry: typeof TypesRegistry
+    componentRegistry: typeof ComponentRegistry
 };
 
 interface QueryAndVariables {
@@ -466,7 +466,7 @@ async function applyProcessors(componentDescriptors: ComponentDescriptor[], cont
 }
 
 function collectPartDescriptors(components: PageComponent[],
-                                typesRegistry: typeof TypesRegistry,
+                                componentRegistry: typeof ComponentRegistry,
                                 requestedComponentPath: string | undefined,
                                 xpContentPath: string,
                                 context: Context | undefined
@@ -481,7 +481,7 @@ function collectPartDescriptors(components: PageComponent[],
         if (XP_COMPONENT_TYPE.PART == cmp.type && (!requestedComponentPath || requestedComponentPath === cmp.path)) {
             const partDesc = cmp.part?.descriptor;
             if (partDesc) {
-                const partTypeDef = typesRegistry.getPart(partDesc);
+                const partTypeDef = ComponentRegistry.getPart(partDesc);
                 if (partTypeDef) {
                     // const partPath = `${xpContentPath}/_component${cmp.path}`;
                     const partQueryAndVars = getQueryAndVariables(cmp.type, xpContentPath, partTypeDef.query, context, cmp.part?.config);
@@ -494,7 +494,7 @@ function collectPartDescriptors(components: PageComponent[],
             }
         } else if (XP_COMPONENT_TYPE.FRAGMENT === cmp.type) {
             // look for parts inside fragments
-            const fragPartDescs = collectPartDescriptors(cmp.fragment!.fragment.components, typesRegistry, requestedComponentPath,
+            const fragPartDescs = collectPartDescriptors(cmp.fragment!.fragment.components, componentRegistry, requestedComponentPath,
                 xpContentPath, context);
             if (fragPartDescs.length) {
                 partDescriptors.push(...fragPartDescs);
@@ -581,8 +581,8 @@ function createMetaData(contentType: string, contentPath: string, requestType: X
     }
 
     const pageDesc = pageData?.descriptor;
-    const haveType = !!TypesRegistry.getContentType(contentType)?.view;
-    const havePage = !!pageDesc && !!TypesRegistry.getPage(pageDesc)?.view;
+    const haveType = !!ComponentRegistry.getContentType(contentType)?.view;
+    const havePage = !!pageDesc && !!ComponentRegistry.getPage(pageDesc)?.view;
 
     meta.canRender = haveType || havePage;
 
@@ -606,7 +606,7 @@ function errorResponse(code: string = '500', message: string = 'Unknown error'):
 /**
  * Configures, builds and returns a general fetchContent function.
  * @param adapterConstants Object containing attributes imported from enonic-connecion-config.js: constants and function concerned with connection to the XP backend. Easiest: caller imports enonic-connection-config and just passes that entire object here as adapterConstants.
- * @param typesRegistry TypesRegistry object from TypesRegistry.ts, holding user type mappings that are set in typesRegistration.ts file
+ * @param componentRegistry ComponentRegistry object from ComponentRegistry.ts, holding user type mappings that are set in typesRegistration.ts file
  * @returns ContentFetcher
  */
 export const buildContentFetcher = <T extends adapterConstants>(config: FetcherConfig<T>): ContentFetcher => {
@@ -619,7 +619,7 @@ export const buildContentFetcher = <T extends adapterConstants>(config: FetcherC
         getXPRequestType,
         getRenderMode,
         getSingleComponentPath,
-        typesRegistry,
+        componentRegistry,
     } = config;
 
     return async (
@@ -666,7 +666,7 @@ export const buildContentFetcher = <T extends adapterConstants>(config: FetcherC
             const componentDescriptors: ComponentDescriptor[] = [];
 
             // Add the content type query at all cases
-            const contentTypeDef = typesRegistry?.getContentType(type);
+            const contentTypeDef = componentRegistry?.getContentType(type);
             const pageCmp = (components || []).find(cmp => cmp.type === XP_COMPONENT_TYPE.PAGE);
             if (pageCmp) {
                 processComponentConfig(APP_NAME, APP_NAME_DASHED, pageCmp);
@@ -683,12 +683,12 @@ export const buildContentFetcher = <T extends adapterConstants>(config: FetcherC
                 queryAndVariables: contentQueryAndVars,
             });
 
-            if (components?.length && typesRegistry) {
+            if (components?.length && componentRegistry) {
                 for (const cmp of (components || [])) {
                     processComponentConfig(APP_NAME, APP_NAME_DASHED, cmp);
                 }
                 // Collect part queries if defined
-                const partDescriptors = collectPartDescriptors(components, typesRegistry, requestedComponentPath, contentPath, context);
+                const partDescriptors = collectPartDescriptors(components, componentRegistry, requestedComponentPath, contentPath, context);
                 if (partDescriptors.length) {
                     componentDescriptors.push(...partDescriptors);
                 }
@@ -767,5 +767,5 @@ export const buildContentFetcher = <T extends adapterConstants>(config: FetcherC
  */
 export const fetchContent: ContentFetcher = buildContentFetcher<adapterConstants>({
     ...adapterConstants,
-    typesRegistry: TypesRegistry,
+    componentRegistry: ComponentRegistry,
 });

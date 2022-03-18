@@ -178,7 +178,7 @@ Add the following section to the file:
 ----
 // (...other type registrations...),
 
-TypesRegistry.addContentType('com.example.myproject:movie', {
+ComponentRegistry.addContentType('com.example.myproject:movie', {
     query: movieQuery,
     view: MovieView,
 });

@@ -81,7 +81,7 @@ import ChildList, {childListProcessor, getChildList} from './parts/ChildList';
 
 ...
 
-TypesRegistry.addPart(`${APP_NAME}:child-list`, {
+ComponentRegistry.addPart(`${APP_NAME}:child-list`, {
     query: getChildList,
     processor: childListProcessor,
     view: ChildList
@@ -146,7 +146,7 @@ import Heading from './parts/Heading';
 
 ...
 
-TypesRegistry.addPart(`${APP_NAME}:heading`, {
+ComponentRegistry.addPart(`${APP_NAME}:heading`, {
     view: Heading
 });
 ----

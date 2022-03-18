@@ -1,6 +1,6 @@
 import React from "react";
 import {FetchContentResult} from "../guillotine/fetchContent";
-import {TypesRegistry} from '../ComponentRegistry';
+import {ComponentRegistry} from '../ComponentRegistry';
 import BasePage from './BasePage';
 import DataDump from "./DataDump";
 import {IS_DEV_MODE} from "../utils";
@@ -21,8 +21,8 @@ const BaseContent = (props: FetchContentResult) => {
     }
 
     const pageDesc = page?.descriptor;
-    const typeDef = TypesRegistry.getContentType(meta.type);
-    const pageDef = pageDesc ? TypesRegistry.getPage(pageDesc) : undefined;
+    const typeDef = ComponentRegistry.getContentType(meta.type);
+    const pageDef = pageDesc ? ComponentRegistry.getPage(pageDesc) : undefined;
     const ContentTypeView = typeDef?.view;
 
     if (ContentTypeView && !typeDef?.catchAll) {

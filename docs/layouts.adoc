@@ -63,7 +63,7 @@ import TwoColumnLayout from './layouts/TwoColumnLayout';
 
 ...
 
-TypesRegistry.addLayout(`${APP_NAME}:2-column`, {
+ComponentRegistry.addLayout(`${APP_NAME}:2-column`, {
     view: TwoColumnLayout
 });
 ----

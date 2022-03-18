@@ -1,6 +1,6 @@
 import React from "react"
 import {LayoutData, MetaData, RegionTree} from "../guillotine/getMetaData";
-import {TypesRegistry} from '../ComponentRegistry';
+import {ComponentRegistry} from '../ComponentRegistry';
 import {IS_DEV_MODE} from "../utils";
 import DataDump from "./DataDump";
 import Empty from './Empty';
@@ -23,7 +23,7 @@ const BaseLayout = (props: BaseLayoutProps) => {
     const {component, content, regions, meta} = props;
     let layoutSelection;
     if (component) {
-        layoutSelection = TypesRegistry.getLayout(component.descriptor);
+        layoutSelection = ComponentRegistry.getLayout(component.descriptor);
     }
     const SelectedLayoutView = layoutSelection?.view;
     if (SelectedLayoutView) {
