@@ -2,11 +2,94 @@
 :toc: right
 :imagesdir: media/
 
-Todo
+In this chapter you will launch cloud instances of Enonic and the Next app - link them together, and watch the glorious result.
 
-* Enonic cloud sign up
-* CMS essentials
-* 
+This will involve running a single instance of Enonic, and two instances of the Next.js application - one for preview, and one for handling the live site.
+
+NOTE: For simplicity, we will use Enonic's cloud, and Vercel to host the Next.js app (Vercel are the makers of Next.js). If you didn't know - both solutions are open source and can be hosted more or less anywhere. Have a look at the https://developer.enonic.com/docs/kubernetes-operator-for-xp[Kubernetes operator for Enonic XP] if you are keen on running it yourself.
+
+
+== Task: Sign up to Enonic and deploy your app
+
+Follow the steps below to get deploy your app on Enonic Cloud:
+
+. **Sign up** for a https://enonic.com/sign-up/cloud-trial[free trial] and create your personal account.
+. **Create a new solution** (NOTE: Choose the `CMS essentials` template), and go with the default values
+. **Connect Enonic CLI to the cloud** by running this command, and follow the instructions:
++
+[source,bash,{subs}]
+----
+enonic cloud login
+----
++ 
+. From your Enonic app folder, install the app by running this command:
++
+[source,bash,{subs}]
+----
+enonic cloud app install
+----
++ 
+. Going back to the Enonic cloud solution, verify that the app was installed to your selected environment.
++
+TODO Screenshot
++
+. Finally, log into your Enonic XP cloud instance and launch Content Studio to verify that the app automatically initialized the `hmdb` site on the server, just like on your local machine.
++
+NOTE: You may optionally delete the standard content, export and import your local machine content using the https://market.enonic.com/vendors/glenn-ricaud/data-toolbox[Data Toolbox application].
+
+
+== Task: Expose site via drafts route
+
+Let's focus on getting preview up and running first. In order for the Next app to access the draft site and API, you will need to create a so-called route.
+
+TIP: The purpose of routes is to expose endpoints like `:8080/path/to/my/site` to the internet, using a combination of CDN and ingresses.
+
+. From the Cloud Solution interface, go to `Routes` and create a route called "HMDB Drafts".
++
+Use the following settings:
++
+. After the route is `Started`, click the full URL in route details to verify it is working (NOTE: Remember that there is no rendering here, only the API, so you need to add /api to the end to see anything ).
+
+
+== Task: Sign up and deploy preview app to Vercel
+
+With the fresh drafts API available, you are ready to launch the Next preview server.
+
+. Sign up to Vercel
+. Configure with route to Enonic
+TODO
+
+
+== Task: Link Enonic to the preview server
+
+With the preview server running, Content Studio is still not able to access it, simply because it defaults to http://localhost:3000, which is obviously not where it is now.
+
+. From the Enonic Cloud interface, choose `Applications`, select and `Edit` the application from the details panel.
+. Paste the following into the configuration field: `nextjsurl=<full url to next preview server>` - i.e. nextjsurl=myapp.vercel.com 
+. Save the changes, and wait for the configuration to be applied
+
+
+== Task: Create route to live content
+
+Let's now put our focus on the live site (content published to the master branch). In order for the Next app to access the site and API, we need to create a so-called route.
+
+. Publish your site from Content Studio. Select the site, and then press `Publish Tree` from the right action menu.
+. From the Cloud UI, go to `Routes` and create a new route, call it "HMDB".
++
+Use the following settings:
++
+* TODO
++
+After the route is listed as `Started`, click the full URL link in the route details to try it out.
+TODO: No page problem?
+
+
+
+
+
+== Task: Sign up to Vercel
+
+
 * Routes
 * Vercel: https://nextjs.org/learn/basics/deploying-nextjs-app/github
 

@@ -112,4 +112,4 @@ Give the default rendering a spin by trying out some other URLs, for example: +
 
 **That's it for the basic Next.js setup.**
 
-Next, well have a closer look at <<rendering-basics#, how to customize the rendering>>.
+Next (pun intended), well have a closer look at <<rendering-basics#, how to customize the rendering>>.
