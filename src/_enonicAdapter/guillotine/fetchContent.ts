@@ -7,14 +7,15 @@ import adapterConstants, {
     APP_NAME_DASHED,
     FRAGMENT_CONTENTTYPE_NAME,
     FRAGMENT_DEFAULT_REGION_NAME,
+    IS_DEV_MODE,
     PAGE_TEMPLATE_CONTENTTYPE_NAME,
+    PAGE_TEMPLATE_FOLDER,
     RENDER_MODE,
     setXpBaseUrl,
     XP_COMPONENT_TYPE,
     XP_REQUEST_TYPE
 } from "../utils";
 import {ComponentDefinition, ComponentRegistry, SelectedQueryMaybeVariablesFunc} from '../ComponentRegistry';
-import {defaultQuery, defaultVariables} from '../../components/queries/_defaultQuery';
 
 export type adapterConstants = {
     APP_NAME: string,
@@ -484,12 +485,15 @@ function collectPartDescriptors(components: PageComponent[],
                 const partTypeDef = ComponentRegistry.getPart(partDesc);
                 if (partTypeDef) {
                     // const partPath = `${xpContentPath}/_component${cmp.path}`;
-                    const partQueryAndVars = getQueryAndVariables(cmp.type, xpContentPath, partTypeDef.query, context, cmp.part?.config);
-                    partDescriptors.push({
-                        component: cmp,
-                        type: partTypeDef,
-                        queryAndVariables: partQueryAndVars,
-                    });
+                    const partQueryAndVars = getQueryAndVariables(componentRegistry, cmp.type, xpContentPath, partTypeDef.query, context,
+                        cmp.part?.config);
+                    if (partQueryAndVars) {
+                        partDescriptors.push({
+                            component: cmp,
+                            type: partTypeDef,
+                            queryAndVariables: partQueryAndVars,
+                        });
+                    }
                 }
             }
         } else if (XP_COMPONENT_TYPE.FRAGMENT === cmp.type) {
@@ -517,7 +521,8 @@ function processComponentConfig(myAppName: string, myAppNameDashed: string, cmp:
     }
 }
 
-function getQueryAndVariables(type: string,
+function getQueryAndVariables(componentRegistry: typeof ComponentRegistry,
+                              type: string,
                               path: string,
                               selectedQuery?: SelectedQueryMaybeVariablesFunc,
                               context?: Context, config?: any): QueryAndVariables | undefined {
@@ -546,9 +551,9 @@ function getQueryAndVariables(type: string,
 
     if (query) {
         return {
-            query,
-            variables: getVariables ? getVariables(path, context, config) : defaultVariables(path),
-        }
+            query: query,
+            variables: getVariables ? getVariables(path, context, config) : componentRegistry.getDefaultVars(path),
+        };
     }
 }
 
@@ -589,7 +594,7 @@ function createMetaData(contentType: string, contentPath: string, requestType: X
         meta.canRender = true;
     } else if (pageDef && pageDef.view) {
         meta.canRender = true;
-        meta.catchAll = pageDef?.catchAll || false;
+        meta.catchAll = false;  // catchAll only refers to content type catch-all
     } else if (typeDef?.view) {
         meta.canRender = true;
         meta.catchAll = true;
@@ -665,7 +670,11 @@ export const buildContentFetcher = <T extends adapterConstants>(config: FetcherC
             } else if (!type) {
                 return errorResponse('500', "Server responded with incomplete meta data: missing content 'type' attribute.")
 
-            } else if (renderMode === RENDER_MODE.LIVE && (type === FRAGMENT_CONTENTTYPE_NAME || PAGE_TEMPLATE_CONTENTTYPE_NAME)) {
+            } else if (renderMode === RENDER_MODE.NEXT && !IS_DEV_MODE &&
+                       (type === FRAGMENT_CONTENTTYPE_NAME ||
+                        type === PAGE_TEMPLATE_CONTENTTYPE_NAME ||
+                        type === PAGE_TEMPLATE_FOLDER)) {
+                console.log('404 from fetch content');
                 return errorResponse('404', `Content type [${type}] is not accessible in ${renderMode} mode`);
             }
 
@@ -680,11 +689,13 @@ export const buildContentFetcher = <T extends adapterConstants>(config: FetcherC
             if (pageCmp) {
                 processComponentConfig(APP_NAME, APP_NAME_DASHED, pageCmp);
             }
-            let contentQueryAndVars = getQueryAndVariables(type, contentPath, contentTypeDef?.query, context, pageCmp?.page?.config);
+
+            let contentQueryAndVars = getQueryAndVariables(componentRegistry, type, contentPath, contentTypeDef?.query, context,
+                pageCmp?.page?.config);
             if (!contentQueryAndVars) {
                 contentQueryAndVars = {
-                    query: defaultQuery,
-                    variables: defaultVariables(contentPath),
+                    query: componentRegistry.getDefaultQuery(),
+                    variables: componentRegistry.getDefaultVars(contentPath),
                 }
             }
             componentDescriptors.push({

@@ -39,6 +39,7 @@ export const FRAGMENT_CONTENTTYPE_NAME = 'portal:fragment';
 export const FRAGMENT_DEFAULT_REGION_NAME = 'fragment';
 
 export const PAGE_TEMPLATE_CONTENTTYPE_NAME = 'portal:page-template';
+export const PAGE_TEMPLATE_FOLDER = 'portal:template-folder';
 
 export const SITE_CONTENTTYPE_NAME = 'portal:site';
 

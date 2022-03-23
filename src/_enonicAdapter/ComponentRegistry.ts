@@ -1,4 +1,5 @@
 import {Context} from "../pages/[[...contentPath]]";
+import {defaultQuery, defaultVariables} from "./guillotine/defaultQuery";
 
 
 /**
@@ -39,6 +40,8 @@ export type SelectedQueryMaybeVariablesFunc = string |
 
 export const CATCH_ALL = "*";
 
+type DefaultVarsFunction = (path: string) => { [key: string]: any };
+
 export class ComponentRegistry {
 
     private static contentTypes: ComponentDictionary = {};
@@ -46,6 +49,8 @@ export class ComponentRegistry {
     private static components: ComponentDictionary = {};
     private static parts: ComponentDictionary = {};
     private static layouts: ComponentDictionary = {};
+    private static defaultQuery: string;
+    private static defaultVars: DefaultVarsFunction;
 
     private static getSelector(name: SelectorName): ComponentDictionary {
         switch (name) {
@@ -71,7 +76,6 @@ export class ComponentRegistry {
             type = selector[CATCH_ALL];
             if (type) {
                 type.catchAll = true;
-                console.log(`ComponentRegistry: using catch-all view for ${selectorName} '${typeName}': ${type.view?.name}`)
             }
         }
         return type;
@@ -81,6 +85,22 @@ export class ComponentRegistry {
         const selector = ComponentRegistry.getSelector(selectorName);
         const curr = selector[name];
         selector[name] = curr ? Object.assign(curr, obj) : obj;
+    }
+
+    public static setDefaultQuery(query: string): void {
+        this.defaultQuery = query;
+    }
+
+    public static getDefaultQuery(): string {
+        return this.defaultQuery || defaultQuery;
+    }
+
+    public static setDefaultVars(vars: DefaultVarsFunction): void {
+        this.defaultVars = vars;
+    }
+
+    public static getDefaultVars(path: string): { [key: string]: any } {
+        return this.defaultVars ? this.defaultVars(path) : defaultVariables(path);
     }
 
     public static addContentType(name: string, obj: ComponentDefinition): void {

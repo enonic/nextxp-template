@@ -7,12 +7,15 @@ import BaseLayout, {LayoutDevView} from './views/BaseLayout';
 import TextView from './views/Text';
 import {ContentDevView} from './views/BaseContent';
 
+// You can override default query here
+// ComponentRegistry.setDefaultQuery(defaultQuery);
+// ComponentRegistry.setDefaultVars(defaultVariables);
+
 // Base Content Types
 
 ComponentRegistry.addContentType(FRAGMENT_CONTENTTYPE_NAME, {
     view: FragmentView,
 });
-
 
 
 // Base Components

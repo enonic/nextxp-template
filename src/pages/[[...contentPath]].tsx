@@ -1,7 +1,7 @@
 import React from 'react';
 import {fetchContent, FetchContentResult} from "../_enonicAdapter/guillotine/fetchContent";
 import MainView from "../_enonicAdapter/views/MainView";
-import {RENDER_MODE} from "../_enonicAdapter/utils";
+import {IS_DEV_MODE, RENDER_MODE} from "../_enonicAdapter/utils";
 import {GetServerSideProps, GetServerSidePropsContext, GetServerSidePropsResult} from 'next';
 import {ParsedUrlQuery} from 'node:querystring';
 
@@ -41,9 +41,11 @@ export const getServerSideProps: GetServerSideProps = async (context: Context): 
         context.res.statusCode = 418;
     }
 
+    let catchAllInNextProdMode = meta?.renderMode === RENDER_MODE.NEXT && !IS_DEV_MODE && meta?.catchAll;
+
     return {
         // HTTP 404
-        notFound: (error && error.code === '404') || undefined,
+        notFound: (error && error.code === '404') || catchAllInNextProdMode || undefined,
         props: {
             content,
             meta,
