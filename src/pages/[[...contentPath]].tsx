@@ -13,6 +13,7 @@ export interface ServerSideParams
     extends ParsedUrlQuery {
     // String array catching a sub-path assumed to match the site-relative path of an XP content.
     contentPath?: string[];
+    mode?: string;
 }
 
 export type Context = GetServerSidePropsContext<ServerSideParams>;
@@ -35,7 +36,8 @@ export const getServerSideProps: GetServerSideProps = async (context: Context): 
 
     // TODO: Drop? 404 handling should be sufficient for CS
     // HTTP 418 if CMS is not configured to render item yet
-    if (meta && !meta.canRender && meta.renderMode != RENDER_MODE.EDIT && meta.renderMode != RENDER_MODE.NEXT) {
+    // catch-all rendering is ignored for isRenderableRequest in edit mode to allow selecting descriptors in page editor
+    if (meta && (!meta.canRender || meta.catchAll && isEditRenderableRequest(context)) && meta.renderMode != RENDER_MODE.NEXT) {
         context.res.statusCode = 418;
     }
 
@@ -50,5 +52,11 @@ export const getServerSideProps: GetServerSideProps = async (context: Context): 
         }
     }
 };
+
+function isEditRenderableRequest(context: Context): boolean {
+    const method = context.req.method;
+    const mode = context.query['mode'];
+    return method === 'HEAD' && mode === RENDER_MODE.EDIT;
+}
 
 export default MainView;

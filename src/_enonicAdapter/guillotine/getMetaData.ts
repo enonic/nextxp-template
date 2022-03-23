@@ -1,4 +1,4 @@
-import {XP_COMPONENT_TYPE, RENDER_MODE, XP_REQUEST_TYPE} from "../utils";
+import {RENDER_MODE, XP_COMPONENT_TYPE, XP_REQUEST_TYPE} from "../utils";
 
 const COMPONENTS_QUERY = `
         type
@@ -113,5 +113,6 @@ export interface MetaData {
     requestType: XP_REQUEST_TYPE,
     renderMode: RENDER_MODE,
     requestedComponent?: PageComponent,
-    canRender?: boolean
+    canRender: boolean,
+    catchAll: boolean,
 }

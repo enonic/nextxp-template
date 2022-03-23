@@ -573,7 +573,9 @@ function createMetaData(contentType: string, contentPath: string, requestType: X
         type: contentType,
         path: contentPath,
         requestType: requestType,
-        renderMode: renderMode
+        renderMode: renderMode,
+        canRender: false,
+        catchAll: false,
     }
 
     if (requestedComponentPath) {
@@ -581,10 +583,17 @@ function createMetaData(contentType: string, contentPath: string, requestType: X
     }
 
     const pageDesc = pageData?.descriptor;
-    const haveType = !!ComponentRegistry.getContentType(contentType)?.view;
-    const havePage = !!pageDesc && !!ComponentRegistry.getPage(pageDesc)?.view;
-
-    meta.canRender = haveType || havePage;
+    const typeDef = ComponentRegistry.getContentType(contentType);
+    const pageDef = !!pageDesc && ComponentRegistry.getPage(pageDesc);
+    if (typeDef?.view && !typeDef.catchAll) {
+        meta.canRender = true;
+    } else if (pageDef && pageDef.view) {
+        meta.canRender = true;
+        meta.catchAll = pageDef?.catchAll || false;
+    } else if (typeDef?.view) {
+        meta.canRender = true;
+        meta.catchAll = true;
+    }
 
     return meta;
 }
