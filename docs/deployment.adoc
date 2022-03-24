@@ -2,16 +2,60 @@
 :toc: right
 :imagesdir: media/
 
-In this chapter you will launch cloud instances of Enonic and the Next app - link them together, and watch the glorious result.
+In this chapter you will launch cloud instances of both Enonic and Next - link them together, and watch the glorious result.
 
-This will involve running a single instance of Enonic, and two instances of the Next.js application - one for preview, and one for handling the live site.
+== Introduction
+Running a full production setup involves running a single instance of Enonic XP, and two instances of the Next.js application - one for preview, and one for handling the live traffic. For simplicity, let's use Enonic's cloud offering, and Vercel to host the respective apps - Vercel are the makers of Next.js. 
 
-NOTE: For simplicity, we will use Enonic's cloud, and Vercel to host the Next.js app (Vercel are the makers of Next.js). If you didn't know - both solutions are open source and can be hosted more or less anywhere. Have a look at the https://developer.enonic.com/docs/kubernetes-operator-for-xp[Kubernetes operator for Enonic XP] if you are keen on running it yourself.
+NOTE: Enonic and Next.js are both open source software projects and can be deployed more or less anywhere. Have a look at the https://developer.enonic.com/docs/kubernetes-operator-for-xp[Kubernetes operator for Enonic XP] if you are keen on hosting it yourself.
 
+== Task: Run Next in production mode
+
+So far, you have been running Next in dev mode. Before proceeding to live servers - let's try running the app in production mode locally. When running in production mode Next optimizes the build and performance of the server.
+
+TIP: The Next config file `.env` holds common values, while `.env.development` and `.env.production` are runmode-specific.
+
+. Update your production configuration like this:
++
+..env.production
+[source,properties]
+----
+...
+
+SITEPATH=/hmdb                                                      
+CONTENT_API_URL=http://localhost:8080/site/hmdb/master/hmdb/api
+----
++
+NOTE: When compared to the `.env.development` configuration, the main difference is referencing the `master` branch, vs the `draft` branch. The master branch holds your published content.
++
+. Start Next in production mode:
++
+    npm run prod
++
+At this point, your site has not yet been published - and Next will not be able to access the API and it's content.
+. From Content Studio, **select your site and publish it** using the `Publish Tree` option from the top right action menu.
++
+NOTE: **"Mark as ready"** In order to publish items, they all need to be marked as "Ready", you can quickly mark all relevant items as ready directly within the publishing wizard if needed.
++
+With some luck, Next should now be rendering your site once again. This time however - Next is running in optimized mode, AND renders the published items. Sweet!
++
+As you may have noticed, preview has also stopped working, this is because Next is now running on a different port `:4242`.
++
+. **Update your app configuration** to reference the new location of the preview server
++
+Create a configuration file in your sandbox, and add the following value to it:
++
+..enonic/sandboxes/<mysandbox>/home/config/<app-name>.cfg
+[source,properties]
+----
+nextjsurl=http://localhost:4242
+----
+
+Its time to start playing with live servers!
 
 == Task: Sign up to Enonic and deploy your app
 
-Follow the steps below to get deploy your app on Enonic Cloud:
+Follow the steps below to deploy your app on Enonic Cloud:
 
 . **Sign up** for a https://enonic.com/sign-up/cloud-trial[free trial] and create your personal account.
 . **Create a new solution** (NOTE: Choose the `CMS essentials` template), and go with the default values
@@ -38,93 +82,60 @@ TODO Screenshot
 NOTE: You may optionally delete the standard content, export and import your local machine content using the https://market.enonic.com/vendors/glenn-ricaud/data-toolbox[Data Toolbox application].
 
 
-== Task: Expose site via drafts route
+== Task: Expose drafts API via route
 
-Let's focus on getting preview up and running first. In order for the Next app to access the draft site and API, you will need to create a so-called route.
+In order for the Next app to access the draft items and API, you will need to create a so-called route in the Enonic Cloud.
 
-TIP: The purpose of routes is to expose endpoints like `:8080/path/to/my/site` to the internet, using a combination of CDN and ingresses.
+TIP: The purpose of routes is to expose internal endpoints like `:8080/site/<project>/<branch>/<path-to-site>` to the internet.
 
-. From the Cloud Solution interface, go to `Routes` and create a route called "HMDB Drafts".
+. Via the Cloud Solution interface, go to `Routes` and create a new route called "HMDB Drafts".
 +
 Use the following settings:
+TODO:
 +
-. After the route is `Started`, click the full URL in route details to verify it is working (NOTE: Remember that there is no rendering here, only the API, so you need to add /api to the end to see anything ).
+. After the route has started, click the URL in route details to verify that it is working - you should be getting a "403 error" page. (NOTE: To access the API, append `/api` to the end of this URL).
 
+== Task: Sign up and deploy the preview app to Vercel
 
-== Task: Sign up and deploy preview app to Vercel
-
-With the fresh drafts API available, you are ready to launch the Next preview server.
+With the drafts API online, you are ready to launch the Next preview server.
 
 . Sign up to Vercel
 . Configure with route to Enonic
 TODO
 
-
 == Task: Link Enonic to the preview server
 
-With the preview server running, Content Studio is still not able to access it, simply because it defaults to http://localhost:3000, which is obviously not where it is now.
+At this moment, Content Studio is still not able to access the preview server, as you might remember it uses http://localhost:3000 as it's default location.
 
-. From the Enonic Cloud interface, choose `Applications`, select and `Edit` the application from the details panel.
+. From the Enonic Cloud interface, choose `Applications`, select and `Edit` the your app from the details panel.
 . Paste the following into the configuration field: `nextjsurl=<full url to next preview server>` - i.e. nextjsurl=myapp.vercel.com 
 . Save the changes, and wait for the configuration to be applied
+. The preview should now be working in Content Studio - yay!.
 
 
-== Task: Create route to live content
+== Task: Go live
 
-Let's now put our focus on the live site (content published to the master branch). In order for the Next app to access the site and API, we need to create a so-called route.
+Finally, it's time to go live. Follow these steps to get there:
 
-. Publish your site from Content Studio. Select the site, and then press `Publish Tree` from the right action menu.
-. From the Cloud UI, go to `Routes` and create a new route, call it "HMDB".
-+
-Use the following settings:
-+
+. **Publish your site** and content. In Content Studio, selecting the site, then press `Publish Tree` from the right action menu dropdown.
+. **Create the "HMDB" route** from the Enonic Cloud interface, this time, use the following configuration values: TODO
+. **Create a new project and deploy the production app to Vercel**, the process is essentially the same as for the preview app - but this time we will configure it to use the URL to the new `HMDB` route.
+. Verify that your site is now live
+
+== Summary, and what next?
+
+You've reached the end of this tutorial - we hope you enjoyed it!
+
+The following topics were not covered, but will be added in later revisions of this tutorial:
+
+* Securing your drafts API
+* Securing your preview server
+* Importing and exporting content in XP
 * TODO
-+
-After the route is listed as `Started`, click the full URL link in the route details to try it out.
-TODO: No page problem?
 
+There are obviously many aspects of Enonic and Next.js that will never be covered by this tutorial, however - you should check out the following links to learn even more:
 
-
-
-
-== Task: Sign up to Vercel
-
-
-* Routes
+TODO
+* Developer 101
+* Developer portal
 * Vercel: https://nextjs.org/learn/basics/deploying-nextjs-app/github
-
-Links for how to deploy
-
-[[connection-config-setup]]
-== Task: Configure the connection to XP
-
-So the values in the `.env*` files must reflect the actual location of your Enonic server. _.env_ has common values, while _.env.development_ and _.env.production_ are runmode-specific. The most important difference is that they can point to different sites and branches (drafts or published items) of your Enonic server.
-
-. **Verify configuration files** - the default values should match the settings we need in this tutorial:
-
-..env* config values (example for dev mode):
-[source,properties,options="nowrap"]
-----
-# Common value in .env:
-APP_NAME=com.example.myproject                                      <!--1-->
-
-# Runtime-specific values, here dev mode (.env.development):
-SITE=hmdb                                                           <!--3-->
-CONTENT_API_URL=$API_DOMAIN/site/hmdb/draft/$SITE/api               <!--4-->
-NEXT_DOMAIN=http://localhost:3000                                   
-
-----
-<1> `APP_NAME` should match your enonic app name e.g. `com.example.myproject`.
-<3> `SITE` refers to the relative location of your site within Enonic, as you can see directly in Content Studio.
-+
-image:xp-cs-sitename.png[title="Looking up the siteName in XP content studio",width=500px]
-<4> `CONTENT_API_URL` is the _full URL_ to where both this Next.js-instance and the react components in the browser will contact the guillotine API for data. This should in the end be the same URL that you used when testing <<enonic-setup#setup-guillotine-api, GraphQL playground>> earlier.
-
-[NOTE]
-====
-**`CONTENT_API_URL` is link:https://developer.enonic.com/docs/xp/stable/deployment/vhosts[vhost]-sensitive**.
-
-For example, let's say you've locally vhosted `hmdb-draft` to point to `/site/hmdb/draft/hmdb`, and changed the API mapping in site.xml from `/api` to `/_guillotine` (actually, vhosting is one area where that gets important). Then you could just set `API_DOMAIN=http://hmdb-draft:8080` and `CONTENT_API_URL=$API_DOMAIN/_guillotine`.
-
-You still need to set and export `SITE` though, it's used elsewhere.
-====

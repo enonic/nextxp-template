@@ -251,3 +251,7 @@ Since the query is still parameterized with `$path`, we can use the same `variab
 Run the query in the playground. It should produce a fully resolved set of data we can later use as `props` in a `Movie` react component.
 +
 All in all, this allows for fetching deep and rich content data in a single API request.
+
+**Congrats on setting up the Enonic SDK environment**
+
+Coming up - get up and running with <<next-setup#, your Next.js developer environment>>.
