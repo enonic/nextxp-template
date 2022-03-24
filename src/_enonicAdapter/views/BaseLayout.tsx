@@ -30,25 +30,26 @@ const BaseLayout = (props: BaseLayoutProps) => {
         return <SelectedLayoutView layout={{descriptor: component?.descriptor, regions: regions || {}, config: component?.config}}
                                    content={content}
                                    meta={meta}/>;
-    } else {
+    } else if (component?.descriptor) {
+        // empty descriptor usually means uninitialized layout
         console.log(`BaseLayout: can not render layout '${component?.descriptor}': no next view or catch-all defined`);
-        return null;
     }
+    return null;
 }
 
 export default BaseLayout;
 
 
-const LayoutView = ({layout}: LayoutProps ) => (
+const LayoutView = ({layout}: LayoutProps) => (
     <div className={`layout`}
-        style={{marginTop: "2rem", padding: "10px", border: "2px solid lightgrey"}}>
+         style={{marginTop: "2rem", padding: "10px", border: "2px solid lightgrey"}}>
         <h6 style={{fontSize: ".7em", fontWeight: "normal", color: "#bbb", marginTop: "0", marginBottom: "0"}}>Layout debug:</h6>
         <h3 style={{marginTop: "0", marginBottom: "8px"}}>{layout.descriptor}</h3>
-        <DataDump label="config" data={layout.config} />
-        <DataDump label="regions" data={layout.regions} />
+        <DataDump label="config" data={layout.config}/>
+        <DataDump label="regions" data={layout.regions}/>
     </div>
 );
 
 export const LayoutDevView = IS_DEV_MODE
-    ? LayoutView
-    : Empty;
+                             ? LayoutView
+                             : Empty;

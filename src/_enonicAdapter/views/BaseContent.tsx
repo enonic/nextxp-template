@@ -1,7 +1,7 @@
 import React from "react";
 import {FetchContentResult} from "../guillotine/fetchContent";
 import {ComponentRegistry} from '../ComponentRegistry';
-import BasePage from './BasePage';
+import BasePage, {BasePageProps} from './BasePage';
 import DataDump from "./DataDump";
 import {IS_DEV_MODE} from "../utils";
 import Error from "../../pages/_error";
@@ -20,7 +20,8 @@ const BaseContent = (props: FetchContentResult) => {
         return null;
     }
 
-    const pageDesc = page?.descriptor;
+    const pageData = page?.page;
+    const pageDesc = pageData?.descriptor;
     const typeDef = ComponentRegistry.getContentType(meta.type);
     const pageDef = pageDesc ? ComponentRegistry.getPage(pageDesc) : undefined;
     const ContentTypeView = typeDef?.view;
@@ -30,7 +31,19 @@ const BaseContent = (props: FetchContentResult) => {
         return <ContentTypeView {...props}/>
     } else if (pageDef?.view) {
         console.info(`BaseContent: rendering '${meta.type}' with page: ${BasePage.name}`);
-        return <BasePage {...props}/>;
+        const pageAttrs: BasePageProps = {
+            component: pageData,
+            meta,
+            content,
+        };
+        if (page?.data) {
+            pageAttrs.data = page.data;
+        }
+        if (page?.error) {
+            pageAttrs.error = page.error;
+        }
+
+        return <BasePage {...pageAttrs}/>;
     } else if (ContentTypeView) {
         console.info(`BaseContent: rendering '${meta.type}' with content type catch-all: ${ContentTypeView.name}`);
         return <ContentTypeView {...props}/>

@@ -55,9 +55,7 @@ query($path:ID!){
 // Root component
 const MovieView = (props: PartProps) => {
     const data = props.data?.get.data as MovieInfoProps;
-    console.log(props);
     const {displayName, parent = {}} = props.data.get;
-    console.log(parent);
     return (
         <>
             <div>

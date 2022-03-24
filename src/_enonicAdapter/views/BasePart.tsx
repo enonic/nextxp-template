@@ -10,6 +10,7 @@ export interface PartProps {
     part: PartData;
     data?: any;
     content?: any; // Content is passed down to componentviews. TODO: Use a react contextprovider instead?
+    meta: MetaData;
 }
 
 interface BasePartProps {
@@ -40,10 +41,11 @@ const BasePart = (props: BasePartProps) => {
                                  data={data}
                                  content={content}
                                  meta={meta}/>;
-    } else {
-        console.warn(`BasePart: can not render part '${component?.descriptor}': no next view or catch-all defined`);
-        return null;
+    } else if (component?.descriptor) {
+        // empty descriptor usually means uninitialized part
+        console.warn(`BasePart: can not render part '${component.descriptor}': no next view or catch-all defined`);
     }
+    return null;
 }
 
 export default BasePart;

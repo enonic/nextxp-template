@@ -1,6 +1,5 @@
 import React from "react"
 import {ComponentRegistry} from '../ComponentRegistry';
-import {FetchContentResult} from '../guillotine/fetchContent';
 import {MetaData, PageData} from "../guillotine/getMetaData";
 import {IS_DEV_MODE} from "../utils";
 import DataDump from "./DataDump";
@@ -8,7 +7,16 @@ import Empty from './Empty';
 
 export interface PageProps {
     page: PageData;
-    content: any;
+    data?: any;
+    content?: any; // Content is passed down to componentviews. TODO: Use a react contextprovider instead?
+    meta: MetaData;
+}
+
+export interface BasePageProps {
+    component?: PageData;
+    content?: any;
+    data?: any;
+    error?: string;
     meta: MetaData;
 }
 
@@ -18,29 +26,38 @@ const PageView = ({page}: PageProps) => {
              style={{margin: "10px", padding: "10px", border: "2px solid lightgrey"}}>
             <h6 style={{fontSize: ".7em", fontWeight: "normal", color: "#bbb", marginTop: "0", marginBottom: "0"}}>Page debug:</h6>
             <h3 style={{marginTop: "0", marginBottom: "8px"}}>{page.descriptor}</h3>
-            <DataDump label="config" data={page.config} />
-            <DataDump label="regions" data={page.regions} />
+            <DataDump label="config" data={page.config}/>
+            <DataDump label="regions" data={page.regions}/>
         </div>);
 }
 
 export const PageDevView = IS_DEV_MODE
-    ? PageView
-    : Empty; // TODO: Should return 404 + log error about missing component mapping
+                           ? PageView
+                           : Empty; // TODO: Should return 404 + log error about missing component mapping
 
 
-const BasePage = (props: FetchContentResult) => {
-    const desc = props.page?.descriptor;
+const BasePage = (props: BasePageProps) => {
+    const {component, data, content, error, meta} = props;
+    const desc = component?.descriptor;
+    if (error) {
+        console.warn(`BasePage: '${desc}' error: ${error}`);
+        return null;    //TODO: create page error view
+    }
     let pageDef;
     if (desc) {
         pageDef = ComponentRegistry.getPage(desc);
     }
     const PageView = pageDef?.view;
     if (PageView) {
-        return <PageView {...props}/>;
-    } else {
+        return <PageView page={component}
+                         data={data}
+                         content={content}
+                         meta={meta}/>;
+    } else if (component?.descriptor) {
+        // empty descriptor usually means uninitialized page
         console.log(`BasePage: can not render page '${desc}': no next view or catch-all defined`);
-        return null;
     }
+    return null;
 }
 
 export default BasePage;

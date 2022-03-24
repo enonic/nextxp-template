@@ -59,7 +59,7 @@ interface ComponentDescriptor {
 export type FetchContentResult = Result & {
     content: Record<string, any> | null,
     meta: MetaData | null,
-    page: PageData | null,
+    page: PageComponent | null,
 };
 
 
@@ -357,20 +357,19 @@ function prefixLayoutPath(contentType: string, path: string): string {
     }
 }
 
-function buildPage(contentType: string, comps: PageComponent[] = []): PageData {
+function buildPage(contentType: string, comps: PageComponent[] = []): PageComponent {
 
-    let page: PageData = {
-        descriptor: '',
-        template: null,
-        regions: {}
+    let page: PageComponent = {
+        type: XP_COMPONENT_TYPE.PAGE,
+        path: '/',
     };
-    const tree = page.regions!;
+    const tree = {};
     comps.forEach(cmp => {
         let region;
         if (cmp.path === '/' && cmp.type === XP_COMPONENT_TYPE.PAGE) {
             // add page values to page object
-            page = Object.assign(page, cmp.page);
-            // skip adding it as component
+            page = Object.assign(page, cmp);
+            page.page!.regions = tree;
             return;
         } else {
             region = getParentRegion(tree, contentType, cmp.path, comps, true);
@@ -466,47 +465,44 @@ async function applyProcessors(componentDescriptors: ComponentDescriptor[], cont
     return Promise.allSettled(processorPromises);
 }
 
-function collectPartDescriptors(components: PageComponent[],
-                                componentRegistry: typeof ComponentRegistry,
-                                requestedComponentPath: string | undefined,
-                                xpContentPath: string,
-                                context: Context | undefined
+function collectComponentDescriptors(components: PageComponent[],
+                                     componentRegistry: typeof ComponentRegistry,
+                                     requestedComponentPath: string | undefined,
+                                     xpContentPath: string,
+                                     context: Context | undefined
 ): ComponentDescriptor[] {
 
-    const partDescriptors: ComponentDescriptor[] = [];
+    const descriptors: ComponentDescriptor[] = [];
 
     for (const cmp of (components || [])) {
         processComponentConfig(APP_NAME, APP_NAME_DASHED, cmp);
         // only look for parts
         // look for single part if it is a single component request
-        if (XP_COMPONENT_TYPE.PART == cmp.type && (!requestedComponentPath || requestedComponentPath === cmp.path)) {
-            const partDesc = cmp.part?.descriptor;
-            if (partDesc) {
-                const partTypeDef = ComponentRegistry.getPart(partDesc);
-                if (partTypeDef) {
-                    // const partPath = `${xpContentPath}/_component${cmp.path}`;
-                    const partQueryAndVars = getQueryAndVariables(componentRegistry, cmp.type, xpContentPath, partTypeDef.query, context,
-                        cmp.part?.config);
-                    if (partQueryAndVars) {
-                        partDescriptors.push({
-                            component: cmp,
-                            type: partTypeDef,
-                            queryAndVariables: partQueryAndVars,
-                        });
-                    }
+        if (XP_COMPONENT_TYPE.FRAGMENT !== cmp.type) {
+            const cmpDef = ComponentRegistry.getByComponent(cmp);
+            if (cmpDef) {
+                // const partPath = `${xpContentPath}/_component${cmp.path}`;
+                const queryAndVariables = getQueryAndVariables(cmp.type, xpContentPath, cmpDef.query, context,
+                    cmp[cmp.type]?.config);
+                if (queryAndVariables) {
+                    descriptors.push({
+                        component: cmp,
+                        type: cmpDef,
+                        queryAndVariables: queryAndVariables,
+                    });
                 }
             }
-        } else if (XP_COMPONENT_TYPE.FRAGMENT === cmp.type) {
+        } else {
             // look for parts inside fragments
-            const fragPartDescs = collectPartDescriptors(cmp.fragment!.fragment.components, componentRegistry, requestedComponentPath,
+            const fragPartDescs = collectComponentDescriptors(cmp.fragment!.fragment.components, componentRegistry, requestedComponentPath,
                 xpContentPath, context);
             if (fragPartDescs.length) {
-                partDescriptors.push(...fragPartDescs);
+                descriptors.push(...fragPartDescs);
             }
         }
     }
 
-    return partDescriptors;
+    return descriptors;
 }
 
 function processComponentConfig(myAppName: string, myAppNameDashed: string, cmp: PageComponent) {
@@ -521,8 +517,7 @@ function processComponentConfig(myAppName: string, myAppNameDashed: string, cmp:
     }
 }
 
-function getQueryAndVariables(componentRegistry: typeof ComponentRegistry,
-                              type: string,
+function getQueryAndVariables(type: string,
                               path: string,
                               selectedQuery?: SelectedQueryMaybeVariablesFunc,
                               context?: Context, config?: any): QueryAndVariables | undefined {
@@ -552,25 +547,24 @@ function getQueryAndVariables(componentRegistry: typeof ComponentRegistry,
     if (query) {
         return {
             query: query,
-            variables: getVariables ? getVariables(path, context, config) : componentRegistry.getDefaultVars(path),
+            variables: getVariables ? getVariables(path, context, config) : {path},
         };
     }
 }
 
 
-function createPageData(contentType: string, components?: PageComponent[]): PageData | undefined {
+function createPageData(contentType: string, components?: PageComponent[]): PageComponent | undefined {
     let page;
     if (components) {
         page = buildPage(contentType, components);
     }
-
-    return page as PageData;
+    return page as PageComponent;
 }
 
 
 function createMetaData(contentType: string, contentPath: string, requestType: XP_REQUEST_TYPE, renderMode: RENDER_MODE,
                         requestedComponentPath: string | undefined,
-                        pageData?: PageData, components: PageComponent[] = []): MetaData {
+                        pageCmp?: PageComponent, components: PageComponent[] = []): MetaData {
     // .meta will be visible in final rendered inline props.
     // Only adding some .meta attributes here on certain conditions
     // (instead of always adding them and letting them be visible as false/undefined etc)
@@ -587,7 +581,7 @@ function createMetaData(contentType: string, contentPath: string, requestType: X
         meta.requestedComponent = components.find(cmp => cmp.path === requestedComponentPath);
     }
 
-    const pageDesc = pageData?.descriptor;
+    const pageDesc = pageCmp?.page?.descriptor;
     const typeDef = ComponentRegistry.getContentType(contentType);
     const pageDef = !!pageDesc && ComponentRegistry.getPage(pageDesc);
     if (typeDef?.view && !typeDef.catchAll) {
@@ -674,14 +668,13 @@ export const buildContentFetcher = <T extends adapterConstants>(config: FetcherC
                        (type === FRAGMENT_CONTENTTYPE_NAME ||
                         type === PAGE_TEMPLATE_CONTENTTYPE_NAME ||
                         type === PAGE_TEMPLATE_FOLDER)) {
-                console.log('404 from fetch content');
                 return errorResponse('404', `Content type [${type}] is not accessible in ${renderMode} mode`);
             }
 
 
             ////////////////////////////////////////////////////  Content type established. Proceed to data call:
 
-            const componentDescriptors: ComponentDescriptor[] = [];
+            const allDescriptors: ComponentDescriptor[] = [];
 
             // Add the content type query at all cases
             const contentTypeDef = componentRegistry?.getContentType(type);
@@ -690,7 +683,7 @@ export const buildContentFetcher = <T extends adapterConstants>(config: FetcherC
                 processComponentConfig(APP_NAME, APP_NAME_DASHED, pageCmp);
             }
 
-            let contentQueryAndVars = getQueryAndVariables(componentRegistry, type, contentPath, contentTypeDef?.query, context,
+            let contentQueryAndVars = getQueryAndVariables(type, contentPath, contentTypeDef?.query, context,
                 pageCmp?.page?.config);
             if (!contentQueryAndVars) {
                 contentQueryAndVars = {
@@ -698,7 +691,7 @@ export const buildContentFetcher = <T extends adapterConstants>(config: FetcherC
                     variables: componentRegistry.getDefaultVars(contentPath),
                 }
             }
-            componentDescriptors.push({
+            allDescriptors.push({
                 type: contentTypeDef,
                 queryAndVariables: contentQueryAndVars,
             });
@@ -707,14 +700,15 @@ export const buildContentFetcher = <T extends adapterConstants>(config: FetcherC
                 for (const cmp of (components || [])) {
                     processComponentConfig(APP_NAME, APP_NAME_DASHED, cmp);
                 }
-                // Collect part queries if defined
-                const partDescriptors = collectPartDescriptors(components, componentRegistry, requestedComponentPath, contentPath, context);
-                if (partDescriptors.length) {
-                    componentDescriptors.push(...partDescriptors);
+                // Collect component queries if defined
+                const componentDescriptors = collectComponentDescriptors(components, componentRegistry, requestedComponentPath, contentPath,
+                    context);
+                if (componentDescriptors.length) {
+                    allDescriptors.push(...componentDescriptors);
                 }
             }
 
-            const {query, variables} = combineMultipleQueries(componentDescriptors);
+            const {query, variables} = combineMultipleQueries(allDescriptors);
 
             if (!query.trim()) {
                 return errorResponse('400', `Missing or empty query override for content type ${type}`)
@@ -725,7 +719,7 @@ export const buildContentFetcher = <T extends adapterConstants>(config: FetcherC
             /////////////////////////////////////////////////////////////////////////////
 
             // Apply processors to every component
-            const datas = await applyProcessors(componentDescriptors, contentResults, context);
+            const datas = await applyProcessors(allDescriptors, contentResults, context);
 
             //  Unwind the data back to components
             const content = datas[0].status === 'fulfilled' ? datas[0].value?.get : datas[0].reason;
@@ -740,9 +734,9 @@ export const buildContentFetcher = <T extends adapterConstants>(config: FetcherC
                     } else if (typeof reason !== 'string') {
                         reason = String(reason);
                     }
-                    componentDescriptors[i].component!.error = reason;
+                    allDescriptors[i].component!.error = reason;
                 } else {
-                    componentDescriptors[i].component!.data = datum.value;
+                    allDescriptors[i].component!.data = datum.value;
                 }
             }
 

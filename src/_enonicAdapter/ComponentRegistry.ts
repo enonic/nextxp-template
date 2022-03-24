@@ -1,5 +1,7 @@
 import {Context} from "../pages/[[...contentPath]]";
 import {defaultQuery, defaultVariables} from "./guillotine/defaultQuery";
+import {PageComponent} from './guillotine/getMetaData';
+import {XP_COMPONENT_TYPE} from './utils';
 
 
 /**
@@ -16,6 +18,17 @@ export interface ComponentDefinition {
 }
 
 type SelectorName = "contentType" | "page" | "component" | "part" | "layout";
+
+function toSelectorName(type: XP_COMPONENT_TYPE): SelectorName | undefined {
+    switch (type) {
+    case XP_COMPONENT_TYPE.PAGE:
+        return "page";
+    case XP_COMPONENT_TYPE.LAYOUT:
+        return "layout";
+    case XP_COMPONENT_TYPE.PART:
+        return "part";
+    }
+}
 
 interface ComponentDictionary {
     [type: string]: ComponentDefinition;
@@ -85,6 +98,13 @@ export class ComponentRegistry {
         const selector = ComponentRegistry.getSelector(selectorName);
         const curr = selector[name];
         selector[name] = curr ? Object.assign(curr, obj) : obj;
+    }
+
+    public static getByComponent(component: PageComponent): ComponentDefinition | undefined {
+        const type = component.type;
+        const selName = toSelectorName(type);
+        const desc = component[type]?.descriptor;
+        return selName && desc ? this.getType(selName, desc) : undefined;
     }
 
     public static setDefaultQuery(query: string): void {

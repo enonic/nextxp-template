@@ -7,6 +7,8 @@ import ChildList, {childListProcessor, getChildList} from './parts/ChildList';
 import Heading from './parts/Heading';
 import MovieDetails, {getMovie} from './parts/MovieDetails';
 import TwoColumnLayout from './layouts/TwoColumnLayout';
+import getMainPage from './queries/getMainPage';
+import getTwoColumnLayout from './queries/getTwoColumnLayout';
 
 
 // Content type mappings
@@ -19,13 +21,15 @@ ComponentRegistry.addContentType(`${APP_NAME}:person`, {
 
 // Page mappings
 ComponentRegistry.addPage(`${APP_NAME}:main`, {
-    view: MainPage
+    view: MainPage,
+    query: getMainPage,
 });
 
 
 // Layout mappings
 ComponentRegistry.addLayout(`${APP_NAME}:2-column`, {
-    view: TwoColumnLayout
+    view: TwoColumnLayout,
+    query: getTwoColumnLayout,
 });
 
 
