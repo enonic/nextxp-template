@@ -4,13 +4,13 @@ import {LayoutProps} from '../../_enonicAdapter/views/BaseLayout';
 
 const TwoColumnLayout = (props: LayoutProps) => {
     const regions = props.layout.regions;
-    const {content, meta} = props;
+    const {common, meta} = props;
 
     return (
         <>
             <div className="row">
-                <RegionView className="col-sm-6" name="left" components={regions['left']?.components} content={content} meta={meta}/>
-                <RegionView className="col-sm-6" name="right" components={regions['right']?.components} content={content} meta={meta}/>
+                <RegionView className="col-sm-6" name="left" components={regions['left']?.components} common={common} meta={meta}/>
+                <RegionView className="col-sm-6" name="right" components={regions['right']?.components} common={common} meta={meta}/>
             </div>
             <style jsx>{`
                 .row {

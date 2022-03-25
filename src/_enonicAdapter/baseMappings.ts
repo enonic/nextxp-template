@@ -6,10 +6,10 @@ import BasePart, {PartDevView} from './views/BasePart';
 import BaseLayout, {LayoutDevView} from './views/BaseLayout';
 import TextView from './views/Text';
 import {ContentDevView} from './views/BaseContent';
+import {commonQuery, commonVariables} from './guillotine/commonQuery';
 
-// You can override default query here
-// ComponentRegistry.setDefaultQuery(defaultQuery);
-// ComponentRegistry.setDefaultVars(defaultVariables);
+// You can set common query for all views here
+ComponentRegistry.setCommonQuery([commonQuery, commonVariables]);
 
 // Base Content Types
 
@@ -56,6 +56,7 @@ ComponentRegistry.addLayout(CATCH_ALL, {
 
 ComponentRegistry.addContentType(CATCH_ALL, {
     view: ContentDevView,
+    query: commonQuery,
 });
 
 

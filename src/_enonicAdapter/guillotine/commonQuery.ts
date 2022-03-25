@@ -1,7 +1,7 @@
 // This query is executed for every page rendering.
 // Result is included in props.content by fetchContent
 
-export const defaultQuery = `
+export const commonQuery = `
 query($path:ID!){
   guillotine {
     get(key:$path) {
@@ -14,7 +14,7 @@ query($path:ID!){
   }
 }`;
 
-export function defaultVariables(path: string) {
+export function commonVariables(path: string) {
     return {
         path
     }

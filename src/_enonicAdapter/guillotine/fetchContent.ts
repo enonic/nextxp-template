@@ -57,7 +57,8 @@ interface ComponentDescriptor {
 }
 
 export type FetchContentResult = Result & {
-    content: Record<string, any> | null,
+    data: Record<string, any> | null,
+    common: Record<string, any> | null,
     meta: MetaData | null,
     page: PageComponent | null,
 };
@@ -604,7 +605,8 @@ function errorResponse(code: string = '500', message: string = 'Unknown error'):
             message,
         },
         page: null,
-        content: null,
+        common: null,
+        data: null,
         meta: null,
     };
 }
@@ -683,18 +685,22 @@ export const buildContentFetcher = <T extends adapterConstants>(config: FetcherC
                 processComponentConfig(APP_NAME, APP_NAME_DASHED, pageCmp);
             }
 
-            let contentQueryAndVars = getQueryAndVariables(type, contentPath, contentTypeDef?.query, context,
-                pageCmp?.page?.config);
-            if (!contentQueryAndVars) {
-                contentQueryAndVars = {
-                    query: componentRegistry.getDefaultQuery(),
-                    variables: componentRegistry.getDefaultVars(contentPath),
-                }
+            const contentQueryAndVars = getQueryAndVariables(type, contentPath, contentTypeDef?.query, context, pageCmp?.page?.config);
+            if (contentQueryAndVars) {
+                allDescriptors.push({
+                    type: contentTypeDef,
+                    queryAndVariables: contentQueryAndVars,
+                });
             }
-            allDescriptors.push({
-                type: contentTypeDef,
-                queryAndVariables: contentQueryAndVars,
-            });
+
+            const commonQueryAndVars = getQueryAndVariables(type, contentPath, componentRegistry.getCommonQuery(), context,
+                pageCmp?.page?.config);
+            if (commonQueryAndVars) {
+                allDescriptors.push({
+                    type: contentTypeDef,
+                    queryAndVariables: commonQueryAndVars,
+                })
+            }
 
             if (components?.length && componentRegistry) {
                 for (const cmp of (components || [])) {
@@ -722,8 +728,21 @@ export const buildContentFetcher = <T extends adapterConstants>(config: FetcherC
             const datas = await applyProcessors(allDescriptors, contentResults, context);
 
             //  Unwind the data back to components
-            const content = datas[0].status === 'fulfilled' ? datas[0].value?.get : datas[0].reason;
-            for (let i = 1; i < datas.length; i++) {
+
+            let contentData = null, common = null;
+            let startFrom = 0;
+            if (contentQueryAndVars) {
+                let item = datas[startFrom];
+                contentData = item.status === 'fulfilled' ? item.value?.get : item.reason;
+                startFrom++;
+            }
+            if (commonQueryAndVars) {
+                let item = datas[startFrom];
+                common = item.status === 'fulfilled' ? item.value?.get : item.reason;
+                startFrom++
+            }
+
+            for (let i = startFrom; i < datas.length; i++) {
                 // component descriptors hold references to components
                 // that will later be used for creating page regions
                 const datum = datas[i];
@@ -744,7 +763,8 @@ export const buildContentFetcher = <T extends adapterConstants>(config: FetcherC
             const meta = createMetaData(type, siteRelativeContentPath, requestType, renderMode, requestedComponentPath, page, components);
 
             return {
-                content,
+                data: contentData,
+                common,
                 meta,
                 page: page || null,
             } as FetchContentResult;

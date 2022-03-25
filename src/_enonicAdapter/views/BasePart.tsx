@@ -9,20 +9,20 @@ import Empty from './Empty';
 export interface PartProps {
     part: PartData;
     data?: any;
-    content?: any; // Content is passed down to componentviews. TODO: Use a react contextprovider instead?
+    common?: any; // Content is passed down to componentviews. TODO: Use a react contextprovider instead?
     meta: MetaData;
 }
 
 interface BasePartProps {
     component?: PartData;
-    content?: any;
+    common?: any;
     data?: any;
     error?: string;
     meta: MetaData;
 }
 
 const BasePart = (props: BasePartProps) => {
-    const {component, data, content, error, meta} = props;
+    const {component, data, common, error, meta} = props;
 
     if (error) {
         console.warn(`BasePart: '${component?.descriptor}' error: ${error}`);
@@ -39,7 +39,7 @@ const BasePart = (props: BasePartProps) => {
     if (SelectedPartView) {
         return <SelectedPartView part={component}
                                  data={data}
-                                 content={content}
+                                 common={common}
                                  meta={meta}/>;
     } else if (component?.descriptor) {
         // empty descriptor usually means uninitialized part

@@ -6,7 +6,7 @@ import {FRAGMENT_DEFAULT_REGION_NAME} from '../utils';
 interface FragmentProps {
     page?: PageData;
     component?: FragmentData;
-    content?: any;
+    common?: any;
     meta: MetaData;
 }
 
@@ -24,13 +24,13 @@ const FragmentView = (props: FragmentProps) => {
         // rendering a part of a page
         comps.push(...component.fragment.components);
     }
-    const {content, meta} = props;
+    const {common, meta} = props;
 
     return (
         <>
             {
                 comps.map((comp: PageComponent, i: number) => (
-                    <BaseComponent key={i} component={comp} content={content} meta={meta}/>
+                    <BaseComponent key={i} component={comp} common={common} meta={meta}/>
                 ))
             }
         </>

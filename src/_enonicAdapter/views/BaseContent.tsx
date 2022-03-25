@@ -8,15 +8,10 @@ import Error from "../../pages/_error";
 
 
 const BaseContent = (props: FetchContentResult) => {
-    const {content, meta, page} = props;
-
-    if (!content) {
-        console.warn("No 'content' data in BasePage props");
-        return null;
-    }
+    const {common, meta, page} = props;
 
     if (!meta?.type) {
-        console.warn("BasePage props are missing 'meta.type'");
+        console.warn("BaseContent props are missing 'meta.type'");
         return null;
     }
 
@@ -34,7 +29,7 @@ const BaseContent = (props: FetchContentResult) => {
         const pageAttrs: BasePageProps = {
             component: pageData,
             meta,
-            content,
+            common,
         };
         if (page?.data) {
             pageAttrs.data = page.data;
@@ -56,13 +51,14 @@ const BaseContent = (props: FetchContentResult) => {
 export default BaseContent;
 
 
-const ContentView = ({content}: any) => {
+const ContentView = (props: any) => {
+    const {data} = props;
     return (
         <div style={{padding: "10px"}}>
             <h6 style={{fontSize: ".7em", fontWeight: "normal", color: "#bbb", marginTop: "0", marginBottom: "0"}}>Dev mode - Content
                 Type:</h6>
-            <h2>{content.displayName}</h2>
-            <DataDump label="content" data={content}/>
+            <h2>{data.displayName}</h2>
+            <DataDump label="content" data={data}/>
         </div>
     )
 }

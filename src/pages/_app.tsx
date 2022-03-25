@@ -8,7 +8,7 @@ import Footer from "../components/views/Footer";
 /**
  * Wraps all rendered components
  * @param Component Usually triggering [[...contentPath]].tsx, this component is BasePage.tsx
- * @param pageProps {{content, common, meta, error}}
+ * @param pageProps {{common, data, meta, error}}
  */
 function MyApp({Component, pageProps}: AppProps) {
 

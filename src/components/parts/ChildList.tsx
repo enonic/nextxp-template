@@ -55,7 +55,7 @@ export const getChildList = {
     }
 };
 
-export async function childListProcessor(content: any, context?: Context): Promise<any> {
-    content.modifiedBy = 'childListProcessor';
-    return content;
+export async function childListProcessor(common: any, context?: Context): Promise<any> {
+    common.modifiedBy = 'childListProcessor';
+    return common;
 }

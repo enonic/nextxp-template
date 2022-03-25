@@ -7,11 +7,11 @@ export const HEADING_PART_NAME = `${APP_NAME}:heading`;
 
 export interface HeadingData {
     part: PartData;
-    content: any;
+    common: any;
 }
 
-const HeadingView = ({part, content}: HeadingData) => (
-    <h2>{part?.config?.heading || content.displayName}</h2>
+const HeadingView = ({part, common}: HeadingData) => (
+    <h2>{part?.config?.heading || common.displayName}</h2>
 );
 
 export default HeadingView;

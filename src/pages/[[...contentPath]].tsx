@@ -22,7 +22,8 @@ export type Context = GetServerSidePropsContext<ServerSideParams>;
 
 export const getServerSideProps: GetServerSideProps = async (context: Context): Promise<GetServerSidePropsResult<FetchContentResult>> => {
     const {
-        content = null,
+        common = null,
+        data = null,
         meta,
         error = null,
         page = null,
@@ -47,7 +48,8 @@ export const getServerSideProps: GetServerSideProps = async (context: Context): 
         // HTTP 404
         notFound: (error && error.code === '404') || catchAllInNextProdMode || undefined,
         props: {
-            content,
+            common,
+            data,
             meta,
             error,
             page,

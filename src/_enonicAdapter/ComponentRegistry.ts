@@ -1,5 +1,4 @@
 import {Context} from "../pages/[[...contentPath]]";
-import {defaultQuery, defaultVariables} from "./guillotine/defaultQuery";
 import {PageComponent} from './guillotine/getMetaData';
 import {XP_COMPONENT_TYPE} from './utils';
 
@@ -62,8 +61,7 @@ export class ComponentRegistry {
     private static components: ComponentDictionary = {};
     private static parts: ComponentDictionary = {};
     private static layouts: ComponentDictionary = {};
-    private static defaultQuery: string;
-    private static defaultVars: DefaultVarsFunction;
+    private static commonQuery: SelectedQueryMaybeVariablesFunc;
 
     private static getSelector(name: SelectorName): ComponentDictionary {
         switch (name) {
@@ -107,20 +105,12 @@ export class ComponentRegistry {
         return selName && desc ? this.getType(selName, desc) : undefined;
     }
 
-    public static setDefaultQuery(query: string): void {
-        this.defaultQuery = query;
+    public static setCommonQuery(query: SelectedQueryMaybeVariablesFunc): void {
+        this.commonQuery = query;
     }
 
-    public static getDefaultQuery(): string {
-        return this.defaultQuery || defaultQuery;
-    }
-
-    public static setDefaultVars(vars: DefaultVarsFunction): void {
-        this.defaultVars = vars;
-    }
-
-    public static getDefaultVars(path: string): { [key: string]: any } {
-        return this.defaultVars ? this.defaultVars(path) : defaultVariables(path);
+    public static getCommonQuery(): SelectedQueryMaybeVariablesFunc {
+        return this.commonQuery;
     }
 
     public static addContentType(name: string, obj: ComponentDefinition): void {

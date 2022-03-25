@@ -8,13 +8,13 @@ import Empty from './Empty';
 export interface PageProps {
     page: PageData;
     data?: any;
-    content?: any; // Content is passed down to componentviews. TODO: Use a react contextprovider instead?
+    common?: any; // Content is passed down to componentviews. TODO: Use a react contextprovider instead?
     meta: MetaData;
 }
 
 export interface BasePageProps {
     component?: PageData;
-    content?: any;
+    common?: any;
     data?: any;
     error?: string;
     meta: MetaData;
@@ -37,7 +37,7 @@ export const PageDevView = IS_DEV_MODE
 
 
 const BasePage = (props: BasePageProps) => {
-    const {component, data, content, error, meta} = props;
+    const {component, data, common, error, meta} = props;
     const desc = component?.descriptor;
     if (error) {
         console.warn(`BasePage: '${desc}' error: ${error}`);
@@ -51,7 +51,7 @@ const BasePage = (props: BasePageProps) => {
     if (PageView) {
         return <PageView page={component}
                          data={data}
-                         content={content}
+                         common={common}
                          meta={meta}/>;
     } else if (component?.descriptor) {
         // empty descriptor usually means uninitialized page

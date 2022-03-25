@@ -8,11 +8,11 @@ import {ComponentRegistry} from '../ComponentRegistry';
 export type BaseComponentProps = {
     component: PageComponent;
     meta: MetaData;
-    content?: any;                  // Content is passed down for optional consumption in componentviews.
+    common?: any;                  // Content is passed down for optional consumption in componentviews.
     // TODO: Use a react contextprovider instead of "manually" passing everything down
 }
 
-const BaseComponent = ({component, meta, content}: BaseComponentProps) => {
+const BaseComponent = ({component, meta, common}: BaseComponentProps) => {
     const {type, data, error} = component;
     const divAttrs: { [key: string]: string } = {
         [PORTAL_COMPONENT_ATTRIBUTE]: type
@@ -26,7 +26,7 @@ const BaseComponent = ({component, meta, content}: BaseComponentProps) => {
     const cmpAttrs: { [key: string]: any } = {
         component: component[type],
         meta,
-        content,
+        common,
     };
 
     if (data) {

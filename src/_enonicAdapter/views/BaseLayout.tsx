@@ -7,20 +7,20 @@ import Empty from './Empty';
 
 export interface LayoutProps {
     layout: LayoutData;
-    content: any;
+    common: any;
     meta: MetaData;
 }
 
 interface BaseLayoutProps {
     component?: LayoutData;
     regions?: RegionTree;
-    content?: any;
+    common?: any;
     meta: MetaData;
 }
 
 const BaseLayout = (props: BaseLayoutProps) => {
 
-    const {component, content, regions, meta} = props;
+    const {component, common, regions, meta} = props;
     let layoutSelection;
     if (component) {
         layoutSelection = ComponentRegistry.getLayout(component.descriptor);
@@ -28,7 +28,7 @@ const BaseLayout = (props: BaseLayoutProps) => {
     const SelectedLayoutView = layoutSelection?.view;
     if (SelectedLayoutView) {
         return <SelectedLayoutView layout={{descriptor: component?.descriptor, regions: regions || {}, config: component?.config}}
-                                   content={content}
+                                   common={common}
                                    meta={meta}/>;
     } else if (component?.descriptor) {
         // empty descriptor usually means uninitialized layout
