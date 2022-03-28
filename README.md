@@ -1,4 +1,4 @@
-# Enonic ♡ NextJS: proof of concept
+# Enonic ♡ NextJS: Demo app
 
 Enonic XP - CMS, powering frontend rendring based on NextJS
 
