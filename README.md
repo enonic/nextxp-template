@@ -1,23 +1,27 @@
 # Enonic ♡ NextJS: proof of concept
 
-Two apps working together: a data/CMS app running on enonic XP, communicating with a frontend-rendering app running on NextJS,
+Enonic XP - CMS, powering frontend rendring based on NextJS
 
+This is repo contains a [Next.js](https://nextjs.org/) project based on [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app). It also includes an integration with the CMS called Enonic Adapter.
 
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+## Usage
 
-## Getting Started
+1. Launch Enonic instance
+To use this project you will an running instance of Enonic, containing Next.js demo content.
+This is available by signing up to Enonic, and creating a solution using the Next.js demo template.
 
-First, run the development server:
+2. Check out and configure this application
+Checkout this project to your local machine and Update the `.env.development` file to reference the location of the Enonic API
+
+3. Start app
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
 ```
-
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+## Next basics
 
 [API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.tsx`.
 
