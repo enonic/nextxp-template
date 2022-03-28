@@ -7,10 +7,12 @@ This is repo contains a [Next.js](https://nextjs.org/) project based on [`create
 ## Usage
 
 1. Launch Enonic instance
+
 To use this project you will an running instance of Enonic, containing Next.js demo content.
 This is available by signing up to Enonic, and creating a solution using the Next.js demo template.
 
 2. Check out and configure this application
+
 Checkout this project to your local machine and Update the `.env.development` file to reference the location of the Enonic API
 
 3. Start app
