@@ -19,7 +19,7 @@ const BaseComponent = ({component, meta, common}: BaseComponentProps) => {
     };
 
     const ComponentView = ComponentRegistry.getComponent(type)?.view || (() => {
-        console.error(`Missing view for component type '${type}'`);
+        console.warn(`BaseComponent: can not render component '${type}': no next view or catch-all defined`);
         return <></>;
     });
 

@@ -9,11 +9,14 @@ import MovieDetails, {getMovie} from './parts/MovieDetails';
 import TwoColumnLayout from './layouts/TwoColumnLayout';
 import getMainPage from './queries/getMainPage';
 import getTwoColumnLayout from './queries/getTwoColumnLayout';
+import {commonQuery, commonVariables} from './commonQuery';
+
+
+// You can set common query for all views here
+ComponentRegistry.setCommonQuery([commonQuery, commonVariables]);
 
 
 // Content type mappings
-
-
 ComponentRegistry.addContentType(`${APP_NAME}:person`, {
     query: getPerson,
     view: Person
@@ -56,4 +59,4 @@ ComponentRegistry.addLayout(`${APP_NAME}:focus`, {
 */
 
 
-console.info('CMS components registered');
+// console.debug('CMS components registered');

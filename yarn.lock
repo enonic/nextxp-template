@@ -2144,7 +2144,7 @@
   "resolved" "https://registry.npmjs.org/node-fetch/-/node-fetch-2.6.1.tgz"
   "version" "2.6.1"
 
-"node-html-parser@1.4.9":
+"node-html-parser@^1.4.9", "node-html-parser@1.4.9":
   "integrity" "sha512-UVcirFD1Bn0O+TSmloHeHqZZCxHjvtIeGdVdGMhyZ8/PWlEiZaZ5iJzR189yKZr8p0FXN58BUeC7RHRkf/KYGw=="
   "resolved" "https://registry.npmjs.org/node-html-parser/-/node-html-parser-1.4.9.tgz"
   "version" "1.4.9"

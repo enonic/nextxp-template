@@ -55,7 +55,7 @@ const BasePage = (props: BasePageProps) => {
                          meta={meta}/>;
     } else if (component?.descriptor) {
         // empty descriptor usually means uninitialized page
-        console.log(`BasePage: can not render page '${desc}': no next view or catch-all defined`);
+        console.warn(`BasePage: can not render page '${desc}': no next view or catch-all defined`);
     }
     return null;
 }

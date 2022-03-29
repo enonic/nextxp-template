@@ -32,7 +32,7 @@ const BaseLayout = (props: BaseLayoutProps) => {
                                    meta={meta}/>;
     } else if (component?.descriptor) {
         // empty descriptor usually means uninitialized layout
-        console.log(`BaseLayout: can not render layout '${component?.descriptor}': no next view or catch-all defined`);
+        console.warn(`BaseLayout: can not render layout '${component?.descriptor}': no next view or catch-all defined`);
     }
     return null;
 }

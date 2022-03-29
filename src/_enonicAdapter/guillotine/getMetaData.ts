@@ -17,6 +17,9 @@ const COMPONENTS_QUERY = `
         text {
           value(processHtml:{type:absolute}) {
             processedHtml
+            images {
+              ref
+            }
           }
         }
         part {

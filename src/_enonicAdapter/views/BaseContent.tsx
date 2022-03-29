@@ -22,10 +22,10 @@ const BaseContent = (props: FetchContentResult) => {
     const ContentTypeView = typeDef?.view;
 
     if (ContentTypeView && !typeDef?.catchAll) {
-        console.info(`BaseContent: rendering '${meta.type}' with content type: ${ContentTypeView.name}`);
+        // console.debug(`BaseContent: rendering '${meta.type}' with content type: ${ContentTypeView.name}`);
         return <ContentTypeView {...props}/>
     } else if (pageDef?.view) {
-        console.info(`BaseContent: rendering '${meta.type}' with page: ${BasePage.name}`);
+        // console.debug(`BaseContent: rendering '${meta.type}' with page: ${BasePage.name}`);
         const pageAttrs: BasePageProps = {
             component: pageData,
             meta,
@@ -40,11 +40,11 @@ const BaseContent = (props: FetchContentResult) => {
 
         return <BasePage {...pageAttrs}/>;
     } else if (ContentTypeView) {
-        console.info(`BaseContent: rendering '${meta.type}' with content type catch-all: ${ContentTypeView.name}`);
+        // console.debug(`BaseContent: rendering '${meta.type}' with content type catch-all: ${ContentTypeView.name}`);
         return <ContentTypeView {...props}/>
     }
 
-    console.log(`BaseContent: can not render ${meta.type}: no content type or page view defined`);
+    console.warn(`BaseContent: can not render ${meta.type}: no content type or page view defined`);
     return null;
 }
 
@@ -52,12 +52,12 @@ export default BaseContent;
 
 
 const ContentView = (props: any) => {
-    const {data} = props;
+    const {data, common} = props;
     return (
         <div style={{padding: "10px"}}>
             <h6 style={{fontSize: ".7em", fontWeight: "normal", color: "#bbb", marginTop: "0", marginBottom: "0"}}>Dev mode - Content
                 Type:</h6>
-            <h2>{data.displayName}</h2>
+            <h2>Content view</h2>
             <DataDump label="content" data={data}/>
         </div>
     )

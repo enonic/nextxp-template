@@ -19,7 +19,6 @@ function MyApp({Component, pageProps}: AppProps) {
             return <details data-single-component-output="true"><Component {...pageProps} /></details>;
         } else if (!meta.canRender
                    || (meta.catchAll && meta.renderMode === RENDER_MODE.EDIT)) {
-            console.info(`Not able to render '${meta.type}' in ${meta.renderMode} mode: returning early`)
             // return empty page, status is set in [[...contentPath.tsx]]
             return null;
         }
