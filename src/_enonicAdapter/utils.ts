@@ -88,7 +88,7 @@ const getRenderMode = (context?: Context): RENDER_MODE => {
     return enumValue || RENDER_MODE.NEXT;
 };
 
-export const getXpBaseUrl = (context?: Context): string => 
+export const getXpBaseUrl = (context?: Context): string =>
     ((context?.req?.headers || {})[XP_BASE_URL_HEADER] || "") as string;
 
 const getSingleComponentPath = (context?: Context): string | undefined => (
@@ -118,9 +118,9 @@ export const setXpBaseUrl = (context: Context | undefined): void => {
 };
 
 /**
- * 
+ *
  * @param resourcePath Relative resource path (Next pages, XP _path, public assets etc)
- * @returns absolute URL string (clientside) 
+ * @returns absolute URL string (clientside)
  */
 export const getUrl = (resourcePath: string): string => {
 
@@ -128,6 +128,24 @@ export const getUrl = (resourcePath: string): string => {
     const xpSiteUrlWithoutEditMode = (xpBaseUrl || '/').replace(/\/edit\//, '/inline/');
 
     return xpSiteUrlWithoutEditMode + resourcePath;
+}
+
+
+export const commonChars = (s1?: string, s2?: string) => {
+    let result = "";
+    if (!s1 || s1.length === 0 || !s2 || s2.length === 0) {
+        return result;
+    }
+    for (let i = 0; i < s1.length; i++) {
+        const s1Element = s1[i];
+        if (s2[i] === s1Element) {
+            result += s1Element
+        } else {
+            break;
+        }
+    }
+
+    return result;
 }
 
 // ---------------------------------------------------------------------------------------------------------------- Export

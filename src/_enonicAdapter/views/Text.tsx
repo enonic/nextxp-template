@@ -1,5 +1,5 @@
 import React from "react"
-import {RichTextProcessor} from '../RichTextProcessor';
+import {LinkData, RichTextProcessor} from '../RichTextProcessor';
 import {MetaData} from '../guillotine/getMetaData';
 
 type Props = {
@@ -7,9 +7,7 @@ type Props = {
     component: {
         value: {
             processedHtml: string,
-            images: {
-                ref: string,
-            }[]
+            links: LinkData[]
         }
     }
 }
