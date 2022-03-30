@@ -1,8 +1,7 @@
 import React from "react"
 import {MetaData, PartData} from "../guillotine/getMetaData";
 import {ComponentRegistry} from '../ComponentRegistry';
-import {IS_DEV_MODE, RENDER_MODE} from '../utils';
-import DataDump from "./DataDump";
+import {RENDER_MODE} from '../utils';
 import Empty from './Empty';
 
 
@@ -61,21 +60,4 @@ export const ErrorPart = ({descriptor, reason}: { descriptor?: string, reason: s
         </div>
     )
 }
-
-
-
-const PartView = ({part, data}: PartProps) => (
-    <div className={`part`}
-         style={{marginTop: "2rem", padding: "10px", border: "2px solid lightgrey"}}>
-        <h6 style={{fontSize: ".7em", fontWeight:"normal", color:"#bbb", marginTop: "0", marginBottom: "0"}}>Part debug:</h6>
-        <h3 style={{marginTop: "0", marginBottom: "8px"}}>{part.descriptor}</h3>
-        <DataDump label="config" data={part.config} />
-        <DataDump label="data" data={data} />
-    </div>
-);
-
-export const PartDevView = IS_DEV_MODE
-    ? PartView
-    : Empty;
-
 

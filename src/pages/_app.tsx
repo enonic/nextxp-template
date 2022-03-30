@@ -27,7 +27,7 @@ function MyApp({Component, pageProps}: AppProps) {
     return (
         <>
             <Header
-                title="Enonic <3 Next.js"
+                title="🔥 Next.XP"
                 logoUrl={getUrl('images/xp-shield.svg')}/>
             <main style={{
                 margin: `0 auto`,

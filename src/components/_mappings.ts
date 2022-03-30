@@ -1,5 +1,6 @@
 import {APP_NAME} from '../_enonicAdapter/utils'
-import {ComponentRegistry} from '../_enonicAdapter/ComponentRegistry';
+import {CATCH_ALL, ComponentRegistry} from '../_enonicAdapter/ComponentRegistry';
+import PropsView from './views/Props';
 import Person from './views/Person';
 import getPerson from './queries/getPerson';
 import MainPage from './pages/Main';
@@ -9,12 +10,11 @@ import MovieDetails, {getMovie} from './parts/MovieDetails';
 import TwoColumnLayout from './layouts/TwoColumnLayout';
 import getMainPage from './queries/getMainPage';
 import getTwoColumnLayout from './queries/getTwoColumnLayout';
-import {commonQuery, commonVariables} from './commonQuery';
+import {commonQuery, commonVariables} from './queries/common';
 
 
 // You can set common query for all views here
 ComponentRegistry.setCommonQuery([commonQuery, commonVariables]);
-
 
 // Content type mappings
 ComponentRegistry.addContentType(`${APP_NAME}:person`, {
@@ -24,17 +24,15 @@ ComponentRegistry.addContentType(`${APP_NAME}:person`, {
 
 // Page mappings
 ComponentRegistry.addPage(`${APP_NAME}:main`, {
-    view: MainPage,
     query: getMainPage,
+    view: MainPage,
 });
-
 
 // Layout mappings
 ComponentRegistry.addLayout(`${APP_NAME}:2-column`, {
     view: TwoColumnLayout,
     query: getTwoColumnLayout,
 });
-
 
 // Part mappings
 ComponentRegistry.addPart(`${APP_NAME}:movie-details`, {
@@ -44,19 +42,15 @@ ComponentRegistry.addPart(`${APP_NAME}:movie-details`, {
 ComponentRegistry.addPart(`${APP_NAME}:heading`, {
     view: Heading
 });
-
 ComponentRegistry.addPart(`${APP_NAME}:child-list`, {
     query: getChildList,
     processor: childListProcessor,
     view: ChildList
 });
 
-
 /*
-ComponentRegistry.addLayout(`${APP_NAME}:focus`, {
-    view: FocusLayoutView
+// Debug
+ComponentRegistry.addContentType(CATCH_ALL, {
+    view: PropsView
 });
 */
-
-
-// console.debug('CMS components registered');

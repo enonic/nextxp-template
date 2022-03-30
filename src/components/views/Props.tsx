@@ -5,6 +5,21 @@ type Props = {
     data: any
 }
 
+const PropsView = (props: any) => {
+    return (
+        <div className={`debug`}
+            style={{margin: "10px", padding: "10px", border: "2px solid lightgrey"}}>
+            <DataDump label="Page" data={props.page}/>
+            <DataDump label="Part" data={props.part}/>
+            <DataDump label="Layout" data={props.layout}/>
+            <DataDump label="Data" data={props.data}/>
+            <DataDump label="Common" data={props.common}/>
+        </div>
+    )
+}
+
+export default PropsView;
+
 const DataDump = ({label, data}: Props) => (
     (data && (
             <>
@@ -21,7 +36,3 @@ const DataDump = ({label, data}: Props) => (
         )
     ) || null
 );
-
-export default DataDump;
-
-

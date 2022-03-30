@@ -1,9 +1,6 @@
 import React from "react"
 import {ComponentRegistry} from '../ComponentRegistry';
 import {MetaData, PageData} from "../guillotine/getMetaData";
-import {IS_DEV_MODE} from "../utils";
-import DataDump from "./DataDump";
-import Empty from './Empty';
 
 export interface PageProps {
     page: PageData;
@@ -19,22 +16,6 @@ export interface BasePageProps {
     error?: string;
     meta: MetaData;
 }
-
-const PageView = ({page}: PageProps) => {
-    return (
-        <div className={`page`}
-             style={{margin: "10px", padding: "10px", border: "2px solid lightgrey"}}>
-            <h6 style={{fontSize: ".7em", fontWeight: "normal", color: "#bbb", marginTop: "0", marginBottom: "0"}}>Page debug:</h6>
-            <h3 style={{marginTop: "0", marginBottom: "8px"}}>{page.descriptor}</h3>
-            <DataDump label="config" data={page.config}/>
-            <DataDump label="regions" data={page.regions}/>
-        </div>);
-}
-
-export const PageDevView = IS_DEV_MODE
-                           ? PageView
-                           : Empty; // TODO: Should return 404 + log error about missing component mapping
-
 
 const BasePage = (props: BasePageProps) => {
     const {component, data, common, error, meta} = props;
