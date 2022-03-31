@@ -1,6 +1,8 @@
 import React from "react"
 import {LayoutData, MetaData, RegionTree} from "../guillotine/getMetaData";
 import {ComponentRegistry} from '../ComponentRegistry';
+import {IS_DEV_MODE, RENDER_MODE, XP_COMPONENT_TYPE} from '../utils';
+import {MissingComponent} from './BaseComponent';
 
 export interface LayoutProps {
     layout: LayoutData;
@@ -30,6 +32,9 @@ const BaseLayout = (props: BaseLayoutProps) => {
     } else if (component?.descriptor) {
         // empty descriptor usually means uninitialized layout
         console.warn(`BaseLayout: can not render layout '${component?.descriptor}': no next view or catch-all defined`);
+        if (IS_DEV_MODE && meta.renderMode !== RENDER_MODE.NEXT) {
+            return <MissingComponent type={XP_COMPONENT_TYPE.LAYOUT} descriptor={component.descriptor}/>
+        }
     }
     return null;
 }

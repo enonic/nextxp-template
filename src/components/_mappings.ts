@@ -1,6 +1,5 @@
 import {APP_NAME} from '../_enonicAdapter/utils'
-import {CATCH_ALL, ComponentRegistry} from '../_enonicAdapter/ComponentRegistry';
-import PropsView from './views/Props';
+import {ComponentRegistry} from '../_enonicAdapter/ComponentRegistry';
 import Person from './views/Person';
 import getPerson from './queries/getPerson';
 import MainPage from './pages/Main';

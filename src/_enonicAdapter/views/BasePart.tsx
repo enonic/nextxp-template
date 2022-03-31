@@ -1,8 +1,9 @@
 import React from "react"
 import {MetaData, PartData} from "../guillotine/getMetaData";
 import {ComponentRegistry} from '../ComponentRegistry';
-import {RENDER_MODE} from '../utils';
+import {IS_DEV_MODE, RENDER_MODE, XP_COMPONENT_TYPE} from '../utils';
 import Empty from './Empty';
+import {MissingComponent} from './BaseComponent';
 
 
 export interface PartProps {
@@ -43,6 +44,9 @@ const BasePart = (props: BasePartProps) => {
     } else if (component?.descriptor) {
         // empty descriptor usually means uninitialized part
         console.warn(`BasePart: can not render part '${component.descriptor}': no next view or catch-all defined`);
+        if (IS_DEV_MODE && meta.renderMode !== RENDER_MODE.NEXT) {
+            return <MissingComponent type={XP_COMPONENT_TYPE.PART} descriptor={component.descriptor}/>
+        }
     }
     return null;
 }

@@ -54,3 +54,15 @@ const BaseComponent = ({component, meta, common}: BaseComponentProps) => {
     }
 }
 export default BaseComponent;
+
+export const MissingComponent = ({descriptor, type}: { descriptor?: string, type: string }) => {
+    return (
+        <div style={{
+            border: "2px dashed lightgrey",
+            padding: '16px',
+        }}>
+            <h3 style={{margin: 0}}>Missing component</h3>
+            <p style={{marginBottom: 0, color: 'grey'}}>{`Missing ${type} with descriptor: ${descriptor}`}</p>
+        </div>
+    )
+}

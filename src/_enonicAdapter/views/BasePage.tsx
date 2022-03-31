@@ -1,6 +1,8 @@
 import React from "react"
 import {ComponentRegistry} from '../ComponentRegistry';
 import {MetaData, PageData} from "../guillotine/getMetaData";
+import {IS_DEV_MODE, RENDER_MODE, XP_COMPONENT_TYPE} from '../utils';
+import {MissingComponent} from './BaseComponent';
 
 export interface PageProps {
     page: PageData;
@@ -37,6 +39,9 @@ const BasePage = (props: BasePageProps) => {
     } else if (component?.descriptor) {
         // empty descriptor usually means uninitialized page
         console.warn(`BasePage: can not render page '${desc}': no next view or catch-all defined`);
+        if (IS_DEV_MODE && meta.renderMode !== RENDER_MODE.NEXT) {
+            return <MissingComponent type={XP_COMPONENT_TYPE.PAGE} descriptor={component.descriptor}/>
+        }
     }
     return null;
 }
