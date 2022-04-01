@@ -17,8 +17,13 @@ const COMPONENTS_QUERY = `
         text {
           value(processHtml:{type:absolute}) {
             processedHtml
-            images {
+            links {
               ref
+              media {
+                content {
+                  _id
+                }
+              }
             }
           }
         }
