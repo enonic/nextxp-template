@@ -1,6 +1,6 @@
 import React from "react";
 
-import {PORTAL_COMPONENT_ATTRIBUTE, RENDER_MODE, XP_COMPONENT_TYPE} from "../utils";
+import {IS_DEV_MODE, PORTAL_COMPONENT_ATTRIBUTE, RENDER_MODE, XP_COMPONENT_TYPE} from "../utils";
 import {MetaData, PageComponent} from "../guillotine/getMetaData";
 import {ComponentRegistry} from '../ComponentRegistry';
 
@@ -65,4 +65,8 @@ export const MissingComponent = ({descriptor, type}: { descriptor?: string, type
             <p style={{marginBottom: 0, color: 'grey'}}>{`Missing ${type} with descriptor: ${descriptor}`}</p>
         </div>
     )
+}
+
+export function shouldShowMissingView(meta: MetaData): boolean {
+    return IS_DEV_MODE || meta.renderMode !== RENDER_MODE.NEXT;
 }

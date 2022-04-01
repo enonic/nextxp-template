@@ -584,10 +584,10 @@ function createMetaData(contentType: string, contentPath: string, requestType: X
 
     const pageDesc = pageCmp?.page?.descriptor;
     const typeDef = ComponentRegistry.getContentType(contentType);
-    const pageDef = !!pageDesc && ComponentRegistry.getPage(pageDesc);
     if (typeDef?.view && !typeDef.catchAll) {
         meta.canRender = true;
-    } else if (pageDef && pageDef.view) {
+    } else if (pageDesc) {
+        // always render a page if there is a descriptor (show missing in case it's not implemented)
         meta.canRender = true;
         meta.catchAll = false;  // catchAll only refers to content type catch-all
     } else if (typeDef?.view) {

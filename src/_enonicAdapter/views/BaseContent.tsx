@@ -15,13 +15,12 @@ const BaseContent = (props: FetchContentResult) => {
     const pageData = page?.page;
     const pageDesc = pageData?.descriptor;
     const typeDef = ComponentRegistry.getContentType(meta.type);
-    const pageDef = pageDesc ? ComponentRegistry.getPage(pageDesc) : undefined;
     const ContentTypeView = typeDef?.view;
 
     if (ContentTypeView && !typeDef?.catchAll) {
         // console.info(`BaseContent: rendering '${meta.type}' with content type: ${ContentTypeView.name}`);
         return <ContentTypeView {...props}/>
-    } else if (pageDef?.view) {
+    } else if (pageDesc) {
         // console.info(`BaseContent: rendering '${meta.type}' with page: ${BasePage.name}`);
         const pageAttrs: BasePageProps = {
             component: pageData,
