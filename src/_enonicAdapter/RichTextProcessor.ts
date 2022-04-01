@@ -33,18 +33,17 @@ export class RichTextProcessor {
     }
 
     private static processImages(root: HTMLElement): void {
-        const imgs = root.querySelectorAll('img');
+        const imgs = root.querySelectorAll('img[' + this.imageAttr + ']');
         imgs.forEach(img => {
             const src = img.getAttribute('src');
-            const ref = img.getAttribute(this.imageAttr);
-            if (ref && src) {
+            if (src) {
                 img.setAttribute('src', this.urlFunction(this.stripApiUrl(src)));
             }
         })
     }
 
     private static processLinks(root: HTMLElement, linkData: LinkData[], mode: RENDER_MODE): void {
-        const links = root.querySelectorAll('a');
+        const links = root.querySelectorAll('a[' + this.linkAttr + ']');
         links.forEach(link => {
             const href = link.getAttribute('href');
             const ref = link.getAttribute(this.linkAttr);
