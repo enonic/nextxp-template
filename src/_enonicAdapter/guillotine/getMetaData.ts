@@ -57,6 +57,7 @@ export function getMetaQuery(pageFragment?: string): string {
     return `query($path:ID!){
               guillotine {
                 get(key:$path) {
+                  _path
                   type
                   ${pageFragment || ''}
                 }

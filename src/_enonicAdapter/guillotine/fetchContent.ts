@@ -21,7 +21,6 @@ export type adapterConstants = {
     APP_NAME: string,
     APP_NAME_DASHED: string,
     CONTENT_API_URL: string,
-    getXpPath: (siteRelativeContentPath: string) => string,
     getXPRequestType: (context?: Context) => XP_REQUEST_TYPE,
     getRenderMode: (context?: Context) => RENDER_MODE,
     getSingleComponentPath: (context?: Context) => string | undefined
@@ -40,6 +39,7 @@ type GuillotineResult = Result & {
 
 type MetaResult = Result & {
     meta?: {
+        _path: string;
         type: string,
         pageAsJson?: PageData,
         components?: PageComponent[],
@@ -633,7 +633,6 @@ export const buildContentFetcher = <T extends adapterConstants>(config: FetcherC
         APP_NAME,
         APP_NAME_DASHED,
         CONTENT_API_URL,
-        getXpPath,
         getXPRequestType,
         getRenderMode,
         getSingleComponentPath,
@@ -653,7 +652,6 @@ export const buildContentFetcher = <T extends adapterConstants>(config: FetcherC
 
         try {
             const siteRelativeContentPath = getCleanContentPathArrayOrThrow400(contentPathOrArray);
-            contentPath = getXpPath(siteRelativeContentPath);
 
             let requestedComponentPath: string | undefined;
             if (requestType === XP_REQUEST_TYPE.COMPONENT) {
@@ -661,14 +659,15 @@ export const buildContentFetcher = <T extends adapterConstants>(config: FetcherC
             }
 
             ///////////////  FIRST GUILLOTINE CALL FOR METADATA     /////////////////
-            const metaResult = await fetchMetaData(CONTENT_API_URL, contentPath);
+            const metaResult = await fetchMetaData(CONTENT_API_URL, '${site}/' + siteRelativeContentPath);
             /////////////////////////////////////////////////////////////////////////
+
+            const {type, components, _path} = metaResult.meta || {};
+            contentPath = _path || '';
 
             if (metaResult.error) {
                 return errorResponse(metaResult.error.code, metaResult.error.message, requestType, renderMode, contentPath);
             }
-
-            const {type, components} = metaResult.meta || {};
 
             if (!metaResult.meta) {
                 return errorResponse('404', "No meta data found for content, most likely content does not exist", requestType, renderMode,

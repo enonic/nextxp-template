@@ -5,11 +5,6 @@ import {Context} from "../pages/[[...contentPath]]";
 const mode = process.env.MODE || process.env.NEXT_PUBLIC_MODE;
 export const IS_DEV_MODE = (mode === 'development');
 
-
-/** Where is XP running */
-/** Which site this server communicates with: content item _name for the root site item */
-export const SITEPATH = (process.env.SITEPATH || process.env.NEXT_PUBLIC_SITEPATH) as string
-
 /** URL to the guillotine API */
 export const CONTENT_API_URL = (process.env.CONTENT_API_URL || process.env.NEXT_PUBLIC_CONTENT_API_URL) as string
 
@@ -95,15 +90,6 @@ const getSingleComponentPath = (context?: Context): string | undefined => (
     (context?.req?.headers || {})[COMPONENT_SUBPATH_HEADER] as string | undefined
 );
 
-//const siteNamePattern = new RegExp('^/' + SITE + "/");
-const publicPattern = new RegExp('^/*');
-
-/**
- * Prefix the site-relative content path with the XP site _name and returns a full XP _path string.
- * @param pageUrl {string} The contentPath slug array from [[...contentPath]].tsx, stringified and slash-delimited. Aka. nextjs.side-relative content path.
- * @returns {string} Fully qualified XP content path */
-export const getXpPath = (pageUrl: string): string => `${SITEPATH}/${pageUrl}`;
-
 /** For '<a href="..."' link values in props when clicking the link should navigate to an XP content item page
  *  and the query returns the XP _path to the target content item:
  *  When viewed directly, the header will have a `<base href='/' />` (see src/pages/_app.tsx), and when viewed through an
@@ -153,7 +139,6 @@ export const commonChars = (s1?: string, s2?: string) => {
 const adapterConstants = {
     IS_DEV_MODE,
 
-    SITEPATH,
     CONTENT_API_URL,
 
     APP_NAME,
@@ -165,10 +150,7 @@ const adapterConstants = {
     PORTAL_COMPONENT_ATTRIBUTE,
     PORTAL_REGION_ATTRIBUTE,
 
-    getXpPath,
     getXpBaseUrl,
-//    getContentLinkUrlFromXpPath,
-//    getPublicAssetUrl,
     getXPRequestType,
     getSingleComponentPath,
     getRenderMode
