@@ -5,8 +5,9 @@
 
 Enonic provides a highly customizable component type called link:https://developer.enonic.com/docs/xp/stable/components/components#part[parts]. Similar to page components parts must be defined in both Enonic and Next in order to fully work.
 
+
 == Task: Add part to Enonic
-We'll start off by adding a component that lists child items in the tree structure.
+We'll start off by adding a simple component that lists child items in the tree structure.
 
 . **Add the `child-list` part** to the Enonic app
 +
@@ -33,9 +34,11 @@ We'll start off by adding a component that lists child items in the tree structu
 +
 NOTE: This part descriptor also contains a form, similar to content types, which enable editors to configure it - sorting Ascending or Descending.
 +
-To work seamlessly with Content Studio's WYSIWYG preview, parts need a special controller file that assists the preview to load changes to the component, without refreshing the entire page.
+To work seamlessly with Content Studio's WYSIWYG preview, in the Enonic app, parts need a special controller file that helps the preview reload the component when there are changes, without having to refreshing the entire page.
 +
 . **Add the preview controller file** for the child-list part
++
+This controller simply is triggered when a component us updated in the page editor, and simply forwards the request to the proxy - like all other requests.
 +
 .src/main/resources/site/parts/child-list/child-list.js
 [source,JavaScript]
@@ -49,12 +52,11 @@ exports.get = proxy.get;
 +
 . **Add parts to the page**
 +
-After re-deploying the app, head over to Content Studio, this time, lets edit the `Persons` page. Drag'n drop the new part into the region (`right-click -> Insert`, or drag-n-drop from the `Insert panel`` on the right).
+After the app has deployed, head over to Content Studio. This time, lets edit the `Persons` page. Drag'n drop the new part into the region (`right-click -> Insert`, or drag-n-drop from the `Insert panel`` on the right).
 +
-TIP: As you can see, the part appear without making any changes to Next, this is because the Enonic adapter contains fallback part rendering, when Next is running in DEV mode.
+TIP: The part will appear without making any changes to Next, this is because the Enonic adapter contains fallback part rendering, when Next is running in DEV mode.
 +
-TODO: Update?
-image:cs-part-default.png[title="Next.js-rendered text component with an image",width=700px]
+image:missing-component.png[title="Next.js dev mode renderes nice feedback when components are missing",width=1440px]
 +
 TIP: As usual, you can navigate to http://localhost:3000/persons to verify it directly from Next.js.
 
@@ -62,7 +64,7 @@ TIP: As usual, you can navigate to http://localhost:3000/persons to verify it di
 
 Moving over to the Next app, we must register the new component that support actual rendering of this part.
 
-. **Add the part handlers to the Next app**
+. **Add the part implementation to the Next app**
 +
 .src/components/parts/ChildList.tsx
 [source,JavaScript]
@@ -88,12 +90,11 @@ ComponentRegistry.addPart(`${APP_NAME}:child-list`, {
 });
 ----
 +
-As you might have noticed this component has query, view and processor. A processor is an optional JavaScript function that can do whatever you need it to. For instance fetch data from another source than the CMS, or post-process the query response before it is passed to the view.
+As you may have noticed this component has a query, a view and a processor. Processors are optional JavaScript functions that can do whatever you need it to. For instance fetch data from another source than the CMS, or post-process the query response before it is passed to the view etc.
 +
-The Enonic adapter will execute the query, pass the result via the processor, the to the view which finally renders the part.
+The Enonic adapter will execute the query, pass the result via the processor, then to the view which finally renders the part.
 +
-TODO: Update this image
-image:cs-part-nextjsviewed.png[title="Next.js-rendered text component with an image",width=700px]
+image:child-list-rendered.png[title="Part rendered with list of persons as seen from Content Studio",width=1440px]
 + 
 Try customizing the part configuration and see what happens.
 
@@ -153,4 +154,4 @@ ComponentRegistry.addPart(`${APP_NAME}:heading`, {
 +
 You should now have two configurable parts to play with.
 
-In the next chapter we will make page composition even more interesting by <<layouts#, introducing layouts>>. 
+In the next chapter we will make page composition even more interesting, with the introduction of <<layouts#, layouts>>. 

@@ -3,7 +3,24 @@
 :imagesdir: media/
 :sourcedir: ../src
 
-So far, rendering has been based on hardcoded content type mappings made by the developer. In this chaper we will enable editors to compose their own pages.
+So far, rendering has been based on hardcoded mappings made by the developer. In this chaper we will enable editors to compose their own pages.
+
+== Task: Disable debug view
+For every page you select, the debug view keeps appearing - even in Content Studio. You may disable this, simply by commenting out the `CATCH_ALL` content type view at the bottom of your mappings file - like this: 
++
+.src/components/_mappings.ts
+[source,TypeScript]
+----
+...
+
+/*
+// Debug
+ComponentRegistry.addContentType(CATCH_ALL, {
+    view: PropsView
+});
+*/
+----
+
 
 == Task: Setup page rendering
 
@@ -12,7 +29,7 @@ Content types need to exist in Enonic before an editor can create content. Simil
 . *Add a page descriptor* to the Enonic app 
 +
 .src/main/resources/site/pages/default/default.xml
-[source,xml,options="nowrap"]
+[source,xml]
 ----
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <page xmlns="urn:enonic:xp:model:1.0">
@@ -25,7 +42,7 @@ Content types need to exist in Enonic before an editor can create content. Simil
 </page>
 ----
 +
-NOTE: With the definition of the region `main`, Content Studio editors can start adding components to the page. 
+NOTE: The definition of the region `main`, enable Content Studio editors to add components to the page, as you will see later.
 +
 Redploy the Enonic app to register the page component.
 +
@@ -33,7 +50,7 @@ Redploy the Enonic app to register the page component.
 On the Next side of things, rendering a page is similar to rendering a content type. Add the following file to your Next project.
 +
 .src/components/pages/Main.tsx
-[source,JavaScript]
+[source,TypeScript]
 ----
 include::{sourcedir}/components/pages/Main.tsx[]
 ----
@@ -42,8 +59,8 @@ NOTE: Notice the <RegionsView> element, referring to the 'main' region
 +
 Finally, register it in the component mappings by adding the following lines to _mappings.ts
 +
-.src/components/pages/Main.tsx
-[source,JavaScript]
+.src/components/_mappings.ts
+[source,TypeScript]
 ----
 import MainPage from './pages/Main';
 
@@ -54,22 +71,23 @@ ComponentRegistry.addPage(`${APP_NAME}:main`, {
 });
 ----
 
-Both Enonic and Next is now able to handle custom pages.
+Both Enonic and Next are now able to handle custom pages.
 
 == Task: Create your first page
 
 Its time to build a custom page.
 
-. **Make a page for the movies folder**
+. **Turn the site into a page**
 +
-From Content Studio, select and edit the `hmdb/movies` content item. From the edit view, activate the page editor by clicking the monitor icon in the top right corner.
+From Content Studio, select and edit the site `/hmdb` content item. From the edit view, activate the page editor by clicking the monitor icon in the top right corner.
 +
 You should now see the following:
 +
 image:page-setup.png[title="Selecting the page component in the page view",width=1440px]
 +
-Select the `Main` component we created earlier.
-You should the see a page with a single "dropzone" inside (this is the region we specified earlier).
+From the preview area, select the `Main` component we created earlier from the dropdown menu.
++
+You should then see a page with a single "dropzone" inside (the region we specified earlier).
 +
 image:page-rendered.png[title="Active page controller rendering an empty region visualized by a placeholder",width=1440px]
 

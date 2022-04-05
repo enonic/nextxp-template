@@ -5,17 +5,17 @@
 
 In this chapter we will look into the basic rendering mechanisms, and add some custom rendering to our app as well.
 
-== Dev mode fallback rendering
+== Dev mode rendering
 
-As you have seen during the setup of Next, each content item automatically render a page, listing available props. These props are automatically fetched by the Enonic Adapter.
+As you have seen during the setup of Next, each content item automatically render a page, listing available props. These props are fetched by the Enonic Adapter.
 
-By defining custom queries and react components tailored for each content type, we can customise the props passed to the view, and which view is actually being used.
+By defining custom queries and react components tailored for each content type, we can customise the props passed to the view, and which template is actually applied.
 
 == Task: Get person content
 
-With that sorted out, let's get customizing - starting with content of the type "person":
+Let's build our first component - starting with rendring of "person" content types:
 
-NOTE: The full name of your content type should now be "com.example.myproject:person" If you used a different name when creating the Enonic app, update the `.env` in your Next app to reflect this.
+NOTE: The full name of your content type should now be "com.example.myproject:person" If you used a different name when creating the Enonic app, update the `.env` file in your Next app to reflect this.
 
 . **Add query** by creating the following file in your Next application
 +
@@ -30,27 +30,28 @@ This file defines a graphQL query 'getPerson' that will fetch data from the Enon
 TIP: You may validate the query by copying it to the GraphQL playground. Replace `APP_NAME_UNDERSCORED` with `com_example_myproject` and set a query variable, try this for instance:
   `{"path": "/hmdb/persons/brad-pitt"}``
 +
-. **Register the query** by adding the following lines to the component mappings file:
+. **Register the query** by adding the following lines to the component mappings file: 
++
+NOTE: Do not copy the `...` - it is just there to illustrate there are other lines of code you should keep in the target file.
 +
 .src/components/_mappings.ts
 [source,JavaScript]
 ----
 import getPerson from './queries/getPerson';
 
-....
+...
 
 ComponentRegistry.addContentType(`${APP_NAME}:person`, {
     query: getPerson,
+    view: PropsView
 });
 ----
 +
 . **View the result**
 +
-By visiting a person item - for instance `http://localhost:3000/persons/brad-pitt` you should now see a different set of props being listed by the default view.
+By visiting a person item - like `http://localhost:3000/persons/morgan-freeman` you should now see data props being listed in the view.
 +
-image:missing image[title="Development view showing person data from query",width=650px]
-+
-.
+image:morgan-freeman-props.png[title="Page showing data props for Morgan Freeman content item",width=767px]
 
 == Task: Add custom person rendering
 
@@ -66,26 +67,30 @@ include::{sourcedir}/components/views/Person.tsx[]
 +
 This file defines a react view 'Person' that will use the props from the query to render the person. 
 +
-. **Register Person view** in the mapping by adding the following lines to the component mappings:
+. **Register Person view** by adding the following import to the component mappings:
 +
 .src/components/_mappings.ts
 [source,JavaScript]
 ----
 import Person from './views/Person';
-
-....
-
+----
++
+And then update the component mapping you created earlier to use the new view:
++
+.src/components/_mappings.ts
+[source,JavaScript]
+----
 ComponentRegistry.addContentType(`${APP_NAME}:person`, {
-    view: Person,
+    query: getPerson,
+    view: Person
 });
 ----
 +
-. **View the result** - The page should automatically reload once the change has been saved
+. **Check the result** - The page should automatically reload once the changes have been saved
 +
-image:morgan-freeman-plain.png[title="Person rendering with query and view",width=1069px]
+image:morgan-freeman-render.png[title="Person rendering with query and view",width=768px]
 
 The content type mapping applies to every `person` content item in the site, regardless of it's location in the hierarchy. Try looking at some other persons, eg. http://localhost:3000/persons/uma-thurman
-
 
 == Task: Add custom header and footer
 
@@ -136,8 +141,25 @@ return (
 
 Morgan Freeman's page should now look like this
 
-image:morgan-freeman-header-footer.png[title="Rendering with header and footer",width=1068px]
+image:morgan-freeman-header-footer.png[title="Rendering with header and footer",width=768px]
 
-With the basic rendering done, in the next chapter, well add <<preview#, Content Studio preview>> into the mix.
+== The common query
 
+You may have noticed the `Common` props appearing in the various prop views - these originate from the the following statement in the mappings:
+
+.src/components/_mappings.ts
+----
+...
+
+// Common query
+ComponentRegistry.setCommonQuery([commonQuery, commonVariables]);
+
+...
+----
+
+The result of this query is available across all components on the page, and may be useful if you want to fetch data for the page itself, or to be used across multiple components. Feel free to adapt it to your requirements.
+
+NOTE: If you do not need any common props, remove it from the mappings to optimize performance.
+
+With the basic rendering completed, in the next chapter, well add <<preview#, preview support in Content Studio>>.
 

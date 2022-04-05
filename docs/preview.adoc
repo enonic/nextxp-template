@@ -40,7 +40,7 @@ Update the `site.xml` , https://developer.enonic.com/docs/xp/stable/components/m
 ...
   <mappings>
     <mapping controller="/controllers/graphql.js" order="50">
-      <pattern>/api</pattern>
+      <pattern>/_grapqhql</pattern>
     </mapping>
     <mapping controller="/lib/nextjs-proxy/proxy.js" order="99">
       <pattern>/.*</pattern>
@@ -49,9 +49,9 @@ Update the `site.xml` , https://developer.enonic.com/docs/xp/stable/components/m
 ...
 ----
 +
-This effectively replaces the preview that shipped with the app, with the proxy. All requests excluding `/api` (which contains the headless API) will now be be handled by the proxy instead - as you can see from the `/.*` pattern, which essentially means "catch all" URL patterns.
+This effectively replaces the preview that shipped with the app, with the proxy. All requests excluding `/_graphql` (which contains the headless API) will now be be handled by the proxy instead - as you can see from the `/.*` pattern, which essentially means "catch all" URL patterns.
 +
-NOTE: If the current headless API mapping conflicts with your Next.js app, you can always change the mapping right here
+NOTE: If the headless API mappings come in conflicts with your Next.js app, you can always change the mapping above.
 +
 Redeploy the Enonic app after saving the changes:
 +
@@ -59,7 +59,7 @@ Redeploy the Enonic app after saving the changes:
 +
 . *Verify the preview*
 +
-By default, the proxy is configured to lookup the server on localhost:3000, later we will look into how this can be changed - but essentially this means everything should be working instantly.
+By default, the proxy is configured to access the Next.js server on localhost:3000, later we will look into how this can be changed - but essentially this means everything should be working instantly.
 +
 From Content Studio, select (or edit) any item in the content hierarchy, and it should be rendered by Next.js and visible in the preview panel on the right:
 +

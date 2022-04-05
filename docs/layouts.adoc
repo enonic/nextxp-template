@@ -28,9 +28,9 @@ Adding layouts is more or less identical to pages and parts. Simply follow the s
 +
 NOTE: Just like a page, layouts may declare named regions.
 +
-. **Add the preview controller file**
+. **Add the preview helper**
 +
-.src/main/resources/site/parts/child-list/child-list.js
+.src/main/resources/site/parts/2-column/2-column.js
 [source,JavaScript]
 ----
 var proxy = require('/lib/nextjs-proxy/proxy');
@@ -72,10 +72,10 @@ NOTE: this specific layout does not need any additional data - hence no query or
 +
 After completing these steps, you should be able to add the layout to a page, and then add components inside the layout. It might look something like this:
 +
-TODO: Update this image
-image:cs-part-nextjsviewed.png[title="Layout placed to the front page",width=700px]
-TODO: Update this image
-image:cs-part-nextjsviewed.png[title="Layout with components placed inside",width=700px]
+image:layout-empty.png[title="Empty layout on the persons page",width=1440px]
++
+By combining layout, part and text we are starting to see the potential of the page editor:
++
+image:layout-part-text.png[title="Layout combined with part and text components",width=1440px]
 
-
-That completes the introduction to parts and layouts, in the next chapter we will look into <<templates#, reuse of page compositions>> across content items.
+In the next chapter we will look into <<templates#, reuse of pages>> across content items.

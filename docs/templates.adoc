@@ -3,13 +3,13 @@
 :imagesdir: media/
 :sourcedir: ../src
 
-Thus far, page rendering has been based on hard-coding by developers, or editorially composing single pages. In this chapter you'll learn how to make page templates - and reuse them across multiple content items.
+Thus far, page rendering has been based on hard-coding, or editorially composing one page at a time. In this chapter you'll learn how to make page templates - and reuse them across multiple content items.
 
 ## Task: Movie details part
 
-To complete this section, we'll need one more part for listing movie details. The content type and content for movies already exists in Enonic, so lets get to work.
+To complete this section, we'll need one final part for listing movie details. The content type and content for movies already exists in Enonic, so lets get to work.
 
-. **Add the `movie-details` part to Enonic** - same procedure as earlier...
+. **Add the `movie-details` part to Enonic** - same procedure as before...
 +
 .src/main/resources/site/parts/movie-details/movie-details.xml
 [source,xml]
@@ -30,7 +30,7 @@ var proxy = require('/lib/nextjs-proxy/proxy');
 exports.get = proxy.get;
 ----
 +
-. **Redeploy** the Enonic app and add the part to your page
+. **Redeploy** the Enonic app.
 +
 . **Register the Movie query and view** in Next.
 +
@@ -38,7 +38,7 @@ exports.get = proxy.get;
 ----
 include::{sourcedir}/components/parts/MovieDetails.tsx[]
 ----
-Add the following lines to _mappings.ts:
+Update the component mappings:
 +
 .src/components/_mappings.ts
 [source,javascript,options="nowrap"]
@@ -56,23 +56,27 @@ ComponentRegistry.addPart(`${APP_NAME}:movie-details`, {
 
 == Task: Create template
 
-With the new component registered, its time to put it to use.
+With the new component registered, let's put it to use.
 
 . In Content Studio, select and **edit your favorite movie** (or choose "No time to die" if you have no faviorites).
 +
-. Like before, activate the page editor, select the "main" page component and **add the "Movie details" part** to the page.
+. Like you did for the other pages, activate the page editor, select the "main" page component and **add the "Movie details" part** to the page.
 +
-TODO: Screenshot
+image:movie-details.png[title="No time to die, configured with movie-details part",width=1440px]
 +
 We now have a single movie nicely presented, but it would be cumbersome to manually configure each movie like this - page templates to the rescue.
 +
 . In the page editor, **select the page component** (for instance by clicking on the header).
 +
-. Click **Save as template** from the right hand panel that appears.
+image:movie-page.png[title="With page component selected, save as template appears in right hand panel",width=1440px]
++
+. Click **Save as template** from the right hand panel.
 +
 This will create a new page template content item, and open it in a new tab for editing.
 +
 . **Give your template a better name**, such as "Movie details" and save the changes.
++
+image:movie-template.png[title="Content item of type template, configure to support movie items",width=1440px]
 +
 . Try visiting other movie items to **verify they now automatically render**.
 

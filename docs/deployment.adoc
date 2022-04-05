@@ -5,7 +5,7 @@
 In this chapter you will launch cloud instances of both Enonic and Next - link them together, and watch the glorious result.
 
 == Introduction
-Running a full production setup involves running a single instance of Enonic XP, and two instances of the Next.js application - one for preview, and one for handling the live traffic. For simplicity, let's use Enonic's cloud offering, and Vercel to host the respective apps - Vercel are the makers of Next.js. 
+Running a full production setup involves running a single instance of Enonic XP, and two instances of the Next.js application - one for preview, and one for handling the live traffic. For simplicity, let's use Enonic, and Vercel to host the respective apps - Vercel are the makers of Next.js. 
 
 NOTE: Enonic and Next.js are both open source software projects and can be deployed more or less anywhere. Have a look at the https://developer.enonic.com/docs/kubernetes-operator-for-xp[Kubernetes operator for Enonic XP] if you are keen on hosting it yourself.
 
@@ -23,7 +23,7 @@ TIP: The Next config file `.env` holds common values, while `.env.development` a
 ...
 
 SITEPATH=/hmdb                                                      
-CONTENT_API_URL=http://localhost:8080/site/hmdb/master/hmdb/api
+CONTENT_API_URL=http://localhost:8080/site/hmdb/master/hmdb/_graphql
 ----
 +
 NOTE: When compared to the `.env.development` configuration, the main difference is referencing the `master` branch, vs the `draft` branch. The master branch holds your published content.
@@ -43,6 +43,8 @@ As you may have noticed, preview has also stopped working, this is because Next 
 +
 . **Update your app configuration** to reference the new location of the preview server
 +
+When working in your local Enonic SDK, the sandboxes are stored in your home directory under the .enonic/ folder. 
++
 Create a configuration file in your sandbox, and add the following value to it:
 +
 ..enonic/sandboxes/<mysandbox>/home/config/<app-name>.cfg
@@ -51,7 +53,7 @@ Create a configuration file in your sandbox, and add the following value to it:
 nextjsurl=http://localhost:4242
 ----
 
-Its time to start playing with live servers!
+When you have verified production mode is working, Its time to start playing with live servers!
 
 == Task: Sign up to Enonic and deploy your app
 
@@ -128,9 +130,8 @@ You've reached the end of this tutorial - we hope you enjoyed it!
 
 The following topics were not covered, but will be added in later revisions of this tutorial:
 
-* Securing your drafts API
-* Securing your preview server
-* Importing and exporting content in XP
+* Securing your drafts API and preview server
+* Importing and exporting content between instances
 * TODO
 
 There are obviously many aspects of Enonic and Next.js that will never be covered by this tutorial, however - you should check out the following links to learn even more:

@@ -7,8 +7,7 @@ In this chapter we will create a front-end application that renders pages based 
 
 == Next.js at a glance
 
-link:https://nextjs.org/[**Next.js**] runs on top of link:https://nodejs.org/en/[Node.js], and provides a shrink-wrapped approach to building sites using the link:https://reactjs.org/[React framework]). Next.js supports both client-side rendering and link:https://nextjs.org/docs/basic-features/pages#static-generation-recommended[Server side rendering], as well as pre-generation of static HTML files.
-
+link:https://nextjs.org/[**Next.js**] runs on top of link:https://nodejs.org/en/[Node.js], and provides a shrink-wrapped approach to building sites using the link:https://reactjs.org/[React framework]). Next.js supports both client-side rendering and link:https://nextjs.org/docs/basic-features/´pages#static-generation-recommended[Server side rendering], as well as pre-generation of static HTML files.
 
 == Task: Create the Next.js project
 
@@ -57,8 +56,8 @@ Before booting the application, you need to provide some configuration variables
 
 . Update the settings in your `.env.development` file as follows:
 
-CONTENT_API_URL=http://localhost:8080/site/hmdb/draft/hmdb/api:: Absolute url to the Content API
-SITEPATH=/hmdb:: Path to the site, as seen in Content Studio 
+CONTENT_API_URL=http://localhost:8080/site/hmdb/draft/hmdb/_graphql:: Absolute url to the Content API
+SITEPATH=/hmdb:: Internal path to the site, as seen in Content Studio 
 
 TIP: These configuration values can be overridden when deplying your app to a live server later.
 
@@ -76,28 +75,26 @@ Start Next.js in  **dev mode** by running the following commands from within you
 
 If Next boots without errors, point your browser to http://localhost:3000 to see the glorious result.
 
-image:render-default-hmdb.png[title="Application root page, showing the title Headless Movie Database",width=400px]
+image:content-debug.png[title="Application root page, showing debugging details",width=767px]
 
 [TIP]
 ====
-Running Next in DEV mode normally works fine, should you however experience "strange issues" - try deleting the `.next/` folder and reboot
+Running Next in `dev` mode normally works fine. Should you however experience "strange issues" - try deleting the `.next/` folder and reboot
 
-For more details on starting Next, check out the link:https://nextjs.org/docs/api-reference/cli[Next.js CLI docs].
+For more details on booting Next, check out the link:https://nextjs.org/docs/api-reference/cli[Next.js CLI docs].
 ====
 
+== Next URL patterns
 
-== Next URL handling
+The URL structure of your Next site will mirror the structure of the content in the CMS. http://localhost:3000/ is mounted to the site root. In our case, the site is located at `/hmdb`.
 
-The URL structure of your Next site will mirror the structure of the content in the CMS. Meaning, http://localhost:3000/ will be mounted to the root element aka "the site" in Content Studio. In our case, the site is located at `/hmdb`.
+Using the Movie Se7en as an example: 
 
-Child items like http://localhost:3000/movies/se7en will lookup, fetch and return content found on the path '/hmdb/movies/se7en' in the CMS. 
+.Result when visiting http://localhost:3000/movies/se7en 
+image:se7en-debug.png[title="Default render: movie content item The Godfather",width=766px]
 
-TODO (image showing both next and CS at the same time)
-.Default render: movie content item se7en
-image:render-default-godfather.png[title="Default render: movie content item The Godfather",width=512px]
-
-.Se7en as seen in Content Studio edit mode
-image:path-content-item.png[title="The Godfather content item in Content Studio edit mode",width=400px]
+.Se7en as seen in Content Studio - internal path is `/hmdb/movies/se7en``
+image:se7en-edit.png[title="Editing item in Content Studio - the path /hmdb/movies/se7en is highlighted",width=768px]
 
 ### Task: Visit some more pages
 
@@ -108,7 +105,6 @@ Give the default rendering a spin by trying out some other URLs, for example: +
 * http://localhost:3000/persons/brad-pitt
 
 ...etc.
-
 
 **That's it for the basic Next.js setup.**
 
