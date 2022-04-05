@@ -3,6 +3,7 @@ import React from "react";
 import {IS_DEV_MODE, PORTAL_COMPONENT_ATTRIBUTE, RENDER_MODE, XP_COMPONENT_TYPE} from "../utils";
 import {MetaData, PageComponent} from "../guillotine/getMetaData";
 import {ComponentRegistry} from '../ComponentRegistry';
+import Empty from './Empty';
 
 
 export type BaseComponentProps = {
@@ -13,16 +14,87 @@ export type BaseComponentProps = {
 }
 
 const BaseComponent = ({component, meta, common}: BaseComponentProps) => {
-    const {type, data, error} = component;
+    const {type, error} = component;
+    const descriptor = component[type]?.descriptor;
     const divAttrs: { [key: string]: string } = {
         [PORTAL_COMPONENT_ATTRIBUTE]: type
     };
 
-    const ComponentView = ComponentRegistry.getComponent(type)?.view || (() => {
-        console.warn(`BaseComponent: can not render component '${type}': no next view or catch-all defined`);
-        return <></>;
-    });
+    let ComponentView: JSX.Element | undefined;
+    let cmpAttrs: { [key: string]: any };
 
+    if (error) {
+        // renders error component when rendering whole page
+        console.warn(`BaseComponent: ${type} '${descriptor}' error: ${error}`);
+        ComponentView = shouldShowErrorView(meta) ? <ErrorComponent type={type} reason={error} descriptor={descriptor}/> : <Empty/>;
+
+    } else {
+
+        const ViewFn = ComponentRegistry.getComponent(type)?.view;
+        if (!ViewFn) {
+            // show missing component kind, i.e. 'part', 'layout', 'text'
+            console.warn(`BaseComponent: can not render component '${type}': no next view or catch-all defined`);
+            ComponentView = shouldShowMissingView(meta) ? <MissingComponent type={type} descriptor={descriptor}/> : <Empty/>;
+
+        } else {
+            cmpAttrs = createComponentAttrs(component, meta, common);
+            ComponentView = <ViewFn {...cmpAttrs}/>;
+        }
+    }
+
+    if (meta.renderMode === RENDER_MODE.LIVE) {
+        // do not make component wrappers in live mode
+        return ComponentView
+    } else {
+        return (
+            <div {...divAttrs}>
+                {ComponentView}
+            </div>
+        )
+    }
+}
+export default BaseComponent;
+
+/*
+ *  Used for displaying components with missing implementations on the page, while rendering whole page
+ */
+export const MissingComponent = ({descriptor, type}: { descriptor?: string, type: string }) => {
+    return (
+        <div style={{
+            border: "2px dashed lightgrey",
+            padding: '16px',
+        }}>
+            <h3 style={{margin: 0}}>Missing component</h3>
+            <p style={{marginBottom: 0, color: 'grey'}}>{`Missing ${type} with descriptor: ${descriptor}`}</p>
+        </div>
+    )
+}
+
+export function shouldShowMissingView(meta: MetaData): boolean {
+    return IS_DEV_MODE || meta.renderMode !== RENDER_MODE.NEXT;
+}
+
+/*
+ *  Used for displaying components with errors on the page, while rendering whole page
+ */
+export const ErrorComponent = ({type, descriptor, reason}: { type?: string, descriptor?: string, reason: string }) => {
+    return (
+        <div style={{
+            border: "2px solid red",
+            padding: '16px',
+        }}>
+            <h3 style={{margin: 0, textTransform: 'capitalize'}}>{reason ? reason : 'Unknown error'}</h3>
+            {descriptor && <p style={{color: 'grey'}}>{`${type}: ${descriptor}`}</p>}
+        </div>
+    )
+}
+
+export function shouldShowErrorView(meta: MetaData): boolean {
+    return meta.renderMode === RENDER_MODE.EDIT;
+}
+
+function createComponentAttrs(component: PageComponent, meta: MetaData, common?: any): { [key: string]: any } {
+    const {type, data, error} = component;
     const cmpAttrs: { [key: string]: any } = {
         component: component[type],
         meta,
@@ -41,32 +113,5 @@ const BaseComponent = ({component, meta, common}: BaseComponentProps) => {
         // add regions to layout because they are not present in component[component.type] above
         cmpAttrs.regions = component.regions;
     }
-
-    if (meta.renderMode === RENDER_MODE.LIVE) {
-        // do not make component wrappers in live mode
-        return <ComponentView {...cmpAttrs}/>
-    } else {
-        return (
-            <div {...divAttrs}>
-                <ComponentView {...cmpAttrs}/>
-            </div>
-        )
-    }
-}
-export default BaseComponent;
-
-export const MissingComponent = ({descriptor, type}: { descriptor?: string, type: string }) => {
-    return (
-        <div style={{
-            border: "2px dashed lightgrey",
-            padding: '16px',
-        }}>
-            <h3 style={{margin: 0}}>Missing component</h3>
-            <p style={{marginBottom: 0, color: 'grey'}}>{`Missing ${type} with descriptor: ${descriptor}`}</p>
-        </div>
-    )
-}
-
-export function shouldShowMissingView(meta: MetaData): boolean {
-    return IS_DEV_MODE || meta.renderMode !== RENDER_MODE.NEXT;
+    return cmpAttrs;
 }

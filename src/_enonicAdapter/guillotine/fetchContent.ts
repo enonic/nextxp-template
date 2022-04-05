@@ -598,7 +598,8 @@ function createMetaData(contentType: string, contentPath: string, requestType: X
     return meta;
 }
 
-function errorResponse(code: string = '500', message: string = 'Unknown error'): FetchContentResult {
+function errorResponse(code: string = '500', message: string = 'Unknown error', requestType: XP_REQUEST_TYPE, renderMode: RENDER_MODE,
+                       contentPath?: string): FetchContentResult {
     return {
         error: {
             code,
@@ -607,7 +608,14 @@ function errorResponse(code: string = '500', message: string = 'Unknown error'):
         page: null,
         common: null,
         data: null,
-        meta: null,
+        meta: {
+            type: '',
+            requestType: requestType,
+            renderMode: renderMode,
+            path: contentPath || '',
+            canRender: false,
+            catchAll: false,
+        },
     };
 }
 
@@ -639,12 +647,14 @@ export const buildContentFetcher = <T extends adapterConstants>(config: FetcherC
 
         setXpBaseUrl(context);
 
+        const requestType = getXPRequestType(context);
+        const renderMode = getRenderMode(context);
+        let contentPath;
+
         try {
             const siteRelativeContentPath = getCleanContentPathArrayOrThrow400(contentPathOrArray);
-            const contentPath = getXpPath(siteRelativeContentPath);
+            contentPath = getXpPath(siteRelativeContentPath);
 
-            const requestType = getXPRequestType(context);
-            const renderMode = getRenderMode(context);
             let requestedComponentPath: string | undefined;
             if (requestType === XP_REQUEST_TYPE.COMPONENT) {
                 requestedComponentPath = getSingleComponentPath(context);
@@ -655,22 +665,25 @@ export const buildContentFetcher = <T extends adapterConstants>(config: FetcherC
             /////////////////////////////////////////////////////////////////////////
 
             if (metaResult.error) {
-                return errorResponse(metaResult.error.code, metaResult.error.message);
+                return errorResponse(metaResult.error.code, metaResult.error.message, requestType, renderMode, contentPath);
             }
 
             const {type, components} = metaResult.meta || {};
 
             if (!metaResult.meta) {
-                return errorResponse('404', "No meta data found for content, most likely content does not exist")
+                return errorResponse('404', "No meta data found for content, most likely content does not exist", requestType, renderMode,
+                    contentPath)
 
             } else if (!type) {
-                return errorResponse('500', "Server responded with incomplete meta data: missing content 'type' attribute.")
+                return errorResponse('500', "Server responded with incomplete meta data: missing content 'type' attribute.", requestType,
+                    renderMode, contentPath)
 
             } else if (renderMode === RENDER_MODE.NEXT && !IS_DEV_MODE &&
                        (type === FRAGMENT_CONTENTTYPE_NAME ||
                         type === PAGE_TEMPLATE_CONTENTTYPE_NAME ||
                         type === PAGE_TEMPLATE_FOLDER)) {
-                return errorResponse('404', `Content type [${type}] is not accessible in ${renderMode} mode`);
+                return errorResponse('404', `Content type [${type}] is not accessible in ${renderMode} mode`, requestType, renderMode,
+                    contentPath);
             }
 
 
@@ -717,7 +730,8 @@ export const buildContentFetcher = <T extends adapterConstants>(config: FetcherC
             const {query, variables} = combineMultipleQueries(allDescriptors);
 
             if (!query.trim()) {
-                return errorResponse('400', `Missing or empty query override for content type ${type}`)
+                return errorResponse('400', `Missing or empty query override for content type ${type}`, requestType, renderMode,
+                    contentPath)
             }
 
             /////////////////    SECOND GUILLOTINE CALL FOR DATA   //////////////////////
@@ -783,7 +797,7 @@ export const buildContentFetcher = <T extends adapterConstants>(config: FetcherC
                     message: e.message
                 }
             }
-            return errorResponse(error.code, error.message);
+            return errorResponse(error.code, error.message, requestType, renderMode, contentPath);
         }
     };
 };

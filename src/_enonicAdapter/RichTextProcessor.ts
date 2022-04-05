@@ -68,8 +68,8 @@ export class RichTextProcessor {
 
     private static stripApiUrl(url: string): string {
         const common = commonChars(url, this.apiUrl);
-        const remaining = common.length > 0 ? url.substr(common.length) : url;
-        return (remaining.length > 0 && remaining.charAt(0) === '/') ? remaining.substr(1) : remaining;
+        const remaining = common.length > 0 ? url.substring(common.length) : url;
+        return (remaining.length > 0 && remaining.charAt(0) === '/') ? remaining.substring(1) : remaining;
     }
 
 

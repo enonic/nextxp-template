@@ -1,8 +1,7 @@
 import React from "react"
 import {MetaData, PartData} from "../guillotine/getMetaData";
 import {ComponentRegistry} from '../ComponentRegistry';
-import {RENDER_MODE, XP_COMPONENT_TYPE} from '../utils';
-import Empty from './Empty';
+import {XP_COMPONENT_TYPE} from '../utils';
 import {MissingComponent, shouldShowMissingView} from './BaseComponent';
 
 
@@ -22,14 +21,7 @@ interface BasePartProps {
 }
 
 const BasePart = (props: BasePartProps) => {
-    const {component, data, common, error, meta} = props;
-
-    if (error) {
-        console.warn(`BasePart: '${component?.descriptor}' error: ${error}`);
-        return meta.renderMode === RENDER_MODE.EDIT ?
-               <ErrorPart reason={error} descriptor={component?.descriptor}/> :
-               <Empty/>;
-    }
+    const {component, data, common, meta} = props;
 
     let partSelection;
     if (component) {
@@ -52,16 +44,4 @@ const BasePart = (props: BasePartProps) => {
 }
 
 export default BasePart;
-
-export const ErrorPart = ({descriptor, reason}: { descriptor?: string, reason: string }) => {
-    return (
-        <div style={{
-            border: "2px solid red",
-            padding: '16px',
-        }}>
-            <h3 style={{margin: 0}}>Part error: {descriptor}</h3>
-            <pre style={{marginBottom: 0}}>{reason ? reason : 'Unknown error'}</pre>
-        </div>
-    )
-}
 
