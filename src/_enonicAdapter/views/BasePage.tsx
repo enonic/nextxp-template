@@ -2,7 +2,7 @@ import React from "react"
 import {ComponentRegistry} from '../ComponentRegistry';
 import {MetaData, PageData} from "../guillotine/getMetaData";
 import {XP_COMPONENT_TYPE} from '../utils';
-import {MissingComponent, shouldShowMissingView} from './BaseComponent';
+import {ErrorComponent, MissingComponent, shouldShowErrorView, shouldShowMissingView} from './BaseComponent';
 
 export interface PageProps {
     page: PageData;
@@ -24,7 +24,11 @@ const BasePage = (props: BasePageProps) => {
     const desc = component?.descriptor;
     if (error) {
         console.warn(`BasePage: '${desc}' error: ${error}`);
-        return null;    //TODO: create page error view
+        if (shouldShowErrorView(meta)) {
+            return <ErrorComponent reason={error} descriptor={desc} type={XP_COMPONENT_TYPE.PAGE}/>
+        } else {
+            return null;
+        }
     }
     let pageDef;
     if (desc) {
