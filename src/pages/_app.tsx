@@ -23,7 +23,7 @@ function MyApp({Component, pageProps}: AppProps) {
             return null;
         }
     }
-    /*    return <Component {...pageProps} />; */
+    /*return <Component {...pageProps} />;*/
     return (
         <>
             <Header

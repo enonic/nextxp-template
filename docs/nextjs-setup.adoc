@@ -52,12 +52,11 @@ src/
 
 == Task: Configure application
 
-Before booting the application, you need to provide some configuration variables.
+Before booting the application, you'll need to add some essential configuration.
 
-. Update the settings in your `.env.development` file as follows:
+. Verify or update your `.env.development` file to reference the drafts API:
 
-CONTENT_API_URL=http://localhost:8080/site/hmdb/draft/hmdb/_graphql:: Absolute url to the Content API
-SITEPATH=/hmdb:: Internal path to the site, as seen in Content Studio 
+CONTENT_API_URL=http://localhost:8080/site/hmdb/draft/hmdb/_graphql:: Must specify the absolute url to the Content API
 
 TIP: These configuration values can be overridden when deplying your app to a live server later.
 
@@ -86,14 +85,14 @@ For more details on booting Next, check out the link:https://nextjs.org/docs/api
 
 == Next URL patterns
 
-The URL structure of your Next site will mirror the structure of the content in the CMS. http://localhost:3000/ is mounted to the site root. In our case, the site is located at `/hmdb`.
+The URL structure of your Next site will mirror the structure of the content in the CMS. http://localhost:3000/ is mounted to the site root, which in our case has the internal path `/hmdb`.
 
 Using the Movie Se7en as an example: 
 
 .Result when visiting http://localhost:3000/movies/se7en 
 image:se7en-debug.png[title="Default render: movie content item The Godfather",width=766px]
 
-.Se7en as seen in Content Studio - internal path is `/hmdb/movies/se7en``
+.Se7en as seen in Content Studio - internal path is `/hmdb/movies/se7en`
 image:se7en-edit.png[title="Editing item in Content Studio - the path /hmdb/movies/se7en is highlighted",width=768px]
 
 ### Task: Visit some more pages

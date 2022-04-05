@@ -95,7 +95,7 @@ TIP: The purpose of routes is to expose internal endpoints like `:8080/site/<pro
 Use the following settings:
 TODO:
 +
-. After the route has started, click the URL in route details to verify that it is working - you should be getting a "403 error" page. (NOTE: To access the API, append `/api` to the end of this URL).
+. After the route has started, click the URL in route details to verify that it is working - you should be getting a "403 error" page. (NOTE: To access the API, append `/_graphql` to the end of this URL).
 
 == Task: Sign up and deploy the preview app to Vercel
 

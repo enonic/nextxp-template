@@ -4,9 +4,6 @@
 
 In this chapter, we will build a custom app based on the HMDB project, and play around with the Headless API
 
-image:enonic_xp.png[title="Enonic XP logo", width=200px]
-
-
 TIP: For an in-depth introduction to Enonic, visit the official link:https://developer.enonic.com/guides/developer-101/xp7[Enonic Developer 101] guide.
 
 [[xp-at-a-glance]]
@@ -15,10 +12,10 @@ TIP: For an in-depth introduction to Enonic, visit the official link:https://dev
 Our platform is actually called Enonic XP (XP, or Enonic for short).
 
 === Enonic apps
-Enonic XP allows you to install and run one or more link:https://developer.enonic.com/guides/developer-101/xp7/apps[**applications**].
+Enonic XP allows you to install and run one or more link:https://developer.enonic.com/guides/developer-101/xp7/apps[**applications**] in a single instance.
 
-You will find ready to run applications on link:https://market.enonic.com/[Enonic Market], or you may build your own, like we will be doing in this tutorial.
-Each app may provide specific functionality. It may for instance be the full system behind a large website, or provide only specific services that combine with the functionality of other apps, such as an **API**. An app is given an <<#new-project, **app name**>> when it's built.
+You can discover ready to run applications on link:https://market.enonic.com/[Enonic Market], or you may build your own, like we will be doing in this tutorial.
+Each app may provide specific functionality. It may for instance be everything you need for a large website, or provide only specific services, such as an **API**. An app is given an <<#new-project, **app name**>> when it's built.
 
 Apps may provide a range of different functionality. For this tutorial we will focus on headless CMS capabilities.
 
@@ -40,25 +37,21 @@ Content can exist on two different link:https://developer.enonic.com/docs/xp/sta
 [[hmdb]]
 == The Headless Movie Database
 
-With Enonic, you may obviously create your own content model, but to save time, we'll be using a demo-app known as the link:https://developer.enonic.com/templates/headless-cms/[Headless Movie Database] (HMDB) as our starting point.
+With Enonic, you may obviously create your own content model, but to save time, we'll be using a demo-app known as the link:https://market.enonic.com/vendors/enonic/headless-movie-db[Headless Movie Database] (HMDB) as our starting point.
 
-HMDB ships with a pre-defined content-model and some useful sample content. It also exposes the headless link:https://graphql.org/[graphQL] API. This API gives us access to the content.
+HMDB ships with a pre-defined content-model and some useful sample content. It also exposes the content through a link:https://graphql.org/[graphQL] API. This API gives us access to the content.
 
 Let's get going!
 
-
-[[xp-setup]]
 === Task: Create application from template
 
-. Follow these instructions to link:https://developer.enonic.com/start[**install the Enonic CLI**].
+. link:https://developer.enonic.com/start[**Install the Enonic CLI**] (follow link for instructions).
 
-[[new-project]]
-[start=2]
-. **Create a new project** using the headless starter as template:
+. **Create a new project** using the "Headless movie database" as your template:
 +
 Run the following command from your terminal
 +
-[source,bash,options="nowrap"]
+[source,bash]
 ----
 enonic project create -r app-hmdb
 ----
@@ -68,7 +61,7 @@ This will be referred to as **app name** later in this tutorial.
 +
 . **Deploy the application** locally:
 +
-[source,bash,options="nowrap"]
+[source,bash]
 ----
 enonic project deploy
 ----
@@ -97,50 +90,42 @@ TIP: New to GraphQL? Check out the link:https://graphql.org/[GraphQL documentati
 
 ### Task: Run a simple query
 
-[[setup-guillotine-api]]
 . **Access the guillotine API:**
 +
-Visit this link http://localhost:8080/site/hmdb/draft/hmdb/api to access the Headless API, and the draft content items.
+Visit this link http://localhost:8080/site/hmdb/draft/hmdb/_graphql to access the Headless API, and the draft content items.
 +
-image:graphql-playground.png[title="The built-in API: GraphQL Playground", width=600px]
+image:graphql-playground.png[title="The built-in API: GraphQL Playground", width=768px]
 +
 The interface served when we access the endpoint lets us browse the API directly. Use the tabs on the far right to discover. Use the left hand field to type/paste in queries, press the "play" button in the middle to **run the query**, and the result will be presented in the right hand field.
 +
 . **Query movies**:
 +
-One of the objectives in this tutorial is listing and presenting movie content items. Using the  <<#setup-guillotine-api, GraphQL playground>> you started up above, run a simple query that retrieves the ID and displayName of some movies:
+One of the objectives in this tutorial is listing and presenting movie details. Run this simple query that retrieves the ID and displayName of some movies:
 +
-.Query string to fetch movies from Headless API:
-[source,JSON]
+.Query to fetch movies from the Headless API:
+[source,GraphQL]
 ----
 {
     guillotine {
-        query(contentTypes: "com.example.myproject:movie", query: "valid='true'", sort: "displayName") {
+        query(query: "valid='true' and type='com.example.myproject:movie'", sort: "displayName") {
             id: _id
             displayName
         }
     }
 }
 ----
-This graphQL query has a field called `query`, which actually exposes the same functionality as Enonic’s JavaScript Content API link:https://developer.enonic.com/docs/xp/stable/api/lib-content#query[query function]. We pass the following parameters to the function:
-+
-* `contentTypes: com.example.myproject:movie`: Fetch only content of the specific content type `com.example.myproject:movie`. A fully qualified content type name contains the name of its app (`com.example.myproject` - the one you used when creating the XP project).
-* `query: "valid='true'"`: Filter out items that don’t have all of the mandatory fields filled out. This is only relevant for draft items, as only valid items can be published.
-* `sort: "displayName"`: Sort the list by name
 +
 . **View the Result**
 +
 After executing the query, you should get a result in the right panel.
-image:movies-query.png[title="Running a query for movies in the GraphQL playground", width=800px]
+image:graphql-query.png[title="Running a query for movies in the GraphQL playground", width=1440px]
 
-[[variables]]
-=== Task: using parameters / variables
+== Task: Query variables
 
-As we'll see <<7-api-and-reference#two-queries, later>>, query strings like this will be supplied from the Next.js side when calling the guillotine API. These are completely <<7-api-and-reference#selector-query, customizable in  the adapter>>, but by default they have a certain shape that's slightly different from the previous example: they are **parameterized**. In addition to the `query` parameter (the query string), the guillotine can also API take an optional `variables` parameter.
+In addition to the query itself, GraphQL also supports optional `variables`.
+Variables enable you to re-use the same query, but for instance fetch different content each time.
 
-This way, we can define a static query string that will locate and fetch  **one target content item**, and then **re-use that query for multiple targets**.
-
-. **Add query string** to the GraphQL playground:
+. **Add query** to the GraphQL playground:
 +
 [source,JavaScript]
 ----
@@ -154,30 +139,27 @@ query($path:ID!){               <!--1-->
   }
 }
 ----
-<1> Parameter named `path` is declared (with a `$` marking it as a variable in the query). The declaration includes its type (`ID`), and a `!` marking it as a _required_ parameter).
-<2> The `path` variable is used as key in a link:https://developer.enonic.com/docs/guillotine/stable/api#fields_2[`get` method]. This is of course the full path to any content item - equal to the item's general `_path` field, and corresponding to its URL.
+<1> `path` is declared (with a `$` marking it as a variable in the query). The declaration includes its type (`ID`), and a `!` marking it as a _required_ parameter).
+<2> The `path` variable here used as the value of the `key` parameter, passed to the `get` field.
 +
-. **Add Query Variables** using the tab at the bottom to add a `variables` JSON object. It should have a `path` field (corresponding to `$path` in the query string) where the value points to any XP content item from HMDB. For example:
+. **Add query Variables** using the tab at the bottom to add a `variables` JSON object. Notice how the `path` field corresponds to the `$path` in the query string.:
 +
 [source,JSON]
 ----
 {
-    "path": "/hmdb/movies/the-godfather"
+    "path": "${site}/movies/se7en"
 }
 ----
 +
-. Finally, **run the query**. Together, the query string and the variables object will use `"/hmdb/movies/the-godfather"` as the `key` in the `get` method, and return the `type`, `_id`, and `displayName` of the content item `the-godfather` under the folder `movies` in the site `hmdb`.
+NOTE: ${site} is a valid path element in Guillotine paths, and will internally resolve the path of the site and expand it - in this case the full path will be expanded to `/hmdb/movies/se7en`.
 +
-In the next chapters, we'll look at using the standard Next.js boilerplate with XP and Guillotine. Here, parameterized queries like this happen automatically behind the scenes, with a set default behaviour but intended for you to add your own. By writing your custom queries and parameterizing them with `$path` (the 3-line "header" at the top of this query string), you get the content-item-by-path lookup for free.
-+
-TIP: It's also possible to add more/other parameters than just `$path` to the query string. The following chapters will show you how to add a <<7-api-and-reference#selector-variables, custom function>> to resolve the `variables` object (that's automatically sent).
+. **Run the query** with the variables, and see the result.
 
-[[introspection]]
-=== Task: type introspection
+== Task: type introspection
 
 The queries above only specify fields like `_id` and `displayName` for each content found. These are general fields in the CMS, available across all content types.
 
-Content types may also define their own link:https://developer.enonic.com/docs/xp/stable/cms/content-types[specific data fields]. These are stored under the `data` field. In the headless API, deeper data and functionality belonging to a content type is accessed through **introspection**.
+Content types may also define their own link:https://developer.enonic.com/docs/xp/stable/cms/content-types[custom fields]. These are stored under the `data` field. In the headless API, deeper data and functionality belonging to a content type is accessed through **introspection**.
 
 For example, you may introspect the fields that are exclusive to the `com.example.myproject:movie` content type like this:
 
@@ -187,7 +169,6 @@ For example, you may introspect the fields that are exclusive to the `com.exampl
 ... on com_example_myproject_Movie
 ----
 NOTE: The fully-qualified content type name is used, dots are replaced with underscores, and the name is capitalized `Movie`.
-
 
 . **Fetch a complex data set**
 +
@@ -244,11 +225,11 @@ Since the query is still parameterized with `$path`, we can use the same `variab
 [source,JSON]
 ----
 {
-    "path": "/hmdb/movies/the-godfather"
+    "path": "${site}/movies/pulp-fiction"
 }
 ----
 +
-Run the query in the playground. It should produce a fully resolved set of data we can later use as `props` in a `Movie` react component.
+Run the query in the playground. It should produce a fully resolved set of data - which will come in handy later in this tutorial.
 +
 All in all, this allows for fetching deep and rich content data in a single API request.
 
