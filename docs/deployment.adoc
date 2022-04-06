@@ -9,52 +9,6 @@ Running a full production setup involves running a single instance of Enonic XP,
 
 NOTE: Enonic and Next.js are both open source software projects and can be deployed more or less anywhere. Have a look at the https://developer.enonic.com/docs/kubernetes-operator-for-xp[Kubernetes operator for Enonic XP] if you are keen on hosting it yourself.
 
-== Task: Run Next in production mode
-
-So far, you have been running Next in dev mode. Before proceeding to live servers - let's try running the app in production mode locally. When running in production mode Next optimizes the build and performance of the server.
-
-TIP: The Next config file `.env` holds common values, while `.env.development` and `.env.production` are runmode-specific.
-
-. Update your production configuration like this:
-+
-..env.production
-[source,properties]
-----
-...
-
-SITEPATH=/hmdb                                                      
-CONTENT_API_URL=http://localhost:8080/site/hmdb/master/hmdb/_graphql
-----
-+
-NOTE: When compared to the `.env.development` configuration, the main difference is referencing the `master` branch, vs the `draft` branch. The master branch holds your published content.
-+
-. Start Next in production mode:
-+
-    npm run prod
-+
-At this point, your site has not yet been published - and Next will not be able to access the API and it's content.
-. From Content Studio, **select your site and publish it** using the `Publish Tree` option from the top right action menu.
-+
-NOTE: **"Mark as ready"** In order to publish items, they all need to be marked as "Ready", you can quickly mark all relevant items as ready directly within the publishing wizard if needed.
-+
-With some luck, Next should now be rendering your site once again. This time however - Next is running in optimized mode, AND renders the published items. Sweet!
-+
-As you may have noticed, preview has also stopped working, this is because Next is now running on a different port `:4242`.
-+
-. **Update your app configuration** to reference the new location of the preview server
-+
-When working in your local Enonic SDK, the sandboxes are stored in your home directory under the .enonic/ folder. 
-+
-Create a configuration file in your sandbox, and add the following value to it:
-+
-..enonic/sandboxes/<mysandbox>/home/config/<app-name>.cfg
-[source,properties]
-----
-nextjsurl=http://localhost:4242
-----
-
-When you have verified production mode is working, Its time to start playing with live servers!
-
 == Task: Sign up to Enonic and deploy your app
 
 Follow the steps below to deploy your app on Enonic Cloud:
@@ -124,7 +78,7 @@ Finally, it's time to go live. Follow these steps to get there:
 . **Create a new project and deploy the production app to Vercel**, the process is essentially the same as for the preview app - but this time we will configure it to use the URL to the new `HMDB` route.
 . Verify that your site is now live
 
-== Summary, and what next?
+== Summary, and whats next?
 
 You've reached the end of this tutorial - we hope you enjoyed it!
 

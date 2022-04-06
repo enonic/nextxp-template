@@ -37,7 +37,11 @@
             "document": "templates"
         },
         {
-            "title": "10 - Deployment",
+            "title": "10 - Production mode",
+            "document": "prod-mode"
+        },
+        {
+            "title": "11 - Deployment",
             "document": "deployment"
         }
     ]

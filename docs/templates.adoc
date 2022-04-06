@@ -80,4 +80,4 @@ image:movie-template.png[title="Content item of type template, configure to supp
 +
 . Try visiting other movie items to **verify they now automatically render**.
 
-With templates sorted out, the development is more or less complete - <<deployment#, and the apps are ready for prime time>>.
+With templates sorted out, the development is more or less complete - and you are ready to test <<prod-mode#, the production mode>>.
