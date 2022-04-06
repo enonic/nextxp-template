@@ -5,15 +5,19 @@
             "document": "enonic-setup"
         },
         {
-            "title": "2 - Next.js setup",
+            "title": "2 - Headless API",
+            "document": "api-primer"
+        },
+        {
+            "title": "3 - Next.js setup",
             "document": "nextjs-setup"
         },
         {
-            "title": "3 - Rendering basics",
+            "title": "4 - Rendering basics",
             "document": "rendering-basics"
         },
         {
-            "title": "4 - Preview",
+            "title": "5 - Preview",
             "document": "preview"
         },
         {
