@@ -104,4 +104,4 @@ image:text-component.png[title="Next.js-rendered text component with an image",w
 +
 . You may also click the `Preview` button in Content Studio for a full screen version, rendered via the proxy.
 
-That completes the introduction to page rendering, coming up we'll add <<part#, dynamic page components>> to play with.
+That completes the introduction to page rendering, coming up we'll add <<parts#, dynamic page components>> to play with.

@@ -155,4 +155,4 @@ Run the query in the playground. It should produce a fully resolved set of data 
 +
 All in all, this allows for fetching deep and rich content data in a single API request.
 
-Coming up - get up and running with <<next-setup#, your Next.js developer environment>>.
+Coming up - get up and running with <<nextjs-setup#, your Next.js developer environment>>.
