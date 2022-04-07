@@ -1,6 +1,6 @@
 # NextJS ♡ Enonic : Demo application
 
-NextJS front-end demo powered by Enonic XP.
+NextJS front-end demo (and tutorial) powered by Enonic XP.
 
 This is repo is based on a [Next.js](https://nextjs.org/) project based on [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app). It also includes an integration with the CMS called the Enonic Adapter.
 
