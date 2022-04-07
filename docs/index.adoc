@@ -34,14 +34,46 @@ You will complete the following steps:
 * Rendering content based on types
 * Using components to build landing pages
 * Setting up page templates
-* Deploying to production 
-
+* Deploying to live servers 
 
 [[tldr]]
 == TLDR;
 
-The impatient may skip directly to the end of this tutorial by following the instructions below. But, ff you want to learn what is really happening, head on to the <<enonic-setup#, first chapter of this tutorial>>
+The impatient may try out end-result of the tutorial, and get a live demo by following the instructions: If you want to learn what is really happening, head on to the <<enonic-setup#, first chapter>> of the tutorial.
 
+=== Setup Enonic
 
-TODO: TLDR
+. Sign up to Enonic Cloud: https://enonic.com/sign-up/cloud-trial
+. Create a new solution based on the Next.js template
+. After the solution has started, **open the "Preview API" route** in your browser
++
+You should now be able to browse the API. Take a note of this URL, as you will need it later
 
+=== Setup preview
+. Sign up to Vercel: https://vercel.com/ 
+. Create "Preview" project based on https://github.com/enonic/nextjs-enonic-demo
+. **Configure the application** to use the Preview API URL:
++
+TODO image?
++
+. Verify that the Next app is now rendering pages.
++
+. **Connect Enonic with the preview server** by configuring the "Next.js Demo" application in the Enonic solution interface:
++
+TODO:
++
+. **Log into Enonic XP admin** and launch Content Studio. You should now be able to see the preview in the right hand panel.
+
+=== Go live
+
+The final step is to launch a Vercel project that renders the published (aka live) content.
+
+. **Create a new "Live" project in Vercel**, using the same Github repo
+. This time, **Configure the project** to access the "Live API" instead, same approach as for the preview project.
++
+The "Live" server should display a 404 page. This is because the content has not been published yet.
++
+. **Publish the content** from Content Studio by selecting the site, and then `Publish Tree` from the top right menu.
+. Your site should now be live and kicking
++
+You can now start editing and publishing new content in Content Studio.
