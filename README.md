@@ -1,19 +1,22 @@
-# Enonic ♡ NextJS: Demo app
+# NextJS ♡ Enonic : Demo application
 
-Enonic XP - CMS, powering frontend rendring based on NextJS
+NextJS front-end demo powered by Enonic XP.
 
-This is repo contains a [Next.js](https://nextjs.org/) project based on [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app). It also includes an integration with the CMS called Enonic Adapter.
+This is repo is based on a [Next.js](https://nextjs.org/) project based on [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app). It also includes an integration with the CMS called the Enonic Adapter.
+
+## Tutorial
+This app is the TLDR; version of the Next.XP tutorial. Visit the tutorial on the Enonic Developer portal: https://developer.enonic.com/docs/next.xp
 
 ## Usage
 
 1. Launch Enonic instance
 
 To use this project you will an running instance of Enonic, containing Next.js demo content.
-This is available by signing up to Enonic, and creating a solution using the Next.js demo template.
+This is available by signing up to Enonic, and creating a solution using the "Next.js demo" template.
 
 2. Check out and configure this application
 
-Checkout this project to your local machine and Update the `.env.development` file to reference the location of the Enonic API
+Checkout this project to your local machine and Update the `.env.development` file to reference the location of the Enonic API (you can use use either draft or master branch)
 
 3. Start app
 
@@ -23,7 +26,7 @@ npm run dev
 ```
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-## Next basics
+## Next hints:
 
 [API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.tsx`.
 
