@@ -4,6 +4,7 @@ import {IS_DEV_MODE, PORTAL_COMPONENT_ATTRIBUTE, RENDER_MODE, XP_COMPONENT_TYPE}
 import {MetaData, PageComponent} from "../guillotine/getMetaData";
 import {ComponentRegistry} from '../ComponentRegistry';
 import Empty from './Empty';
+import * as ReactDOMServer from 'react-dom/server';
 
 
 export type BaseComponentProps = {
@@ -20,7 +21,7 @@ const BaseComponent = ({component, meta, common}: BaseComponentProps) => {
         [PORTAL_COMPONENT_ATTRIBUTE]: type
     };
 
-    let ComponentView: JSX.Element | undefined;
+    let ComponentView: JSX.Element | null;
     let cmpAttrs: { [key: string]: any };
 
     if (error) {
@@ -39,6 +40,14 @@ const BaseComponent = ({component, meta, common}: BaseComponentProps) => {
         } else {
             cmpAttrs = createComponentAttrs(component, meta, common);
             ComponentView = <ViewFn {...cmpAttrs}/>;
+        }
+    }
+
+    if (shouldShowPlaceholderView(meta)) {
+        const outputView = ReactDOMServer.renderToString(ComponentView);
+        if (!outputView || outputView.trim().length === 0) {
+            // render some placeholder in case of empty output
+            ComponentView = <PlaceholderComponent type={type} descriptor={descriptor}/>
         }
     }
 
@@ -115,3 +124,20 @@ function createComponentAttrs(component: PageComponent, meta: MetaData, common?:
     }
     return cmpAttrs;
 }
+
+export const PlaceholderComponent = ({type, descriptor}: { type?: string, descriptor?: string }) => {
+    return (
+        <div style={{
+            border: "2px solid lightgrey",
+            padding: '16px',
+        }}>
+            <h3 style={{margin: 0, textTransform: 'capitalize'}}>Empty output</h3>
+            {descriptor && <p style={{color: 'grey'}}>{`${type} '${descriptor}' output is empty`}</p>}
+        </div>
+    )
+}
+
+export function shouldShowPlaceholderView(meta: MetaData): boolean {
+    return meta.renderMode === RENDER_MODE.EDIT;
+}
+

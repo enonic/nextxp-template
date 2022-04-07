@@ -7,8 +7,11 @@ import {getUrl} from '../../_enonicAdapter/utils'
 const ChildList = (props: PartProps) => {
     const {data} = props;
     const children = data.get.children;
+    if (!children || children.length === 0) {
+        return null;
+    }
     return (
-        <main style={{ 
+        <main style={{
             margin: `0 auto`,
             maxWidth: 960,
             padding: `0 1.0875rem`,
