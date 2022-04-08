@@ -43,7 +43,8 @@ const BaseComponent = ({component, meta, common}: BaseComponentProps) => {
         }
     }
 
-    if (shouldShowPlaceholderView(meta)) {
+    // need to display a placeholder if descriptor is empty as component is not initialized yet
+    if (descriptor && shouldShowPlaceholderView(meta)) {
         const outputView = ReactDOMServer.renderToString(ComponentView);
         if (!outputView || outputView.trim().length === 0) {
             // render some placeholder in case of empty output
