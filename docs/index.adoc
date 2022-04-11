@@ -41,31 +41,33 @@ You will complete the following steps:
 [[tldr]]
 == TLDR;
 
-The impatient may try out end-result of the tutorial, and get a live demo by following the instructions: If you want to learn what is really happening, head on to the <<enonic-setup#, first chapter>> of the tutorial.
+The impatient may try out end-result of this tutorial (and get a fully working demo) - following these instructions: If you want to learn what is really happening, head on to the <<enonic-setup#, first chapter>> of the tutorial.
 
 === 1. Setup Enonic
 
 . Sign up to Enonic Cloud: https://enonic.com/sign-up/cloud-trial
 . Create a new solution using the `Next.js demo` template
-. After the solution has started, **open the "Drafts API" route** in your browser
+. After the solution has started, **open the "Drafts" route** in your browser
 +
-You should now be able to browse the API. Take a note of this URL, as you will need it later
+By adding `/_graphql` to the end of the browser URL, you should be able to browse the API. 
+Take a note of the full API URL, as you will need it later
 
 === 2. Create code repo
 
-NOTE: Vercel (Next.js hosting provider) requires you to have the code in a repo where your user has write permissions.
+NOTE: Vercel (Next.js hosting provider) requires that you place your code in a repo where you have write access.
 
-. Create a fork/clone of this repo: https://github.com/enonic/nextjs-enonic-demo into a repo where you have full write access
+. Create a fork or clone of this repo: https://github.com/enonic/nextjs-enonic-demo
 +
-In Github, simply click "fork" in the top right menu, and select the target account.
+If you are using Github, click `fork` in the top right menu, and select the target account.
 +
-You should now have a complete copy of this repo, with both read and write access.
+You should now have your own copy of this repo, with both read and write access.
 
 
 === 3. Deploy on Vercel
 
-. Sign up to Vercel: https://vercel.com/ 
-. Create a "Drafts" project and link it to the repo you created in the previous step
+. Sign up to https://vercel.com/ 
+. Create a new project based on the repo you created in the previous step 
+. Give it a suitable name, e.g. "Enonic Preview"
 . **Add environment variables* linking the project to the "Drafts API"
 +
 It should look something like this:
@@ -74,31 +76,34 @@ KEY:: `CONTENT_API_URL`
 VALUE:: `https://myaccount-mysolution-myenvironment/drafts/_graphql`
 +
 . Deploy, and verify that the Next app is now rendering correctly.
++
+TODO: Screenshot
 
 === 4. Configure preview
 
-In order for Content Studio preview to work, it needs to know the location of the server
+For Content Studio preview to work, it needs to know the location of the preview server.
 
-. **Add environment configuration** 
-+
-Edit the "Next.js Demo" app from the solution/applications interface:
+. **Add environment configuration** to by editing the "Next.js Demo" app that was installed when setting up the solution:
 +
 The configuration should look something like this:
 +
 
 +
-. **Log into Enonic XP admin** and launch Content Studio. You should now be able to see the preview in the right hand panel.
+. **Launch Enonic XP admin** and go to Content Studio. Select a content item, and you should now be able to see the preview in the right hand panel.
++
+TODO: Screenshot
+
 
 === 5. Go live
 
-The final step is to launch a Vercel project that renders the published (aka live) content.
+Your final step is to launch a Vercel project that renders the published (aka live) content.
 
-. **Create a new "Live" project in Vercel**, using the same Github repo
+. **Create a new "Live" project in Vercel**, using the same Github repo as created earlier
 . This time, **Configure the project** to access the "Live API" instead, same approach as for the preview project.
 +
-The "Live" server should display a 404 page. This is because the content has not been published yet.
+When visiting the "Live" server, it should initially display a 404 page. This is because the site and content has not been published yet.
 +
 . **Publish the content** from Content Studio by selecting the site, and then `Publish Tree` from the top right menu.
 . Your site should now be live and kicking
 +
-You can now start editing and publishing new content in Content Studio.
+Congratulations, you have just created a Next.js site powered by Enonic - go have some fun with it!

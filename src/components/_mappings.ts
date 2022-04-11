@@ -11,7 +11,6 @@ import getMainPage from './queries/getMainPage';
 import getTwoColumnLayout from './queries/getTwoColumnLayout';
 import {commonQuery, commonVariables} from './queries/common';
 
-
 // You can set common query for all views here
 ComponentRegistry.setCommonQuery([commonQuery, commonVariables]);
 
