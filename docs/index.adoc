@@ -8,7 +8,7 @@ This is a step-by-step tutorial for building Next.js sites, where content editor
 ====
 This guide assumes you are already somewhat familiar with link:https://nextjs.org/[Next.js]. Experience with Enonic is recommended, but not required. 
 
-Please check out these tutorials before you continue:
+To learn more about Next.js and Enonic before you start, have a look at these tutorials:
 
 - link:https://nextjs.org/learn/basics/create-nextjs-app[Next.js Tutorial]
 - link:https://developer.enonic.com/templates/headless-cms/[Headless CMS Primer]
@@ -16,9 +16,11 @@ Please check out these tutorials before you continue:
 
 == Introduction
 
-In this tutorial we will demonstrate a powerful approach where the structure and content in the CMS determines the URLs and content available in the front-end. This is possible as Enonic (unlike many other Headless CMS') supports tree-structures. 
+In this tutorial we will demonstrate a close integration between the systems, where the structure and content in the CMS determines the URLs and content available in the front-end. 
+This is possible as Enonic (unlike many other Headless CMS') supports tree-structures.
 
-This setup basically provide editors with a CMS experience they are accustomed to, and developers get a front-end that is cleanly separated from the CMS. The headless architecture ensures the content can be accessed and used by other clients as well - ofcourse.
+The integration also give editors a CMS experience they are accustomed to, while developers can work with their front-end code, cleanly separated from the CMS. 
+The headless architecture of Enonic ensures the content can be accessed and used by other clients as well - naturally.
 
 [[nextjs-xp-flow]]
 image:nextjs-xp-flow.png[title="Illustration showing request flow through from browser, via next, getting content in Enonic, and then rendered and returned to user as a regular web page.",width=912px]
@@ -41,30 +43,53 @@ You will complete the following steps:
 
 The impatient may try out end-result of the tutorial, and get a live demo by following the instructions: If you want to learn what is really happening, head on to the <<enonic-setup#, first chapter>> of the tutorial.
 
-=== Setup Enonic
+=== 1. Setup Enonic
 
 . Sign up to Enonic Cloud: https://enonic.com/sign-up/cloud-trial
-. Create a new solution based on the Next.js template
-. After the solution has started, **open the "Preview API" route** in your browser
+. Create a new solution using the `Next.js demo` template
+. After the solution has started, **open the "Drafts API" route** in your browser
 +
 You should now be able to browse the API. Take a note of this URL, as you will need it later
 
-=== Setup preview
+=== 2. Create code repo
+
+NOTE: Vercel (Next.js hosting provider) requires you to have the code in a repo where your user has write permissions.
+
+. Create a fork/clone of this repo: https://github.com/enonic/nextjs-enonic-demo into a repo where you have full write access
++
+In Github, simply click "fork" in the top right menu, and select the target account.
++
+You should now have a complete copy of this repo, with both read and write access.
+
+
+=== 3. Deploy on Vercel
+
 . Sign up to Vercel: https://vercel.com/ 
-. Create "Preview" project based on https://github.com/enonic/nextjs-enonic-demo
-. **Configure the application** to use the Preview API URL:
+. Create a "Drafts" project and link it to the repo you created in the previous step
+. **Add environment variables* linking the project to the "Drafts API"
 +
-TODO image?
+It should look something like this:
 +
-. Verify that the Next app is now rendering pages.
+KEY:: `CONTENT_API_URL`
+VALUE:: `https://myaccount-mysolution-myenvironment/drafts/_graphql`
 +
-. **Connect Enonic with the preview server** by configuring the "Next.js Demo" application in the Enonic solution interface:
+. Deploy, and verify that the Next app is now rendering correctly.
+
+=== 4. Configure preview
+
+In order for Content Studio preview to work, it needs to know the location of the server
+
+. **Add environment configuration** 
 +
-TODO:
+Edit the "Next.js Demo" app from the solution/applications interface:
++
+The configuration should look something like this:
++
+
 +
 . **Log into Enonic XP admin** and launch Content Studio. You should now be able to see the preview in the right hand panel.
 
-=== Go live
+=== 5. Go live
 
 The final step is to launch a Vercel project that renders the published (aka live) content.
 
