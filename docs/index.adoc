@@ -80,7 +80,7 @@ With a Next.js preview server running, we may link it to Content Studio.
 +
 image:cloud-preview.png[title="Front page as seen from Content Studio", width=1419px]
 
-=== Go live
+=== 5. Go live
 
 The final step is to launch a Vercel project that renders the published (aka live) content.
 
