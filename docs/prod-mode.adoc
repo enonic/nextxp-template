@@ -45,7 +45,7 @@ When working in your local Enonic SDK, the sandboxes are stored in your home dir
 ..enonic/sandboxes/<mysandbox>/home/config/<app-name>.cfg
 [source,properties]
 ----
-nextjsurl=http://localhost:4242
+nextjsUrl=http://localhost:4242
 ----
 +
 XP will automatically pickup the configuration and inject it in your app.
