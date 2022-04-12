@@ -35,8 +35,6 @@ export const getServerSideProps: GetServerSideProps = async (context: Context): 
         throw error
     }
 
-    // TODO: Drop? 404 handling should be sufficient for CS
-    // HTTP 418 if CMS is not configured to render item yet
     // catch-all rendering is ignored for isRenderableRequest in edit mode to allow selecting descriptors in page editor
     if (meta && (!meta.canRender || meta.catchAll && isRenderableRequestEditMode(context))) {
         context.res.statusCode = meta.renderMode !== RENDER_MODE.NEXT ? 418 : 404;

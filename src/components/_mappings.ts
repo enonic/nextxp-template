@@ -1,5 +1,6 @@
 import {APP_NAME} from '../_enonicAdapter/utils'
-import {ComponentRegistry} from '../_enonicAdapter/ComponentRegistry';
+import {ComponentRegistry, CATCH_ALL} from '../_enonicAdapter/ComponentRegistry';
+import PropsView from './views/Props';
 import Person from './views/Person';
 import getPerson from './queries/getPerson';
 import MainPage from './pages/Main';
@@ -7,8 +8,6 @@ import ChildList, {childListProcessor, getChildList} from './parts/ChildList';
 import Heading from './parts/Heading';
 import MovieDetails, {getMovie} from './parts/MovieDetails';
 import TwoColumnLayout from './layouts/TwoColumnLayout';
-import getMainPage from './queries/getMainPage';
-import getTwoColumnLayout from './queries/getTwoColumnLayout';
 import {commonQuery, commonVariables} from './queries/common';
 
 
@@ -23,14 +22,12 @@ ComponentRegistry.addContentType(`${APP_NAME}:person`, {
 
 // Page mappings
 ComponentRegistry.addPage(`${APP_NAME}:main`, {
-    query: getMainPage,
     view: MainPage,
 });
 
 // Layout mappings
 ComponentRegistry.addLayout(`${APP_NAME}:2-column`, {
     view: TwoColumnLayout,
-    query: getTwoColumnLayout,
 });
 
 // Part mappings
