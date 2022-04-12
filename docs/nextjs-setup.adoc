@@ -15,10 +15,10 @@ Get the code by running the following command:
 
 [source,bash,options="nowrap"]
 ----
-npx degit git@github.com:enonic/nextjs-enonic-starter.git
+npx degit git@github.com:enonic/nextjs-enonic-template.git
 ----
 
-The "nextjs-enonic-starter" is based on link:https://nextjs.org/docs/getting-started[Next.js' own introduction app], so if you're familiar with that, you'll recognize the structure of the files.
+The "nextjs-enonic-template" is based on link:https://nextjs.org/docs/getting-started[Next.js' own introduction app], so if you're familiar with that, you'll recognize the structure of the files.
 
 The template includes some boilerplate we will customize, and some additional code that facilitates and simplifies integration with Enonic - aka **"the Enonic adapter"**.
 
@@ -42,12 +42,12 @@ src/
         _document.tsx <!--6-->
 ----
 
-<1> Standard Next configuration files
-<2> Contains the essential logic and functionality to communicate with the CMS and perform rendering. you should not need to change any of these files. This will be released as a separate NPM in the future.
+<1> Next.js config and environment variables are placed in these files
+<2> Contains integration and rendering logic to work smoothly together with Enonic XP. You should never need to modify these files. Planned to be released as an NPM in the future.
 <3> Your Next implementation of CMS components can be placed here
-<4> The fallback next.js router, that enables dynamic rendering based on content in the CMS. File name is not a typo, but Next.js syntax that makes it catch all HTTP requests.
+<4> The fallback next.js router. Wnables dynamic rendering based on content in the CMS. File name is not a typo, but Next.js syntax that makes it catch all HTTP requests.
 <5> Invoked on every request. Add common structures here (eg. `<head>` etc), but be careful not to remove functionality needed by Content Studio
-<6> Vanilla Next.js file that outlines the document structure of all pages.
+<6> Vanilla Next.js file that outlines the basic document structure of all pages.
 
 
 == Task: Configure application
