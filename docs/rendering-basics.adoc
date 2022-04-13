@@ -108,7 +108,6 @@ Update `src/pages/_app.tsx`` with the following changes:
 ----
 import Header from "../components/views/Header";
 import Footer from "../components/views/Footer";
-import {getUrl} from "../_enonicAdapter/utils";
 ----
 +
 . And **replace this line**:
