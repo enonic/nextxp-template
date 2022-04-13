@@ -49,7 +49,7 @@ TIP: The purpose of routes is to expose internal endpoints like `:8080/site/<pro
 Use the following settings:
 +
 Internal path:: `/site/hmdb/draft/hmdb`
-Public path:: `/draft`
+Public path:: `/drafts`
 ID provider:: -empty-
 +
 . **Verify that the route is working** by clicking the link in the route details. You should be seeing an error message from the proxy. 
