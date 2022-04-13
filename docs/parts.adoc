@@ -52,7 +52,7 @@ exports.get = proxy.get;
 +
 . **Add parts to the page**
 +
-After the app has deployed, head over to Content Studio. This time, lets edit the `Persons` page. Drag'n drop the new part into the region (`right-click -> Insert`, or drag-n-drop from the `Insert panel`` on the right).
+After the app has deployed, head over to Content Studio. This time, lets edit the `Persons` folder. Create the page and drag'n drop the new part into the region (`right-click -> Insert`, or drag-n-drop from the `Insert panel`` on the right).
 +
 TIP: The part will appear without making any changes to Next, this is because the Enonic adapter contains fallback part rendering, when Next is running in DEV mode.
 +
