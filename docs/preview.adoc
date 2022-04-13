@@ -40,7 +40,7 @@ Update the `site.xml` , https://developer.enonic.com/docs/xp/stable/components/m
 ...
   <mappings>
     <mapping controller="/controllers/graphql.js" order="50">
-      <pattern>/_grapqhql</pattern>
+      <pattern>/_graphql</pattern>
     </mapping>
     <mapping controller="/lib/nextjs-proxy/proxy.js" order="99">
       <pattern>/.*</pattern>
