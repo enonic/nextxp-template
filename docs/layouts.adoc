@@ -44,13 +44,21 @@ When completed, as always redeploy the Enonic app.
 
 Moving over to the the Next app, you must add the the component that will render the layout.
 
-. **Add the layout component**
+. **Add the layout component** and it's component specific-stylesheet
 +
 .src/components/layouts/TwoColumnLayout.tsx
-[source,JavaScript]
+[source,TypeScript]
 ----
 include::{sourcedir}/components/layouts/TwoColumnLayout.tsx[]
 ----
++
+.src/components/layouts/TwoColumnLayout.module.css
+[source,CSS]
+----
+include::{sourcedir}/components/layouts/TwoColumnLayout.module.css[]
+----
++
+NOTE: This is an example of using CSS modules. For more details visit the https://nextjs.org/docs/basic-features/built-in-css-support[Next.js style documentation]
 +
 . **Register the components** in _mappings.ts:
 +
@@ -69,13 +77,13 @@ ComponentRegistry.addLayout(`${APP_NAME}:2-column`, {
 ----
 +
 NOTE: this specific layout does not need any additional data - hence no query or processor:
-+
+
 After completing these steps, you should be able to add the layout to a page, and then add components inside the layout. It might look something like this:
-+
+
 image:layout-empty.png[title="Empty layout on the persons page",width=1440px]
-+
+
 By combining layout, part and text we are starting to see the potential of the page editor:
-+
+
 image:layout-part-text.png[title="Layout combined with part and text components",width=1440px]
 
 In the next chapter we will look into <<templates#, reuse of pages>> across content items.
