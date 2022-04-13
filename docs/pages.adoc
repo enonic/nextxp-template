@@ -28,13 +28,13 @@ Content types need to exist in Enonic before an editor can create content. Simil
 
 . *Add a page descriptor* to the Enonic app 
 +
-.src/main/resources/site/pages/default/default.xml
+.src/main/resources/site/pages/main/main.xml
 [source,xml]
 ----
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <page xmlns="urn:enonic:xp:model:1.0">
-  <display-name>Next default</display-name>
-  <description>Rendered by the Next frontend server</description>
+  <display-name>Main page</display-name>
+  <description>Will be rendered by front-end</description>
   <form/>
   <regions>
       <region name="main"/>
