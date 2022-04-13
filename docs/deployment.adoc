@@ -98,7 +98,7 @@ image:cloud-preview.png[title="Front page as seen from Content Studio", width=14
 
 == Final task: Go live!
 
-As your final step, deply a new instance of the Next.js app, which will be used to render the published (aka live) content.
+As your final step, deploy a new instance of the Next.js app, which will be used to render the published (aka live) content.
 
 . Start by **creating the route `Live` route** in the Enonic console, this time use the following values:
 +
