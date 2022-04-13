@@ -34,6 +34,7 @@ exports.get = proxy.get;
 +
 . **Register the Movie query and view** in Next.
 +
+.src/components/parts/MovieDetails.tsx
 [source,JavaScript]
 ----
 include::{sourcedir}/components/parts/MovieDetails.tsx[]
