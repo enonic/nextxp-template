@@ -44,7 +44,7 @@ When completed, as always redeploy the Enonic app.
 
 Moving over to the the Next app, you must add the the component that will render the layout.
 
-. **Add the layout component** and it's component specific-stylesheet
+. **Add the layout component** files
 +
 .src/components/layouts/TwoColumnLayout.tsx
 [source,TypeScript]
@@ -52,15 +52,17 @@ Moving over to the the Next app, you must add the the component that will render
 include::{sourcedir}/components/layouts/TwoColumnLayout.tsx[]
 ----
 +
+And it's CSS module
++
 .src/components/layouts/TwoColumnLayout.module.css
-[source,CSS]
+[source,css]
 ----
 include::{sourcedir}/components/layouts/TwoColumnLayout.module.css[]
 ----
 +
 NOTE: This is an example of using CSS modules. For more details visit the https://nextjs.org/docs/basic-features/built-in-css-support[Next.js style documentation]
 +
-. **Register the components** in _mappings.ts:
+. **Register the component** in _mappings.ts:
 +
 Add these new lites to the _mappings.ts file.
 +
