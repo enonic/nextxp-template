@@ -5,6 +5,9 @@ import {MetaData, PageComponent} from "../guillotine/getMetaData";
 import {ComponentRegistry} from '../ComponentRegistry';
 import Empty from './Empty';
 import * as ReactDOMServer from 'react-dom/server';
+import HTMLElement from 'node-html-parser/dist/nodes/html';
+import {parse} from 'node-html-parser';
+import HTMLReactParser from 'html-react-parser';
 
 
 export type BaseComponentProps = {
@@ -17,12 +20,8 @@ export type BaseComponentProps = {
 const BaseComponent = ({component, meta, common}: BaseComponentProps) => {
     const {type, error} = component;
     const descriptor = component[type]?.descriptor;
-    const divAttrs: { [key: string]: string } = {
-        [PORTAL_COMPONENT_ATTRIBUTE]: type
-    };
 
     let ComponentView: JSX.Element | null;
-    let cmpAttrs: { [key: string]: any };
 
     if (error) {
         // renders error component when rendering whole page
@@ -38,30 +37,34 @@ const BaseComponent = ({component, meta, common}: BaseComponentProps) => {
             ComponentView = shouldShowMissingView(meta) ? <MissingComponent type={type} descriptor={descriptor}/> : <Empty/>;
 
         } else {
-            cmpAttrs = createComponentAttrs(component, meta, common);
+            const cmpAttrs = createComponentAttrs(component, meta, common);
             ComponentView = <ViewFn {...cmpAttrs}/>;
         }
     }
 
     // need to display a placeholder if descriptor is empty as component is not initialized yet
+    let outputHTML = ReactDOMServer.renderToStaticMarkup(ComponentView);
     if (descriptor && shouldShowPlaceholderView(meta)) {
-        const outputView = ReactDOMServer.renderToString(ComponentView);
-        if (!outputView || outputView.trim().length === 0) {
+        if (!outputHTML || outputHTML.trim().length === 0) {
             // render some placeholder in case of empty output
             ComponentView = <PlaceholderComponent type={type} descriptor={descriptor}/>
+            outputHTML = ReactDOMServer.renderToStaticMarkup(ComponentView);
         }
     }
 
-    if (meta.renderMode === RENDER_MODE.LIVE) {
-        // do not make component wrappers in live mode
-        return ComponentView
-    } else {
-        return (
-            <div {...divAttrs}>
-                {ComponentView}
-            </div>
-        )
+    const root: HTMLElement = parse(outputHTML);
+    // injecting page editor attributes to the component output
+    if (meta.renderMode === RENDER_MODE.EDIT) {
+        const head = root.firstChild as HTMLElement;
+        if (head) {
+            const editorAttrs = createEditorAttrs(type);
+            for (let p in editorAttrs) {
+                head.setAttribute(p, editorAttrs[p]);
+            }
+        }
     }
+
+    return HTMLReactParser(root.toString());
 }
 export default BaseComponent;
 
@@ -101,6 +104,12 @@ export const ErrorComponent = ({type, descriptor, reason}: { type?: string, desc
 
 export function shouldShowErrorView(meta: MetaData): boolean {
     return meta.renderMode === RENDER_MODE.EDIT;
+}
+
+function createEditorAttrs(type: XP_COMPONENT_TYPE): { [key: string]: string } {
+    return {
+        [PORTAL_COMPONENT_ATTRIBUTE]: type
+    };
 }
 
 function createComponentAttrs(component: PageComponent, meta: MetaData, common?: any): { [key: string]: any } {
