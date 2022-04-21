@@ -15,7 +15,6 @@ query($path:ID!){
       displayName
       _path
     }
-   
   }
 }`;
 
