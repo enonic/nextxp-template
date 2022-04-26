@@ -13,7 +13,10 @@ type Props = {
 }
 
 const DefaultTextView = ({component, meta}: Props) => (
-    <section dangerouslySetInnerHTML={{__html: RichTextProcessor.process(component.value, meta.renderMode)}}/>
+    // temporary workaround for TextComponent expecting section inside of a root element
+    <div>
+        <section dangerouslySetInnerHTML={{__html: RichTextProcessor.process(component.value, meta.renderMode)}}/>
+    </div>
 );
 
 export default DefaultTextView;
