@@ -64,7 +64,7 @@ const BaseComponent = ({component, meta, common}: BaseComponentProps) => {
         }
     }
 
-    return HTMLReactParser(root.toString());
+    return HTMLReactParser(root.toString()) as JSX.Element;
 }
 export default BaseComponent;
 
