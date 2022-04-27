@@ -1,6 +1,7 @@
 import React from "react"
-import {LinkData, RichTextProcessor} from '../RichTextProcessor';
+import {LinkData} from '../RichTextProcessor';
 import {MetaData} from '../guillotine/getMetaData';
+import RichTextView from './RichTextView';
 
 type Props = {
     meta: MetaData,
@@ -13,7 +14,10 @@ type Props = {
 }
 
 const DefaultTextView = ({component, meta}: Props) => (
-    <section dangerouslySetInnerHTML={{__html: RichTextProcessor.process(component.value, meta.renderMode)}}/>
+    // temporary workaround for TextComponent expecting section inside of a root element
+    <div>
+        <RichTextView data={component.value} mode={meta.renderMode}/>
+    </div>
 );
 
 export default DefaultTextView;
