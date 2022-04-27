@@ -3,7 +3,7 @@ import {FetchContentResult} from '../../_enonicAdapter/guillotine/fetchContent';
 import {getUrl} from '../../_enonicAdapter/utils'
 
 const Person = (props: FetchContentResult) => {
-    const {displayName, data, parent} = props.data as any;
+    const {displayName, data, parent} = props.data?.get as any;
     const {bio, photos} = data;
     const {_path} = parent;
 
