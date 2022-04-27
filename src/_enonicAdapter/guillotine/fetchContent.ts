@@ -746,12 +746,12 @@ export const buildContentFetcher = <T extends adapterConstants>(config: FetcherC
             let startFrom = 0;
             if (contentQueryAndVars) {
                 let item = datas[startFrom];
-                contentData = item.status === 'fulfilled' ? item.value?.get : item.reason;
+                contentData = item.status === 'fulfilled' ? item.value : item.reason;
                 startFrom++;
             }
             if (commonQueryAndVars) {
                 let item = datas[startFrom];
-                common = item.status === 'fulfilled' ? item.value?.get : item.reason;
+                common = item.status === 'fulfilled' ? item.value : item.reason;
                 startFrom++
             }
 
