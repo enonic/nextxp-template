@@ -26,16 +26,18 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 1. Create new features in a branch
 2. Test and verify the app
 3. Update docs if needed
-4. Tag using `git tag v0.8.5` and create pull-request to master on github
+4. Create pull-request to master on github
+5. Tag master using `git tag v0.8.5` after pull-request is merged
 
 ### Update template repo
 
-5. Move all relevant changes to a feature branch in the template repo
-6. Test and verify the changes
-7. Tag using `git tag v0.8.5` and create pull-request to master on github
+6. Move all relevant changes to a feature branch in the template repo
+7. Test and verify the changes
+8. Create pull-request to master on github
+9. Tag master branch using `git tag v0.8.5` after pull-request is merged
 
 ### Final step: Release
 
-8. Merge changes to master for both repositories
-9. Verify that setting up new next app is working according to tutorial
-10. Verify that the TLDR; is working
+10. Merge changes to master for both repositories
+11. Verify that setting up new next app is working according to tutorial
+12. Verify that the TLDR; is working
