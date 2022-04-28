@@ -22,10 +22,8 @@ export interface RegionsProps {
 /** Single region */
 export const RegionView = (props: RegionProps) => {
     const {name, components, common, meta, className} = props;
-    const regionAttrs: { [key: string]: string } = {
-        id: name + "Region",
-        [PORTAL_REGION_ATTRIBUTE]: name,
-    };
+    const regionAttrs: { [key: string]: string } = {};
+
     if (className) {
         regionAttrs.className = className;
     }
@@ -34,11 +32,14 @@ export const RegionView = (props: RegionProps) => {
         <BaseComponent key={regionAttrs.id + "-" + i} component={component} common={common} meta={meta}/>
     ))
 
-    if (meta.renderMode === RENDER_MODE.LIVE) {
-        // do not make region wrappers in live mode
-        return (<>{children}</>)
-    } else {
+    if (meta.renderMode === RENDER_MODE.EDIT) {
+        regionAttrs.id = name + "Region";
+        regionAttrs[PORTAL_REGION_ATTRIBUTE] = name;
+    }
+    if (Object.keys(regionAttrs).length) {
         return <div {...regionAttrs}>{children}</div>;
+    } else {
+        return <>{children}</>
     }
 }
 
