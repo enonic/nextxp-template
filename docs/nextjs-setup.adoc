@@ -11,7 +11,7 @@ link:https://nextjs.org/[**Next.js**] runs on top of link:https://nodejs.org/en/
 
 == Task: Create the Next.js project
 
-Get the code by running the following command:
+From an empty folder, run the following command:
 
 [source,bash,options="nowrap"]
 ----
