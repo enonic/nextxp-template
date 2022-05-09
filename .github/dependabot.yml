@@ -1,7 +1,8 @@
 version: 2
 updates:
   - package-ecosystem: "npm"
-    directory: "/"
+    directory: "/"\
+    target-branch: "next"
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 10
