@@ -14,7 +14,7 @@
     "html-react-parser": "^1.4.11",
     "next": "^12.1.5",
     "node-html-parser": "^5.3.3",
-    "react": "18.0.0",
+    "react": "18.1.0",
     "react-dom": "18.0.0"
   },
   "devDependencies": {
