@@ -15,7 +15,7 @@ const COMPONENTS_QUERY = `
           configAsJson
         }
         text {
-          value(processHtml:{type:absolute}) {
+          value(processHtml:{type:absolute, imageWidths:[400, 800, 1200], imageSizes:"(max-width: 400px) 400px, (max-width: 800px) 800px, 1200px"}) {
             processedHtml
             links {
               ref

@@ -11,7 +11,7 @@ export interface HeadingData {
 }
 
 const HeadingView = ({part, common}: HeadingData) => (
-    <h2>{part?.config?.heading || common.displayName}</h2>
+    <h2>{part?.config?.heading || common?.get?.displayName}</h2>
 );
 
 export default HeadingView;
