@@ -1,5 +1,5 @@
 import React from "react"
-import {LinkData} from '../RichTextProcessor';
+import {LinkData, MacroData} from '../RichTextProcessor';
 import {MetaData} from '../guillotine/getMetaData';
 import RichTextView from './RichTextView';
 
@@ -8,7 +8,8 @@ type Props = {
     component: {
         value: {
             processedHtml: string,
-            links: LinkData[]
+            links: LinkData[],
+            macros: MacroData[],
         }
     }
 }
@@ -16,7 +17,7 @@ type Props = {
 const DefaultTextView = ({component, meta}: Props) => (
     // temporary workaround for TextComponent expecting section inside of a root element
     <div>
-        <RichTextView data={component.value} mode={meta.renderMode}/>
+        <RichTextView data={component.value} meta={meta}/>
     </div>
 );
 

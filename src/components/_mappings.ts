@@ -1,12 +1,10 @@
-import {APP_NAME} from '../_enonicAdapter/utils'
-import {ComponentRegistry, CATCH_ALL} from '../_enonicAdapter/ComponentRegistry';
+import {CATCH_ALL, ComponentRegistry} from '../_enonicAdapter/ComponentRegistry';
 import {commonQuery, commonVariables} from './queries/common';
 import PropsView from './views/Props';
 
 
 // You can set common query for all views here
 ComponentRegistry.setCommonQuery([commonQuery, commonVariables]);
-
 
 // Content type mappings
 
