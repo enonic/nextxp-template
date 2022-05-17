@@ -5,9 +5,6 @@ import {MetaData, PageComponent} from "../guillotine/getMetaData";
 import {ComponentRegistry} from '../ComponentRegistry';
 import Empty from './Empty';
 import * as ReactDOMServer from 'react-dom/server';
-import HTMLElement from 'node-html-parser/dist/nodes/html';
-import {parse} from 'node-html-parser';
-import HTMLReactParser from 'html-react-parser';
 
 
 export type BaseComponentProps = {
@@ -43,28 +40,24 @@ const BaseComponent = ({component, meta, common}: BaseComponentProps) => {
     }
 
     // need to display a placeholder if descriptor is empty as component is not initialized yet
-    let outputHTML = ReactDOMServer.renderToStaticMarkup(ComponentView);
     if (descriptor && shouldShowPlaceholderView(meta)) {
+        let outputHTML = ReactDOMServer.renderToString(ComponentView);
         if (!outputHTML || outputHTML.trim().length === 0) {
             // render some placeholder in case of empty output
             ComponentView = <PlaceholderComponent type={type} descriptor={descriptor}/>
-            outputHTML = ReactDOMServer.renderToStaticMarkup(ComponentView);
         }
     }
 
-    const root: HTMLElement = parse(outputHTML);
-    // injecting page editor attributes to the component output
     if (meta.renderMode === RENDER_MODE.EDIT) {
-        const head = root.firstChild as HTMLElement;
-        if (head) {
-            const editorAttrs = createEditorAttrs(type);
-            for (let p in editorAttrs) {
-                head.setAttribute(p, editorAttrs[p]);
-            }
-        }
+        return (
+            <div {...createEditorAttrs(type)}>
+                {ComponentView}
+            </div>
+        )
+    } else {
+        // do not make component wrappers in live mode
+        return ComponentView
     }
-
-    return HTMLReactParser(root.toString()) as JSX.Element;
 }
 export default BaseComponent;
 
