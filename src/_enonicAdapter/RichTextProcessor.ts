@@ -1,9 +1,4 @@
-import {commonChars, CONTENT_API_URL, getUrl, RENDER_MODE} from './utils';
-import {parse} from 'node-html-parser';
-import HTMLElement from 'node-html-parser/dist/nodes/html';
-import * as ReactDOMServer from 'react-dom/server';
-import {MetaData} from './guillotine/getMetaData';
-import BaseMacro from './views/BaseMacro';
+import {commonChars, CONTENT_API_URL, getUrl} from './utils';
 
 export interface TextData {
     processedHtml: string,
@@ -36,61 +31,17 @@ export interface MacroData {
 export class RichTextProcessor {
     private static urlFunction: (url: string) => string;
     private static apiUrl: string;
-    private static macroAttr = 'data-macro-ref';
-    private static imageAttr = 'data-image-ref';
-    private static linkAttr = 'data-link-ref';
 
-    public static process(data: TextData, meta: MetaData): string {
-        const root: HTMLElement = parse(data.processedHtml);
-        const mode = meta?.renderMode || RENDER_MODE.NEXT;
-        // run first to make sure contents is updated before processing links and images
-        this.processMacros(root, data.macrosAsJson, meta);
-        this.processLinks(root, data.links, mode);
-        if (mode !== RENDER_MODE.NEXT) {
-            // images have absolute urls to XP so no need to process them in next mode rendering
-            this.processImages(root);
-        }
-        return root.toString();
-    }
+    public static IMG_TAG = 'img';
+    public static LINK_TAG = 'a';
+    public static MACRO_TAG = 'editor-macro';
 
-    private static processMacros(root: HTMLElement, macroData: MacroData[], meta: MetaData): void {
-        const macros = root.querySelectorAll('editor-macro[' + this.macroAttr + ']');
-        macros.forEach(macroEl => {
-            const ref = macroEl.getAttribute(this.macroAttr);
-            if (ref) {
-                const data = macroData.find(d => d.ref === ref);
-                if (data) {
-                    const MacroElement = BaseMacro({meta, data});
-                    // don't replace if macro output is null
-                    if (MacroElement) {
-                        const macroOutput = ReactDOMServer.renderToStaticMarkup(MacroElement);
-                        macroEl.replaceWith(macroOutput);
-                    }
-                }
-            }
-        })
-    }
+    public static IMG_ATTR = 'data-image-ref';
+    public static LINK_ATTR = 'data-link-ref';
+    public static MACRO_ATTR = 'data-macro-ref';
 
-    private static processImages(root: HTMLElement): void {
-        const imgs = root.querySelectorAll('img[' + this.imageAttr + ']');
-        imgs.forEach(img => {
-            const src = img.getAttribute('src');
-            if (src) {
-                img.setAttribute('src', this.urlFunction(this.stripApiUrl(src)));
-            }
-        })
-    }
-
-    private static processLinks(root: HTMLElement, linkData: LinkData[], mode: RENDER_MODE): void {
-        const links = root.querySelectorAll('a[' + this.linkAttr + ']');
-        links.forEach(link => {
-            const href = link.getAttribute('href');
-            const ref = link.getAttribute(this.linkAttr);
-            if (ref && href && !(mode === RENDER_MODE.NEXT && this.isMediaLink(ref, linkData))) {
-                // do not process media links in next to keep it absolute
-                link.setAttribute('href', this.urlFunction(this.stripApiUrl(href)));
-            }
-        })
+    public static processUrl(url: string): string {
+        return this.urlFunction(this.stripApiUrl(url));
     }
 
     public static setUrlFunction(func: (url: string) => string): void {
@@ -101,7 +52,7 @@ export class RichTextProcessor {
         this.apiUrl = url;
     }
 
-    private static isMediaLink(ref: string, linkData: LinkData[]): boolean {
+    public static isMediaLink(ref: string, linkData: LinkData[]): boolean {
         return linkData.find(data => data.ref === ref)?.media !== null;
     }
 

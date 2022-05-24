@@ -9,7 +9,7 @@ type Props = {
         value: {
             processedHtml: string,
             links: LinkData[],
-            macros: MacroData[],
+            macrosAsJson: MacroData[],
         }
     }
 }

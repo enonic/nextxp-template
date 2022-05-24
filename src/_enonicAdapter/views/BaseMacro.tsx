@@ -19,7 +19,6 @@ export interface MacroProps {
 const BaseMacro = (props: BaseMacroProps) => {
     const {data, meta} = props;
 
-    console.info(`Looking for macro definition for: ${data.descriptor}`)
     const macro = ComponentRegistry.getMacro(data.descriptor);
     const MacroView = macro?.view;
     if (MacroView) {
