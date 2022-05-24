@@ -1,6 +1,5 @@
 import {APP_NAME} from '../_enonicAdapter/utils'
-import {ComponentRegistry, CATCH_ALL} from '../_enonicAdapter/ComponentRegistry';
-import PropsView from './views/Props';
+import {CATCH_ALL, ComponentRegistry} from '../_enonicAdapter/ComponentRegistry';
 import Person from './views/Person';
 import getPerson from './queries/getPerson';
 import MainPage from './pages/Main';
@@ -9,6 +8,8 @@ import Heading from './parts/Heading';
 import MovieDetails, {getMovie} from './parts/MovieDetails';
 import TwoColumnLayout from './layouts/TwoColumnLayout';
 import {commonQuery, commonVariables} from './queries/common';
+import DefaultMacro from './macros/DefaultMacro';
+import YoutubeMacro from './macros/YoutubeMacro';
 
 
 // You can set common query for all views here
@@ -42,6 +43,14 @@ ComponentRegistry.addPart(`${APP_NAME}:child-list`, {
     query: getChildList,
     processor: childListProcessor,
     view: ChildList
+});
+
+// Macro mappings
+ComponentRegistry.addMacro('com.enonic.app.socialmacros:youtube', {
+    view: YoutubeMacro
+});
+ComponentRegistry.addMacro(CATCH_ALL, {
+    view: DefaultMacro
 });
 
 /*
