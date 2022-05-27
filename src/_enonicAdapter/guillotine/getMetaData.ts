@@ -1,5 +1,20 @@
 import {RENDER_MODE, XP_COMPONENT_TYPE, XP_REQUEST_TYPE} from "../utils";
 
+export const richTextQuery = (fieldName: string) => {
+    return `${fieldName}(processHtml:{type:absolute, imageWidths:[400, 800, 1200], imageSizes:"(max-width: 400px) 400px, (max-width: 800px) 800px, 1200px"}) {
+            processedHtml
+            macrosAsJson
+            links {
+              ref
+              media {
+                content {
+                  _id
+                }
+              }
+            }
+          }`
+}
+
 const COMPONENTS_QUERY = `
         type
         path
@@ -15,18 +30,7 @@ const COMPONENTS_QUERY = `
           configAsJson
         }
         text {
-          value(processHtml:{type:absolute, imageWidths:[400, 800, 1200], imageSizes:"(max-width: 400px) 400px, (max-width: 800px) 800px, 1200px"}) {
-            processedHtml
-            macrosAsJson
-            links {
-              ref
-              media {
-                content {
-                  _id
-                }
-              }
-            }
-          }
+            ${richTextQuery('value')}
         }
         part {
           descriptor
