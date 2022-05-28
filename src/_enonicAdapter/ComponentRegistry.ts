@@ -102,9 +102,9 @@ export class ComponentRegistry {
     }
 
     public static getByComponent(component: PageComponent): ComponentDefinition | undefined {
-        const type = component.type;
-        const selName = toSelectorName(type);
-        const desc = component[type]?.descriptor;
+        const selName = toSelectorName(component.type);
+        let cmpData = component[component.type];
+        const desc = cmpData && 'descriptor' in cmpData ? cmpData.descriptor : component.path;
         return selName && desc ? this.getType(selName, desc) : undefined;
     }
 
@@ -122,6 +122,10 @@ export class ComponentRegistry {
 
     public static getMacro(name: string): ComponentDefinition | undefined {
         return ComponentRegistry.getType('macro', name);
+    }
+
+    public static getMacros(): [string, ComponentDefinition][] {
+        return Object.entries(this.macros);
     }
 
     public static addContentType(name: string, obj: ComponentDefinition): void {

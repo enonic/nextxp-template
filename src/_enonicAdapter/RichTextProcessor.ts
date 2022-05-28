@@ -1,32 +1,5 @@
 import {commonChars, CONTENT_API_URL, getUrl} from './utils';
-
-export interface TextData {
-    processedHtml: string,
-    links: LinkData[],
-    macrosAsJson: MacroData[],
-}
-
-export interface LinkData {
-    ref: string,
-    media: {
-        content: {
-            id: string,
-        }
-    } | null,
-}
-
-export interface MacroConfig {
-    [key: string]: any;
-}
-
-export interface MacroData {
-    ref: string;
-    name: string;
-    descriptor: string;
-    config: {
-        [name: string]: MacroConfig;
-    };
-}
+import {LinkData} from './guillotine/getMetaData';
 
 export class RichTextProcessor {
     private static urlFunction: (url: string) => string;
