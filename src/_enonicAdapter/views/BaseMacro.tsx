@@ -1,7 +1,6 @@
 import React from "react"
-import {MetaData} from "../guillotine/getMetaData";
+import {MacroConfig, MacroData, MetaData} from "../guillotine/getMetaData";
 import {ComponentRegistry} from '../ComponentRegistry';
-import {MacroConfig, MacroData} from '../RichTextProcessor';
 
 const unescape = require('unescape');
 
