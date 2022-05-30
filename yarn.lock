@@ -858,9 +858,9 @@ html-dom-parser@1.2.0:
     domhandler "4.3.1"
     htmlparser2 "7.2.0"
 
-html-react-parser@^1.4.12:
-  version "1.4.12"
-  resolved "https://registry.npmjs.org/html-react-parser/-/html-react-parser-1.4.12.tgz"
+html-react-parser@^1.4.13:
+  version "1.4.13"
+  resolved "https://registry.yarnpkg.com/html-react-parser/-/html-react-parser-1.4.13.tgz#7244f35fb2015cae98c40c1ce1d00a2d6ff7492b"
   dependencies:
     domhandler "4.3.1"
     html-dom-parser "1.2.0"
