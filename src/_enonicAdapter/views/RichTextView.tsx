@@ -1,6 +1,6 @@
 import React from "react"
-import {RichTextProcessor, TextData} from '../RichTextProcessor';
-import {MetaData} from '../guillotine/getMetaData';
+import {RichTextProcessor} from '../RichTextProcessor';
+import {MetaData, RichTextData} from '../guillotine/getMetaData';
 import HTMLReactParser, {DOMNode} from 'html-react-parser';
 import {ElementType} from 'domelementtype/lib';
 import {Element} from 'domhandler/lib';
@@ -8,12 +8,13 @@ import BaseMacro from './BaseMacro';
 import {RENDER_MODE} from '../utils';
 
 type Props = {
-    data: TextData,
+    data: RichTextData,
     meta: MetaData,
     tag?: string,
 }
 
-function replacerFactory(allData: TextData, meta: MetaData): (domNode: DOMNode) => JSX.Element | object | void | undefined | null | false {
+function replacerFactory(allData: RichTextData,
+                         meta: MetaData): (domNode: DOMNode) => JSX.Element | object | void | undefined | null | false {
     const mode = meta.renderMode;
     // eslint-disable-next-line react/display-name
     return (domNode: DOMNode): JSX.Element | object | void | undefined | null | false => {
@@ -41,7 +42,7 @@ function replacerFactory(allData: TextData, meta: MetaData): (domNode: DOMNode) 
             break;
         case RichTextProcessor.MACRO_TAG:
             ref = el.attribs[RichTextProcessor.MACRO_ATTR];
-            const data = ref && allData.macrosAsJson.find((d) => d.ref === ref);
+            const data = ref && allData.macros.find((d) => d.ref === ref);
             if (data) {
                 return <BaseMacro data={data} meta={meta}/>
             }

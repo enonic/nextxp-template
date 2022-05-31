@@ -1,5 +1,5 @@
 import {APP_NAME} from '../_enonicAdapter/utils'
-import {CATCH_ALL, ComponentRegistry} from '../_enonicAdapter/ComponentRegistry';
+import {ComponentRegistry} from '../_enonicAdapter/ComponentRegistry';
 import Person from './views/Person';
 import getPerson from './queries/getPerson';
 import MainPage from './pages/Main';
@@ -46,13 +46,22 @@ ComponentRegistry.addPart(`${APP_NAME}:child-list`, {
 });
 
 // Macro mappings
+const DEFAULT_MACRO = {
+    view: DefaultMacro,
+    query: `{
+              body
+            }`
+};
+ComponentRegistry.addMacro('system:embed', DEFAULT_MACRO);
+ComponentRegistry.addMacro('system:disable', DEFAULT_MACRO);
 ComponentRegistry.addMacro('com.enonic.app.socialmacros:youtube', {
-    view: YoutubeMacro
+    view: YoutubeMacro,
+    query: `{
+              body
+              title
+              url
+            }`
 });
-ComponentRegistry.addMacro(CATCH_ALL, {
-    view: DefaultMacro
-});
-
 /*
 // Debug
 ComponentRegistry.addContentType(CATCH_ALL, {
