@@ -8,8 +8,7 @@ import Heading from './parts/Heading';
 import MovieDetails, {getMovie} from './parts/MovieDetails';
 import TwoColumnLayout from './layouts/TwoColumnLayout';
 import {commonQuery, commonVariables} from './queries/common';
-import DefaultMacro from './macros/DefaultMacro';
-import YoutubeMacro from './macros/YoutubeMacro';
+import PanelMacro from './macros/PanelMacro';
 
 
 // You can set common query for all views here
@@ -46,14 +45,23 @@ ComponentRegistry.addPart(`${APP_NAME}:child-list`, {
 });
 
 // Macro mappings
-const DEFAULT_MACRO = {
-    view: DefaultMacro,
+const macroPanelConfig = {
+    view: PanelMacro,
     query: `{
               body
+              header
             }`
-};
-ComponentRegistry.addMacro('system:embed', DEFAULT_MACRO);
-ComponentRegistry.addMacro('system:disable', DEFAULT_MACRO);
+}
+ComponentRegistry.addMacro(`${APP_NAME}:panel2`, macroPanelConfig);
+/*
+// Following macros come from com.enonic.app.panelmacros app that you need to install separately
+ComponentRegistry.addMacro(`com.enonic.app.panelmacros:panel`, macroPanelConfig);
+ComponentRegistry.addMacro(`com.enonic.app.panelmacros:info`, macroPanelConfig);
+ComponentRegistry.addMacro(`com.enonic.app.panelmacros:note`, macroPanelConfig);
+ComponentRegistry.addMacro(`com.enonic.app.panelmacros:error`, macroPanelConfig);
+ComponentRegistry.addMacro(`com.enonic.app.panelmacros:success`, macroPanelConfig);
+
+// Following macro comes from com.enonic.app.socialmacros app that you need to install separately
 ComponentRegistry.addMacro('com.enonic.app.socialmacros:youtube', {
     view: YoutubeMacro,
     query: `{
@@ -62,7 +70,7 @@ ComponentRegistry.addMacro('com.enonic.app.socialmacros:youtube', {
               url
             }`
 });
-/*
+
 // Debug
 ComponentRegistry.addContentType(CATCH_ALL, {
     view: PropsView
