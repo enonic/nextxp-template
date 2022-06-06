@@ -858,14 +858,14 @@ html-dom-parser@1.2.0:
     domhandler "4.3.1"
     htmlparser2 "7.2.0"
 
-html-react-parser@^1.4.13:
-  version "1.4.13"
-  resolved "https://registry.yarnpkg.com/html-react-parser/-/html-react-parser-1.4.13.tgz#7244f35fb2015cae98c40c1ce1d00a2d6ff7492b"
+html-react-parser@^1.4.14:
+  version "1.4.14"
+  resolved "https://registry.yarnpkg.com/html-react-parser/-/html-react-parser-1.4.14.tgz#577b7a90be0c61eebbbc488d914ad08398c79ef5"
   dependencies:
     domhandler "4.3.1"
     html-dom-parser "1.2.0"
     react-property "2.0.0"
-    style-to-js "1.1.0"
+    style-to-js "1.1.1"
 
 htmlparser2@7.2.0:
   version "7.2.0"
@@ -1444,9 +1444,9 @@ strip-json-comments@^3.1.0, strip-json-comments@^3.1.1:
   version "3.1.1"
   resolved "https://registry.npmjs.org/strip-json-comments/-/strip-json-comments-3.1.1.tgz"
 
-style-to-js@1.1.0:
-  version "1.1.0"
-  resolved "https://registry.npmjs.org/style-to-js/-/style-to-js-1.1.0.tgz"
+style-to-js@1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/style-to-js/-/style-to-js-1.1.1.tgz#417786986cda61d4525c80aed9d1123a6a7af9b8"
   dependencies:
     style-to-object "0.3.0"
 
