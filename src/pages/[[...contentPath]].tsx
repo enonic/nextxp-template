@@ -1,22 +1,12 @@
 import React from 'react';
-import {fetchContent, FetchContentResult} from '../_enonicAdapter/guillotine/fetchContent';
-import MainView from '../_enonicAdapter/views/MainView';
-import {IS_DEV_MODE, RENDER_MODE} from '../_enonicAdapter/utils';
-import {GetServerSideProps, GetServerSidePropsContext, GetServerSidePropsResult} from 'next';
-import {ParsedUrlQuery} from 'node:querystring';
+import {Context, fetchContent, FetchContentResult} from "../_enonicAdapter/guillotine/fetchContent";
+import MainView from "../_enonicAdapter/views/MainView";
+import {IS_DEV_MODE, RENDER_MODE} from "../_enonicAdapter/utils";
+import {GetServerSideProps, GetServerSidePropsResult} from 'next';
 
 // Register component mappings
 import "../_enonicAdapter/baseMappings";
 import "../components/_mappings";
-
-export interface ServerSideParams
-    extends ParsedUrlQuery {
-    // String array catching a sub-path assumed to match the site-relative path of an XP content.
-    contentPath?: string[];
-    mode?: string;
-}
-
-export type Context = GetServerSidePropsContext<ServerSideParams>;
 
 // SSR
 

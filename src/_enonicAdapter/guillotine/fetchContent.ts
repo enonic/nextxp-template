@@ -8,8 +8,6 @@ import {
     RegionTree
 } from './getMetaData';
 
-import {Context} from '../../pages/[[...contentPath]]';
-
 import adapterConstants, {
     APP_NAME,
     APP_NAME_DASHED,
@@ -24,6 +22,8 @@ import adapterConstants, {
     XP_REQUEST_TYPE
 } from '../utils';
 import {ComponentDefinition, ComponentRegistry, SelectedQueryMaybeVariablesFunc} from '../ComponentRegistry';
+import {ParsedUrlQuery} from 'node:querystring';
+import {GetServerSidePropsContext} from 'next';
 
 export type adapterConstants = {
     APP_NAME: string,
@@ -81,6 +81,15 @@ interface QueryAndVariables {
     variables?: Record<string, any>;
 }
 
+export interface ServerSideParams
+    extends ParsedUrlQuery {
+    // String array catching a sub-path assumed to match the site-relative path of an XP content.
+    contentPath?: string[];
+    mode?: string;
+}
+
+export type Context = GetServerSidePropsContext<ServerSideParams>;
+
 /**
  * Sends one query to the guillotine API and asks for content type, then uses the type to select a second query and variables, which is sent to the API and fetches content data.
  * @param contentPath string or string array: pre-split or slash-delimited _path to a content available on the API
@@ -100,7 +109,7 @@ const GRAPHQL_FRAGMENTS_REGEXP = /fragment\s+.+\s+on\s+.+\s*{[\s\w{}().,:"'`]+}/
 ///////////////////////////////////////////////////////////////////////////////// Data
 
 // Shape of content base-data API body
-type ContentApiBaseBody = {
+export type ContentApiBaseBody = {
     query?: string,                 // Override the default base-data query
     variables?: {                   // GraphQL variables inserted into the query
         path?: string,              // Full content item _path
@@ -161,7 +170,7 @@ export const fetchFromApi = async (
 };
 
 /** Guillotine-specialized fetch, using the generic fetch above */
-const fetchGuillotine = async (
+export const fetchGuillotine = async (
     contentApiUrl: string,
     body: ContentApiBaseBody,
     xpContentPath: string,

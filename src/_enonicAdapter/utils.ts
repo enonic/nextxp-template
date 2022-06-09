@@ -1,7 +1,6 @@
-import {Context} from '../pages/[[...contentPath]]';
-
-
 /** Import config values from .env, .env.development and .env.production */
+import {Context} from './guillotine/fetchContent';
+
 const mode = process.env.MODE || process.env.NEXT_PUBLIC_MODE;
 export const IS_DEV_MODE = (mode === 'development');
 

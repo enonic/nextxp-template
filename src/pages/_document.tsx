@@ -5,6 +5,8 @@ class MyDocument
     extends Document {
 
     static async getInitialProps(ctx: DocumentContext) {
+        // https://nextjs.org/docs/advanced-features/automatic-static-optimization
+        // ctx.req will be undefined for static pages
         return await Document.getInitialProps(ctx)
     }
 
