@@ -1,6 +1,6 @@
-import {Context} from '../pages/[[...contentPath]]';
 import {PageComponent} from './guillotine/getMetaData';
 import {XP_COMPONENT_TYPE} from './utils';
+import {Context} from './guillotine/fetchContent';
 
 
 /**

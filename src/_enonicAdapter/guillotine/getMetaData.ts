@@ -8,9 +8,10 @@ function sanitizeMacroName(name: string): string {
 }
 
 export const macroConfigsQuery = (): string => {
-    return `config {
-        ${ComponentRegistry.getMacros().map(entry => `${sanitizeMacroName(entry[0])}${entry[1].query}`).join('\n')}
-    }`
+    const macros = ComponentRegistry.getMacros();
+    return macros.length ? `config {
+        ${macros.map(entry => `${sanitizeMacroName(entry[0])}${entry[1].query}`).join('\n')}
+    }` : '';
 }
 
 
