@@ -87,6 +87,8 @@ const ALIAS_PREFIX = 'request';
 
 const GUILLOTINE_QUERY_REGEXP = /^\s*query\s*(?:\((.*)*\))?\s*{\s*guillotine\s*{((?:.|\s)+)}\s*}\s*$/;
 
+const GRAPHQL_FRAGMENTS_REGEXP = /fragment\s+.+\s+on\s+.+\s*{[\s\w{}().,:"'`]+}/;
+
 ///////////////////////////////////////////////////////////////////////////////// Data
 
 // Shape of content base-data API body
@@ -389,6 +391,7 @@ function buildPage(contentType: string, comps: PageComponent[] = []): PageCompon
 
 function combineMultipleQueries(queriesWithVars: ComponentDescriptor[]): QueryAndVariables {
     const queries: string[] = [];
+    const fragments: string[] = [];
     const superVars: { [key: string]: any } = {};
     const superParams: string[] = [];
 
@@ -398,8 +401,18 @@ function combineMultipleQueries(queriesWithVars: ComponentDescriptor[]): QueryAn
             return;
         }
 
+        // Extract fragments first if exist
+        let q = queryAndVars.query;
+        let match = q.match(GRAPHQL_FRAGMENTS_REGEXP);
+        if (match?.length === 1) {
+            // extract a fragment to put it at root level
+            fragments.push(match[0]);
+            // remove it from query because queries are going to get wrapped
+            q = q.replace(match[0], '');
+        }
+
         // Extract graphql query and its params and add prefixes to exclude collisions with other queries
-        const match = queryAndVars.query.match(GUILLOTINE_QUERY_REGEXP);
+        match = q.match(GUILLOTINE_QUERY_REGEXP);
         let query = '';
         if (match && match.length === 2) {
             // no params, just query
@@ -435,7 +448,9 @@ function combineMultipleQueries(queriesWithVars: ComponentDescriptor[]): QueryAn
     // Compose the super query
     const superQuery = `query ${superParams.length ? `(${superParams.join(', ')})` : ''} {
         ${queries.join('\n')}
-    }`;
+    }
+    ${fragments.join('\n')}
+    `;
 
     return {
         query: superQuery,
