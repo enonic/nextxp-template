@@ -16,7 +16,8 @@ export type BaseComponentProps = {
 
 const BaseComponent = ({component, meta, common}: BaseComponentProps) => {
     const {type, error} = component;
-    const descriptor = component[type]?.descriptor;
+    const cmpData = component[type];
+    const descriptor = cmpData && 'descriptor' in cmpData ? cmpData.descriptor : undefined;
 
     let ComponentView: JSX.Element | null;
 
