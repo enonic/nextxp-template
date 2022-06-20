@@ -851,19 +851,19 @@ has@^1.0.3:
   dependencies:
     function-bind "^1.1.1"
 
-html-dom-parser@1.2.0:
-  version "1.2.0"
-  resolved "https://registry.npmjs.org/html-dom-parser/-/html-dom-parser-1.2.0.tgz"
+html-dom-parser@2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/html-dom-parser/-/html-dom-parser-2.0.0.tgz#ece281d47c233bb67982cacde8db7c70e404587c"
   dependencies:
     domhandler "4.3.1"
     htmlparser2 "7.2.0"
 
-html-react-parser@^1.4.14:
-  version "1.4.14"
-  resolved "https://registry.yarnpkg.com/html-react-parser/-/html-react-parser-1.4.14.tgz#577b7a90be0c61eebbbc488d914ad08398c79ef5"
+html-react-parser@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/html-react-parser/-/html-react-parser-2.0.0.tgz#d056ef75534d8f3dfdb611196008fdcf8b392f67"
   dependencies:
     domhandler "4.3.1"
-    html-dom-parser "1.2.0"
+    html-dom-parser "2.0.0"
     react-property "2.0.0"
     style-to-js "1.1.1"
 
