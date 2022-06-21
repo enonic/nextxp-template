@@ -131,9 +131,9 @@
   dependencies:
     next "*"
 
-"@types/node@^17.0.42":
-  version "17.0.42"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-17.0.42.tgz#d7e8f22700efc94d125103075c074396b5f41f9b"
+"@types/node@^18.0.0":
+  version "18.0.0"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-18.0.0.tgz#67c7b724e1bcdd7a8821ce0d5ee184d3b4dd525a"
 
 "@types/prop-types@*":
   version "15.7.4"
@@ -280,10 +280,6 @@ balanced-match@^1.0.0:
   version "1.0.2"
   resolved "https://registry.npmjs.org/balanced-match/-/balanced-match-1.0.2.tgz"
 
-boolbase@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.npmjs.org/boolbase/-/boolbase-1.0.0.tgz"
-
 brace-expansion@^1.1.7:
   version "1.1.11"
   resolved "https://registry.npmjs.org/brace-expansion/-/brace-expansion-1.1.11.tgz"
@@ -344,20 +340,6 @@ cross-spawn@^7.0.2:
     path-key "^3.1.0"
     shebang-command "^2.0.0"
     which "^2.0.1"
-
-css-select@^4.2.1:
-  version "4.3.0"
-  resolved "https://registry.npmjs.org/css-select/-/css-select-4.3.0.tgz"
-  dependencies:
-    boolbase "^1.0.0"
-    css-what "^6.0.1"
-    domhandler "^4.3.1"
-    domutils "^2.8.0"
-    nth-check "^2.0.1"
-
-css-what@^6.0.1:
-  version "6.0.1"
-  resolved "https://registry.npmjs.org/css-what/-/css-what-6.0.1.tgz"
 
 csstype@^3.0.2:
   version "3.0.11"
@@ -425,7 +407,7 @@ domelementtype@^2.0.1, domelementtype@^2.2.0:
   version "2.2.0"
   resolved "https://registry.npmjs.org/domelementtype/-/domelementtype-2.2.0.tgz"
 
-domhandler@4.3.1, domhandler@^4.2.0, domhandler@^4.2.2, domhandler@^4.3.1:
+domhandler@4.3.1, domhandler@^4.2.0, domhandler@^4.2.2:
   version "4.3.1"
   resolved "https://registry.yarnpkg.com/domhandler/-/domhandler-4.3.1.tgz#8d792033416f59d68bc03a5aa7b018c1ca89279c"
   dependencies:
@@ -673,6 +655,12 @@ esutils@^2.0.2:
   version "2.0.3"
   resolved "https://registry.npmjs.org/esutils/-/esutils-2.0.3.tgz"
 
+extend-shallow@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/extend-shallow/-/extend-shallow-2.0.1.tgz#51af7d614ad9a9f610ea1bafbb989d6b1c56890f"
+  dependencies:
+    is-extendable "^0.1.0"
+
 fast-deep-equal@^3.1.1, fast-deep-equal@^3.1.3:
   version "3.1.3"
   resolved "https://registry.npmjs.org/fast-deep-equal/-/fast-deep-equal-3.1.3.tgz"
@@ -832,10 +820,6 @@ has@^1.0.3:
   dependencies:
     function-bind "^1.1.1"
 
-he@1.2.0:
-  version "1.2.0"
-  resolved "https://registry.npmjs.org/he/-/he-1.2.0.tgz"
-
 html-dom-parser@2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/html-dom-parser/-/html-dom-parser-2.0.0.tgz#ece281d47c233bb67982cacde8db7c70e404587c"
@@ -927,6 +911,10 @@ is-date-object@^1.0.1:
   resolved "https://registry.npmjs.org/is-date-object/-/is-date-object-1.0.5.tgz"
   dependencies:
     has-tostringtag "^1.0.0"
+
+is-extendable@^0.1.0:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/is-extendable/-/is-extendable-0.1.1.tgz#62b110e289a471418e3ec36a617d472e301dfc89"
 
 is-extglob@^2.1.1:
   version "2.1.1"
@@ -1114,19 +1102,6 @@ next@*, next@^12.1.6:
     "@next/swc-win32-arm64-msvc" "12.1.6"
     "@next/swc-win32-ia32-msvc" "12.1.6"
     "@next/swc-win32-x64-msvc" "12.1.6"
-
-node-html-parser@^5.3.3:
-  version "5.3.3"
-  resolved "https://registry.npmjs.org/node-html-parser/-/node-html-parser-5.3.3.tgz"
-  dependencies:
-    css-select "^4.2.1"
-    he "1.2.0"
-
-nth-check@^2.0.1:
-  version "2.0.1"
-  resolved "https://registry.npmjs.org/nth-check/-/nth-check-2.0.1.tgz"
-  dependencies:
-    boolbase "^1.0.0"
 
 object-assign@^4.1.1:
   version "4.1.1"
@@ -1510,6 +1485,12 @@ unbox-primitive@^1.0.1:
     has-bigints "^1.0.1"
     has-symbols "^1.0.2"
     which-boxed-primitive "^1.0.2"
+
+unescape@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/unescape/-/unescape-1.0.1.tgz#956e430f61cad8a4d57d82c518f5e6cc5d0dda96"
+  dependencies:
+    extend-shallow "^2.0.1"
 
 uri-js@^4.2.2:
   version "4.4.1"
