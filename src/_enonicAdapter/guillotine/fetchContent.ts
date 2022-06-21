@@ -1,4 +1,4 @@
-import {getMetaQuery, MetaData, PAGE_FRAGMENT, PageComponent, PageData, PageRegion, RegionTree} from "./getMetaData";
+import {getMetaQuery, MetaData, PageComponent, PageData, pageFragmentQuery, PageRegion, RegionTree} from "./getMetaData";
 
 import {Context} from "../../pages/[[...contentPath]]";
 
@@ -86,6 +86,8 @@ const NO_PROPS_PROCESSOR = async (props: any) => props || {};
 const ALIAS_PREFIX = 'request';
 
 const GUILLOTINE_QUERY_REGEXP = /^\s*query\s*(?:\((.*)*\))?\s*{\s*guillotine\s*{((?:.|\s)+)}\s*}\s*$/;
+
+const GRAPHQL_FRAGMENTS_REGEXP = /fragment\s+.+\s+on\s+.+\s*{[\s\w{}().,:"'`]+}/;
 
 ///////////////////////////////////////////////////////////////////////////////// Data
 
@@ -209,7 +211,7 @@ const fetchGuillotine = async (
 
 const fetchMetaData = async (contentApiUrl: string, xpContentPath: string): Promise<MetaResult> => {
     const body: ContentApiBaseBody = {
-        query: getMetaQuery(PAGE_FRAGMENT),
+        query: getMetaQuery(pageFragmentQuery()),
         variables: {
             path: xpContentPath
         }
@@ -389,6 +391,7 @@ function buildPage(contentType: string, comps: PageComponent[] = []): PageCompon
 
 function combineMultipleQueries(queriesWithVars: ComponentDescriptor[]): QueryAndVariables {
     const queries: string[] = [];
+    const fragments: string[] = [];
     const superVars: { [key: string]: any } = {};
     const superParams: string[] = [];
 
@@ -398,8 +401,18 @@ function combineMultipleQueries(queriesWithVars: ComponentDescriptor[]): QueryAn
             return;
         }
 
+        // Extract fragments first if exist
+        let q = queryAndVars.query;
+        let match = q.match(GRAPHQL_FRAGMENTS_REGEXP);
+        if (match?.length === 1) {
+            // extract a fragment to put it at root level
+            fragments.push(match[0]);
+            // remove it from query because queries are going to get wrapped
+            q = q.replace(match[0], '');
+        }
+
         // Extract graphql query and its params and add prefixes to exclude collisions with other queries
-        const match = queryAndVars.query.match(GUILLOTINE_QUERY_REGEXP);
+        match = q.match(GUILLOTINE_QUERY_REGEXP);
         let query = '';
         if (match && match.length === 2) {
             // no params, just query
@@ -435,7 +448,9 @@ function combineMultipleQueries(queriesWithVars: ComponentDescriptor[]): QueryAn
     // Compose the super query
     const superQuery = `query ${superParams.length ? `(${superParams.join(', ')})` : ''} {
         ${queries.join('\n')}
-    }`;
+    }
+    ${fragments.join('\n')}
+    `;
 
     return {
         query: superQuery,
@@ -483,8 +498,9 @@ function collectComponentDescriptors(components: PageComponent[],
             const cmpDef = ComponentRegistry.getByComponent(cmp);
             if (cmpDef) {
                 // const partPath = `${xpContentPath}/_component${cmp.path}`;
-                const queryAndVariables = getQueryAndVariables(cmp.type, xpContentPath, cmpDef.query, context,
-                    cmp[cmp.type]?.config);
+                const cmpData = cmp[cmp.type];
+                const config = cmpData && 'config' in cmpData ? cmpData.config : undefined;
+                const queryAndVariables = getQueryAndVariables(cmp.type, xpContentPath, cmpDef.query, context, config);
                 if (queryAndVariables) {
                     descriptors.push({
                         component: cmp,
@@ -507,13 +523,12 @@ function collectComponentDescriptors(components: PageComponent[],
 }
 
 function processComponentConfig(myAppName: string, myAppNameDashed: string, cmp: PageComponent) {
-    const type = cmp.type;
-    const cmpDef = cmp[type];
-    if (cmpDef?.descriptor && cmpDef?.configAsJson) {
-        const [appName, cmpName] = cmpDef.descriptor.split(':');
-        if (appName === myAppName && cmpDef.configAsJson[myAppNameDashed][cmpName]) {
-            cmpDef.config = cmpDef.configAsJson[myAppNameDashed][cmpName];
-            delete cmpDef.configAsJson;
+    const cmpData = cmp[cmp.type];
+    if (cmpData && 'descriptor' in cmpData && cmpData.descriptor && 'configAsJson' in cmpData && cmpData.configAsJson) {
+        const [appName, cmpName] = cmpData.descriptor.split(':');
+        if (appName === myAppName && cmpData.configAsJson[myAppNameDashed][cmpName]) {
+            cmpData.config = cmpData.configAsJson[myAppNameDashed][cmpName];
+            delete cmpData.configAsJson;
         }
     }
 }
