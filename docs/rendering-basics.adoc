@@ -106,8 +106,8 @@ Update `src/pages/_app.tsx`` with the following changes:
 +
 [source,TypeScript]
 ----
-import Header from "../components/views/Header";
-import Footer from "../components/views/Footer";
+import Header from '../components/views/Header';
+import Footer from '../components/views/Footer';
 ----
 +
 . And **replace this line**:

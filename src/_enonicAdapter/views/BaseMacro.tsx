@@ -1,5 +1,5 @@
-import React from "react"
-import {MacroConfig, MacroData, MetaData} from "../guillotine/getMetaData";
+import React from 'react'
+import {MacroConfig, MacroData, MetaData} from '../guillotine/getMetaData';
 import {ComponentRegistry} from '../ComponentRegistry';
 import {RENDER_MODE} from '../utils';
 import HTMLReactParser from 'html-react-parser';

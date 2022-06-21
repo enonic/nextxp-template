@@ -1,4 +1,4 @@
-import React from "react"
+import React from 'react'
 import {MacroProps} from '../../_enonicAdapter/views/BaseMacro';
 
 import styles from './PanelMacro.module.css';

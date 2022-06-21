@@ -1,4 +1,4 @@
-import {RENDER_MODE, XP_COMPONENT_TYPE, XP_REQUEST_TYPE} from "../utils";
+import {RENDER_MODE, XP_COMPONENT_TYPE, XP_REQUEST_TYPE} from '../utils';
 import {ComponentRegistry} from '../ComponentRegistry';
 
 function sanitizeName(name: string): string {

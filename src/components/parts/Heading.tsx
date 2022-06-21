@@ -1,5 +1,5 @@
-import React from "react"
-import {APP_NAME} from "../../_enonicAdapter/utils";
+import React from 'react'
+import {APP_NAME} from '../../_enonicAdapter/utils';
 import {PartData} from '../../_enonicAdapter/guillotine/getMetaData';
 
 // fully qualified XP part name:

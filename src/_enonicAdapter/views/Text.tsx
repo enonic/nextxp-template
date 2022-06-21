@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {MetaData, TextData} from '../guillotine/getMetaData';
 import RichTextView from './RichTextView';
 

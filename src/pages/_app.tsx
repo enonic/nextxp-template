@@ -1,9 +1,9 @@
 import type {AppProps} from 'next/app'
 import '../styles/globals.css'
 import React from 'react';
-import {getUrl, RENDER_MODE, XP_REQUEST_TYPE} from "../_enonicAdapter/utils";
-import Header from "../components/views/Header";
-import Footer from "../components/views/Footer";
+import {getUrl, RENDER_MODE, XP_REQUEST_TYPE} from '../_enonicAdapter/utils';
+import Header from '../components/views/Header';
+import Footer from '../components/views/Footer';
 
 /**
  * Wraps all rendered components

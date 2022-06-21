@@ -1,8 +1,8 @@
-import React from "react"
+import React from 'react'
 import {PORTAL_REGION_ATTRIBUTE, RENDER_MODE} from '../utils';
 
-import BaseComponent from "./BaseComponent";
-import {MetaData, PageComponent, PageData} from "../guillotine/getMetaData";
+import BaseComponent from './BaseComponent';
+import {MetaData, PageComponent, PageData} from '../guillotine/getMetaData';
 
 export interface RegionProps {
     name: string;

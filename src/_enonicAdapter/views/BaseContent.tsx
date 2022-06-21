@@ -1,5 +1,5 @@
-import React from "react";
-import {FetchContentResult} from "../guillotine/fetchContent";
+import React from 'react';
+import {FetchContentResult} from '../guillotine/fetchContent';
 import {ComponentRegistry} from '../ComponentRegistry';
 import BasePage, {BasePageProps} from './BasePage';
 
