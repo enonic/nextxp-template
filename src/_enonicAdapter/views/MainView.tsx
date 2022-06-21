@@ -1,8 +1,8 @@
 import React from 'react';
 
-import {FetchContentResult} from "../guillotine/fetchContent";
-import SingleComponent from "./SingleComponent";
-import BaseContent from "./BaseContent";
+import {FetchContentResult} from '../guillotine/fetchContent';
+import SingleComponent from './SingleComponent';
+import BaseContent from './BaseContent';
 import {XP_REQUEST_TYPE} from '../utils';
 
 

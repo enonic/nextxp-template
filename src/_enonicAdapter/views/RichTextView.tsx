@@ -1,4 +1,4 @@
-import React from "react"
+import React from 'react'
 import {RichTextProcessor} from '../RichTextProcessor';
 import {MetaData, RichTextData} from '../guillotine/getMetaData';
 import HTMLReactParser, {DOMNode} from 'html-react-parser';

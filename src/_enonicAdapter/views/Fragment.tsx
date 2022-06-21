@@ -1,4 +1,4 @@
-import React from "react"
+import React from 'react'
 import BaseComponent from './BaseComponent';
 import {FragmentData, MetaData, PageComponent, PageData} from '../guillotine/getMetaData';
 import {FRAGMENT_DEFAULT_REGION_NAME} from '../utils';

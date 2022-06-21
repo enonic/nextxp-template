@@ -1,4 +1,4 @@
-import {Context} from "../pages/[[...contentPath]]";
+import {Context} from '../pages/[[...contentPath]]';
 
 
 /** Import config values from .env, .env.development and .env.production */

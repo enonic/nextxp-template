@@ -1,6 +1,6 @@
-import React from "react"
-import Link from "next/link";
-import {getUrl} from "../../_enonicAdapter/utils";
+import React from 'react'
+import Link from 'next/link';
+import {getUrl} from '../../_enonicAdapter/utils';
 
 export interface HeaderProps {
     title: string;

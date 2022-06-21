@@ -1,6 +1,14 @@
-import {getMetaQuery, MetaData, PageComponent, PageData, pageFragmentQuery, PageRegion, RegionTree} from "./getMetaData";
+import {
+    getMetaQuery,
+    MetaData,
+    PageComponent,
+    PageData,
+    pageFragmentQuery,
+    PageRegion,
+    RegionTree
+} from './getMetaData';
 
-import {Context} from "../../pages/[[...contentPath]]";
+import {Context} from '../../pages/[[...contentPath]]';
 
 import adapterConstants, {
     APP_NAME,
@@ -14,7 +22,7 @@ import adapterConstants, {
     setXpBaseUrl,
     XP_COMPONENT_TYPE,
     XP_REQUEST_TYPE
-} from "../utils";
+} from '../utils';
 import {ComponentDefinition, ComponentRegistry, SelectedQueryMaybeVariablesFunc} from '../ComponentRegistry';
 
 export type adapterConstants = {
