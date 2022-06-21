@@ -15,6 +15,7 @@ export interface RegionProps {
 export interface RegionsProps {
     page: PageData | null;
     name?: string;
+    className?: string;
     common?: any;                  // Content is passed down for optional consumption in componentviews. TODO: Use a react contextprovider instead?
     meta: MetaData;
 }
@@ -46,7 +47,7 @@ export const RegionView = (props: RegionProps) => {
 
 /** Multiple regions, or only one if named in props.selected */
 const RegionsView = (props: RegionsProps) => {
-    const {page, name, meta, common} = props;
+    const {page, name, meta, common, className} = props;
     const regions = page?.regions;
     if (!regions || !Object.keys(regions)) {
         return null;
@@ -60,7 +61,7 @@ const RegionsView = (props: RegionsProps) => {
                 `Region name '${name}' was selected but not found among regions (${JSON.stringify(Object.keys(regions))}). Skipping.`);    // TODO: Throw error instead of this? Return null?
             return null;
         }
-        return <RegionView {...selectedRegion} common={common} meta={meta}/>;
+        return <RegionView {...selectedRegion} className={className} common={common} meta={meta}/>;
     }
 
     return (
