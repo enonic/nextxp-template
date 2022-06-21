@@ -27,14 +27,14 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 2. Test and verify the app
 3. Update docs if needed
 4. Create pull-request to master on github
-5. Tag master using `git tag v0.8.5` after pull-request is merged
+5. Tag master using `git tag v0.9.0` after pull-request is merged
 
 ### Update template repo
 
 6. Move all relevant changes to a feature branch in the template repo
 7. Test and verify the changes
 8. Create pull-request to master on github
-9. Tag master branch using `git tag v0.8.5` after pull-request is merged
+9. Tag master branch using `git tag v0.9.0` after pull-request is merged
 
 ### Final step: Release
 
