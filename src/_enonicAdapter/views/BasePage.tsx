@@ -1,6 +1,6 @@
-import React from "react"
+import React from 'react'
 import {ComponentRegistry} from '../ComponentRegistry';
-import {MetaData, PageData} from "../guillotine/getMetaData";
+import {MetaData, PageData} from '../guillotine/getMetaData';
 import {XP_COMPONENT_TYPE} from '../utils';
 import {ErrorComponent, MissingComponent, shouldShowErrorView, shouldShowMissingView} from './BaseComponent';
 

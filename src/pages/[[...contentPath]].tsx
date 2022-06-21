@@ -1,7 +1,7 @@
 import React from 'react';
-import {fetchContent, FetchContentResult} from "../_enonicAdapter/guillotine/fetchContent";
-import MainView from "../_enonicAdapter/views/MainView";
-import {IS_DEV_MODE, RENDER_MODE} from "../_enonicAdapter/utils";
+import {fetchContent, FetchContentResult} from '../_enonicAdapter/guillotine/fetchContent';
+import MainView from '../_enonicAdapter/views/MainView';
+import {IS_DEV_MODE, RENDER_MODE} from '../_enonicAdapter/utils';
 import {GetServerSideProps, GetServerSidePropsContext, GetServerSidePropsResult} from 'next';
 import {ParsedUrlQuery} from 'node:querystring';
 

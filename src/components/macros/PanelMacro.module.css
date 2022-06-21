@@ -1,0 +1,142 @@
+@font-face {
+    font-family: 'icomoon';
+    src: url('/fonts/icomoon.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+.icon {
+    /* use !important to prevent issues with browser extensions that change fonts */
+    font-family: 'icomoon' !important;
+    speak: none;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+
+    /* Better Font Rendering =========== */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-chat_bubble:before {
+    content: "\e0ca";
+}
+
+.icon-check_circle:before {
+    content: "\e86c";
+}
+
+.icon-message:before {
+    content: "\e0c9";
+}
+
+.icon-report:before {
+    content: "\e160";
+}
+
+.icon-warning:before {
+    content: "\e002";
+}
+
+.macro-panel .icon {
+    display: none;
+}
+
+.macroPanelStyled {
+    display: block;
+    text-decoration: none;
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius: 2px;
+
+    -webkit-box-shadow: 0 2px 3px rgba(0, 0, 0, .3);
+    -moz-box-shadow: 0 2px 3px rgba(0, 0, 0, .3);
+    box-shadow: 0 2px 3px rgba(0, 0, 0, .3);
+
+    min-height: 24px;
+    line-height: 24px;
+
+    font-family: sans-serif;
+    font-size: 14px;
+    color: #333;
+}
+
+.macroPanelStyled strong {
+    font-size: 14px;
+    font-weight: bold;
+    line-height: 24px;
+    margin: 0;
+    display: block;
+}
+
+.macroPanelStyled output {
+    display: block;
+}
+
+/*      Default panel   */
+
+.macroPanelDefault {
+    padding: 10px;
+    background-color: #f5f5f5;
+}
+
+/*      Any but default panel   */
+
+.macroPanelStyled:not(.macroPanelDefault) {
+    padding: 10px 10px 10px 44px;
+    position: relative;
+}
+
+.macroPanelStyled:not(.macroPanelDefault) .icon {
+    display: block;
+    position: absolute;
+    font-size: 24px;
+    top: 10px;
+    left: 10px;
+}
+
+/*      Info panel      */
+
+.macroPanelInfo {
+    background-color: #e1f2fa;
+}
+
+.macroPanelInfo .icon:before {
+    content: "\e0c9";
+    color: #4b93bd;
+}
+
+/*      Note panel      */
+
+.macroPanelNote {
+    background-color: #f5f4dc;
+}
+
+.macroPanelNote .icon:before {
+    content: "\e002";
+    color: #ccc03f;
+}
+
+/*      Success panel      */
+
+.macroPanelSuccess {
+    background-color: #edfae1;
+}
+
+.macroPanelSuccess .icon:before {
+    content: "\e86c";
+    color: #7bb842;
+}
+
+/*      Error panel      */
+
+.macroPanelError {
+    background-color: #fae5e1;
+}
+
+.macroPanelError .icon:before {
+    content: "\e160";
+    color: #de6f57;
+}

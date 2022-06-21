@@ -1,4 +1,4 @@
-import React from "react"
+import React from 'react'
 import {PartProps} from '../../_enonicAdapter/views/BasePart';
 import {Context} from '../../pages/[[...contentPath]]';
 import {VariablesGetterResult} from '../../_enonicAdapter/ComponentRegistry';

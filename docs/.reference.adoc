@@ -284,7 +284,7 @@ Or, when importing the app name to keep that defined in one place:
 
 [source,javascript,options="no-wrap"]
 ----
-import { appName } from "../enonic-connection-config";
+import { appName } from '../enonic-connection-config';
 
 contentSelector = {
     [`${appName}:my-content-type`]: {       <!--1-->
@@ -308,7 +308,7 @@ NOTE: This simple form is suitable for queries that only declare the `$path` par
 
 [source,javascript,options="no-wrap"]
 ----
-import { appName } from "../enonic-connection-config";
+import { appName } from '../enonic-connection-config';
 
 const getDisplayName = `                            <!--1-->
     query($path:ID!){
@@ -354,7 +354,7 @@ NOTE: Vice versa: if your query only declares a `$path` parameter, no `variables
 
 [source,javascript,options="no-wrap"]
 ----
-import { appName } from "../enonic-connection-config";
+import { appName } from '../enonic-connection-config';
 
 const getSomeItemsBelowFolder = `                   <!--1-->
     query($path:ID!,$maxChildren:Int){
@@ -414,7 +414,7 @@ The function has the general form `(oldContent, context) => newContent`
 
 [source,javascript,options="no-wrap"]
 ----
-import { appName } from "../enonic-connection-config";
+import { appName } from '../enonic-connection-config';
 
 const getDisplayName = `
     query($path:ID!){
@@ -449,7 +449,7 @@ The `page` attribute (in the <<#type-selection, "type selection">> value object)
 
 [source,javascript,options="no-wrap"]
 ----
-import { appName } from "../enonic-connection-config";
+import { appName } from '../enonic-connection-config';
 
 const RenderName = (props) => (                     <!--1-->
     <>

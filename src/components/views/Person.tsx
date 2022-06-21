@@ -1,4 +1,4 @@
-import React from "react"
+import React from 'react'
 import {FetchContentResult} from '../../_enonicAdapter/guillotine/fetchContent';
 import {getUrl} from '../../_enonicAdapter/utils'
 

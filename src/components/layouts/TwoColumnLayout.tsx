@@ -1,4 +1,4 @@
-import React from "react"
+import React from 'react'
 import {RegionView} from '../../_enonicAdapter/views/Region';
 import {LayoutProps} from '../../_enonicAdapter/views/BaseLayout';
 import styles from './TwoColumnLayout.module.css';
