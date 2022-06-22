@@ -100,7 +100,7 @@ Content Studio's ships with a built-in Text component which is handy when compos
 +
 image:text-component.png[title="Next.js-rendered text component with an image",width=1440px]
 +
-. After saving, visit the Next.js rendering directly on http://localhost:3000/movies to see the result.
+. After saving, visit the Next.js rendering directly on http://localhost:3000/ to see the result.
 +
 . You may also click the `Preview` button in Content Studio for a full screen version, rendered via the proxy.
 
