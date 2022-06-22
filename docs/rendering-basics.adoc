@@ -38,6 +38,7 @@ NOTE: Do not copy the `...` - it is just there to illustrate there are other lin
 [source,JavaScript]
 ----
 import getPerson from './queries/getPerson';
+import {APP_NAME} from '../_enonicAdapter/utils'
 
 ...
 
