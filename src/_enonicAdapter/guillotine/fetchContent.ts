@@ -379,9 +379,14 @@ function buildPage(contentType: string, comps: PageComponent[] = []): PageCompon
         }
 
         if (region) {
-            // getting the index of component from string like '/main/0/left/1'
-            const cmpIndex = +cmp.path.substr(cmp.path.length - 1);
-            region.components.splice(cmpIndex, 0, cmp);
+            // getting the index of component from string like '/main/0/left/11'
+            const pathArr = cmp.path.split('/');
+            const cmpIndex = +(pathArr[pathArr.length - 1] || -1);
+            if (cmpIndex >= 0) {
+                region.components.splice(cmpIndex, 0, cmp);
+            } else {
+                throw Error(`Could not find [${cmp.type}] component index at ${cmp.path}, rendering not possible.`)
+            }
         }
     });
 
