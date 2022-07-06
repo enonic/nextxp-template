@@ -54,7 +54,7 @@ function replacerFactory(allData: RichTextData,
 const RichTextView = ({tag, data, meta}: Props) => {
     const CustomTag = tag as keyof JSX.IntrinsicElements || 'section';
     return <CustomTag>
-        {HTMLReactParser(data.processedHtml, {replace: replacerFactory(data, meta)})}
+        {data.processedHtml ? HTMLReactParser(data.processedHtml, {replace: replacerFactory(data, meta)}) : ''}
     </CustomTag>
 }
 
