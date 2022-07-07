@@ -1,12 +1,13 @@
 import React from 'react'
 import {MacroConfig, MacroData, MetaData} from '../guillotine/getMetaData';
 import {ComponentRegistry} from '../ComponentRegistry';
-import {RENDER_MODE} from '../utils';
+import {RENDER_MODE, sanitizeGraphqlName} from '../utils';
 import HTMLReactParser from 'html-react-parser';
 
 const unescape = require('unescape');
 
-export const DISABLE_MACRO = 'system:disable';
+export const MACRO_DISABLE = 'system:disable';
+export const MACRO_EMBED = 'system:embed';
 
 interface BaseMacroProps {
     data: MacroData;
@@ -22,8 +23,8 @@ export interface MacroProps {
 const BaseMacro = (props: BaseMacroProps) => {
     const {data, meta} = props;
 
-    let config = data.config[data.name] || {};
-    if (data.descriptor !== DISABLE_MACRO) {
+    let config = data.config[sanitizeGraphqlName(data.name)] || {};
+    if (data.descriptor !== MACRO_DISABLE) {
         // do not do any processing for disable macro
         config = normalizeValue(config);
     }

@@ -1,14 +1,15 @@
-import {RENDER_MODE, XP_COMPONENT_TYPE, XP_REQUEST_TYPE} from '../utils';
+import {RENDER_MODE, sanitizeGraphqlName, XP_COMPONENT_TYPE, XP_REQUEST_TYPE} from '../utils';
 import {ComponentRegistry} from '../ComponentRegistry';
 
-function sanitizeName(name: string): string {
+function sanitizeMacroName(name: string): string {
     const idx = name.indexOf(':');
-    return idx >= 0 ? name.substring(idx + 1) : name;
+    const nameWithoutAppPrefix = idx >= 0 ? name.substring(idx + 1) : name;
+    return sanitizeGraphqlName(nameWithoutAppPrefix);
 }
 
 export const macroConfigsQuery = (): string => {
     return `config {
-        ${ComponentRegistry.getMacros().map(entry => `${sanitizeName(entry[0])}${entry[1].query}`).join('\n')}
+        ${ComponentRegistry.getMacros().map(entry => `${sanitizeMacroName(entry[0])}${entry[1].query}`).join('\n')}
     }`
 }
 
