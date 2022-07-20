@@ -80,7 +80,11 @@ export interface ServerSideParams
     mode?: string;
 }
 
-export type Context = GetServerSidePropsContext<ServerSideParams>;
+export interface PreviewParams {
+    contentPath: string[];
+}
+
+export type Context = GetServerSidePropsContext<ServerSideParams, PreviewParams>;
 
 /**
  * Sends one query to the guillotine API and asks for content type, then uses the type to select a second query and variables, which is sent to the API and fetches content data.

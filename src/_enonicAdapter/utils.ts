@@ -79,7 +79,7 @@ export const getXPRequestType = (context?: Context): XP_REQUEST_TYPE => {
 const getRenderMode = (context?: Context): RENDER_MODE => {
     const value = (context?.req?.headers || {})[RENDER_MODE_HEADER] as string | undefined;
     const enumValue = RENDER_MODE[<keyof typeof RENDER_MODE>value?.toUpperCase()];
-    return enumValue || RENDER_MODE.NEXT;
+    return enumValue || process.env.RENDER_MODE || RENDER_MODE.NEXT;
 };
 
 export const getXpBaseUrl = (context?: Context): string =>
