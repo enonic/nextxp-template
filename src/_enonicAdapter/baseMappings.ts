@@ -41,13 +41,9 @@ ComponentRegistry.addComponent(XP_COMPONENT_TYPE.TEXT, {
 // Macro mappings
 ComponentRegistry.addMacro(MACRO_EMBED, {
     view: DefaultMacro,
-    query: `{
-              body
-            }`
+    configQuery: `{body}`
 });
 ComponentRegistry.addMacro(MACRO_DISABLE, {
     view: DisableMacro,
-    query: `{
-              body
-            }`
+    configQuery: `{body}`
 });

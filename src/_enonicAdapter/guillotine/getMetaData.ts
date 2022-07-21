@@ -1,19 +1,58 @@
 import {RENDER_MODE, sanitizeGraphqlName, XP_COMPONENT_TYPE, XP_REQUEST_TYPE} from '../utils';
-import {ComponentRegistry} from '../ComponentRegistry';
+import {ComponentDefinition, ComponentRegistry} from '../ComponentRegistry';
 
-function sanitizeMacroName(name: string): string {
-    const idx = name.indexOf(':');
-    const nameWithoutAppPrefix = idx >= 0 ? name.substring(idx + 1) : name;
-    return sanitizeGraphqlName(nameWithoutAppPrefix);
+const macroConfigQuery = (): string => {
+    return configQuery(ComponentRegistry.getMacros(), false);
 }
 
-export const macroConfigsQuery = (): string => {
-    const macros = ComponentRegistry.getMacros();
-    return macros.length ? `config {
-        ${macros.map(entry => `${sanitizeMacroName(entry[0])}${entry[1].query}`).join('\n')}
-    }` : '';
+const partConfigQuery = (): string => {
+    return configQuery(ComponentRegistry.getParts());
 }
 
+const layoutConfigQuery = (): string => {
+    return configQuery(ComponentRegistry.getLayouts());
+}
+
+const pageConfigQuery = (): string => {
+    return configQuery(ComponentRegistry.getPages())
+}
+
+const configQuery = (list: [string, ComponentDefinition][], includeAppName: boolean = true): string => {
+    const hasQueryList = list?.filter(([key, def]) => def.configQuery) || [];
+    if (hasQueryList.length === 0) {
+        return 'configAsJson';
+    }
+
+    const configsByApp: { [app: string]: string[] } = {};
+    hasQueryList
+        .forEach((entry) => {
+            const nameParts = entry[0].split(':');
+            if (nameParts.length === 2) {
+                const sanitizedAppName = sanitizeGraphqlName(nameParts[0]);
+                let existingConfigs = configsByApp[sanitizedAppName];
+                if (!existingConfigs) {
+                    existingConfigs = [];
+                    configsByApp[sanitizedAppName] = existingConfigs;
+                }
+                existingConfigs.push(`${sanitizeGraphqlName(nameParts[1])}${entry[1].configQuery}`);
+            }
+        })
+
+    // Still query for configAsJson if at least one item has no configQuery defined
+    const configAsJsonQuery = hasQueryList.length < list.length ? 'configAsJson' : '';
+
+    if (!includeAppName) {
+        return `${configAsJsonQuery}
+                config {
+                    ${Object.values(configsByApp).reduce((arr, curr) => arr.concat(curr), []).join('\n')}
+                }`
+    } else {
+        return `${configAsJsonQuery}
+                config {
+                    ${Object.entries(configsByApp).map(entry => entry[0] + '{\n' + entry[1].join('\n') + '\n}')}
+                }`
+    }
+}
 
 export const richTextQuery = (fieldName: string) => {
     return `${fieldName}(processHtml:{type:absolute, imageWidths:[400, 800, 1200], imageSizes:"(max-width: 400px) 400px, (max-width: 800px) 800px, 1200px"}) {
@@ -22,7 +61,7 @@ export const richTextQuery = (fieldName: string) => {
                     ref
                     name
                     descriptor
-                    ${macroConfigsQuery()}
+                    ${macroConfigQuery()}
                 }
                 links {
                     ref
@@ -40,21 +79,21 @@ const componentsQuery = () => `
         path
         page {
           descriptor
-          configAsJson
+          ${pageConfigQuery()}
           template {
             _path
           }
         }
         layout {
           descriptor
-          configAsJson
+          ${layoutConfigQuery()}
         }
         text {
             ${richTextQuery('value')}
         }
         part {
           descriptor
-          configAsJson
+          ${partConfigQuery()}
         }
         image {
           caption

@@ -9,6 +9,7 @@ import adapterConstants, {
     PAGE_TEMPLATE_CONTENTTYPE_NAME,
     PAGE_TEMPLATE_FOLDER,
     RENDER_MODE,
+    sanitizeGraphqlName,
     setXpBaseUrl,
     XP_COMPONENT_TYPE,
     XP_REQUEST_TYPE
@@ -541,11 +542,29 @@ function collectComponentDescriptors(components: PageComponent[],
 
 function processComponentConfig(myAppName: string, myAppNameDashed: string, cmp: PageComponent) {
     const cmpData = cmp[cmp.type];
-    if (cmpData && 'descriptor' in cmpData && cmpData.descriptor && 'configAsJson' in cmpData && cmpData.configAsJson) {
+    if (cmpData && 'descriptor' in cmpData && cmpData.descriptor) {
         const [appName, cmpName] = cmpData.descriptor.split(':');
-        if (appName === myAppName && cmpData.configAsJson[myAppNameDashed][cmpName]) {
-            cmpData.config = cmpData.configAsJson[myAppNameDashed][cmpName];
-            delete cmpData.configAsJson;
+        if (appName !== myAppName) {
+            return;
+        }
+        let config;
+        const configArray: Object[] = [];
+        if ('configAsJson' in cmpData && cmpData.configAsJson && cmpData.configAsJson[myAppNameDashed]) {
+            config = cmpData.configAsJson[myAppNameDashed][cmpName];
+            if (config) {
+                configArray.push(config);
+                delete cmpData.configAsJson;
+            }
+        }
+        let sanitizedAppName = sanitizeGraphqlName(appName);
+        if ('config' in cmpData && cmpData.config && cmpData.config[sanitizedAppName]) {
+            config = cmpData.config[sanitizedAppName][sanitizeGraphqlName(cmpName)];
+            if (config) {
+                configArray.push(config);
+            }
+        }
+        if (configArray.length) {
+            cmpData.config = Object.assign({}, ...configArray);
         }
     }
 }

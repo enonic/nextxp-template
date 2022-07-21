@@ -36,21 +36,23 @@ ComponentRegistry.addPart(`${APP_NAME}:movie-details`, {
     view: MovieDetails
 });
 ComponentRegistry.addPart(`${APP_NAME}:heading`, {
-    view: Heading
+    view: Heading,
+    configQuery: `{heading}`
 });
 ComponentRegistry.addPart(`${APP_NAME}:child-list`, {
     query: getChildList,
     processor: childListProcessor,
-    view: ChildList
+    view: ChildList,
+    configQuery: `{sorting}`
 });
 
 // Macro mappings
 const macroPanelConfig = {
     view: PanelMacro,
-    query: `{
-              body
-              header
-            }`
+    configQuery: `{
+                      body
+                      header
+                  }`
 }
 ComponentRegistry.addMacro(`${APP_NAME}:panel2`, macroPanelConfig);
 /*
