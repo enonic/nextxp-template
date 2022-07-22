@@ -110,6 +110,7 @@ function createComponentAttrs(component: PageComponent, meta: MetaData, common?:
     const {type, data, error} = component;
     const cmpAttrs: { [key: string]: any } = {
         component: component[type],
+        path: component.path,
         meta,
         common,
     };
