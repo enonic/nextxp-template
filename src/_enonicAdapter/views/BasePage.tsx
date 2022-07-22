@@ -6,6 +6,7 @@ import {ErrorComponent, MissingComponent, shouldShowErrorView, shouldShowMissing
 
 export interface PageProps {
     page: PageData;
+    path: string;
     data?: any;
     common?: any; // Content is passed down to componentviews. TODO: Use a react contextprovider instead?
     meta: MetaData;
@@ -13,6 +14,7 @@ export interface PageProps {
 
 export interface BasePageProps {
     component?: PageData;
+    path?: string;
     common?: any;
     data?: any;
     error?: string;
@@ -20,7 +22,7 @@ export interface BasePageProps {
 }
 
 const BasePage = (props: BasePageProps) => {
-    const {component, data, common, error, meta} = props;
+    const {component, data, common, error, meta, path} = props;
     const desc = component?.descriptor;
     if (error) {
         console.warn(`BasePage: '${desc}' error: ${error}`);
@@ -37,6 +39,7 @@ const BasePage = (props: BasePageProps) => {
     const PageView = pageDef?.view;
     if (PageView) {
         return <PageView page={component}
+                         path={path}
                          data={data}
                          common={common}
                          meta={meta}/>;

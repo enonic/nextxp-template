@@ -489,7 +489,6 @@ async function applyProcessors(componentDescriptors: ComponentDescriptor[], cont
         let data;
         if (desc.queryAndVariables) {
             // if there is a query then there must be a result for it
-            // they are not
             data = contentResults.contents![dataCounter++];
         }
 

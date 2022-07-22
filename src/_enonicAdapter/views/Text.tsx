@@ -5,9 +5,10 @@ import RichTextView from './RichTextView';
 type Props = {
     meta: MetaData,
     component: TextData,
+    path: string,
 }
 
-const DefaultTextView = ({component, meta}: Props) => (
+const DefaultTextView = ({component, meta, path}: Props) => (
     <RichTextView data={component.value} meta={meta}/>
 );
 

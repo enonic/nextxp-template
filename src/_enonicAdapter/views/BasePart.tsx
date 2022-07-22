@@ -7,6 +7,7 @@ import {MissingComponent, shouldShowMissingView} from './BaseComponent';
 
 export interface PartProps {
     part: PartData;
+    path: string;
     data?: any;
     common?: any; // Content is passed down to componentviews. TODO: Use a react contextprovider instead?
     meta: MetaData;
@@ -14,6 +15,7 @@ export interface PartProps {
 
 interface BasePartProps {
     component?: PartData;
+    path: string;
     common?: any;
     data?: any;
     error?: string;
@@ -21,7 +23,7 @@ interface BasePartProps {
 }
 
 const BasePart = (props: BasePartProps) => {
-    const {component, data, common, meta} = props;
+    const {component, data, common, meta, path} = props;
 
     let partSelection;
     if (component) {
@@ -30,6 +32,7 @@ const BasePart = (props: BasePartProps) => {
     const SelectedPartView = partSelection?.view;
     if (SelectedPartView) {
         return <SelectedPartView part={component}
+                                 path={path}
                                  data={data}
                                  common={common}
                                  meta={meta}/>;
