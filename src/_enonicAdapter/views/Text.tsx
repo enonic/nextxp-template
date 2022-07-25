@@ -8,10 +8,7 @@ type Props = {
 }
 
 const DefaultTextView = ({component, meta}: Props) => (
-    // temporary workaround for TextComponent expecting section inside of a root element
-    <div>
-        <RichTextView data={component.value} meta={meta}/>
-    </div>
+    <RichTextView data={component.value} meta={meta}/>
 );
 
 export default DefaultTextView;
