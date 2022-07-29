@@ -41,3 +41,5 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 10. Merge changes to master for both repositories
 11. Verify that setting up new next app is working according to tutorial
 12. Verify that the TLDR; is working
+
+Test
