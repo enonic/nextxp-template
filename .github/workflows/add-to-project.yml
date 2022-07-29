@@ -1,4 +1,5 @@
-name: Add new issues to project
+name: Add to GitHub projects
+description: Automatically add issues to GitHub projects
 
 on:
   issues:
@@ -10,7 +11,7 @@ jobs:
     name: Add issue to project
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/add-to-project@RELEASE_VERSION
+      - uses: actions/add-to-project@v0.3.0
         with:
           project-url: https://github.com/orgs/enonic/projects/9/
           github-token: ${{ secrets.ADD_TO_PROJECT_PAT }}
