@@ -1,5 +1,4 @@
 name: Add to GitHub projects
-description: Automatically add issues to GitHub projects
 
 on:
   issues:
