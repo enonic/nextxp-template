@@ -38,7 +38,7 @@ To work seamlessly with Content Studio's WYSIWYG preview, in the Enonic app, par
 +
 . **Add the preview controller file** for the child-list part
 +
-This controller simply is triggered when a component us updated in the page editor, and simply forwards the request to the proxy - like all other requests.
+This controller simply is triggered when a component is updated in the page editor, and simply forwards the request to the proxy - like all other requests.
 +
 .src/main/resources/site/parts/child-list/child-list.js
 [source,JavaScript]
