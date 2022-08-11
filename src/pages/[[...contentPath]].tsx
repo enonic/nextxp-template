@@ -22,9 +22,23 @@ const query = `query($path: ID) {
                   }
                 }`;
 
+function populateXPHeaders(context: Context) {
+    const pd = context.previewData;
+    if (!pd?.headers) {
+        return;
+    }
+    const req = context.req || {};
+    req.headers = Object.assign(req.headers || {}, pd.headers);
+    context.req = req;
+}
+
 export async function getStaticProps(context: Context) {
     const path = context.previewData?.contentPath || context.params?.contentPath || [];
-    console.info(`getStaticProps (preview=${context.preview}): ${context.previewData?.contentPath}`);
+
+    if (context.preview) {
+        populateXPHeaders(context);
+    }
+
     const {
         common = null,
         data = null,

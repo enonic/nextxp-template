@@ -83,6 +83,7 @@ export interface ServerSideParams
 
 export interface PreviewParams {
     contentPath: string[];
+    headers: Record<string, string>;
 }
 
 export type Context = GetServerSidePropsContext<ServerSideParams, PreviewParams>;

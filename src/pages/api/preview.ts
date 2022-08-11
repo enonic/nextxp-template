@@ -1,3 +1,5 @@
+import {COMPONENT_SUBPATH_HEADER, FROM_XP_PARAM, RENDER_MODE_HEADER, XP_BASE_URL_HEADER} from '../../_enonicAdapter/utils';
+
 export default async function handler(req: any, res: any) {
     const {token: token, path} = req.query;
     if (token !== process.env.API_TOKEN) {
@@ -9,11 +11,14 @@ export default async function handler(req: any, res: any) {
         return res.status(400).json({message: 'Invalid path'})
     }
 
-    // Enable Preview Mode by setting the cookies
-    // getStaticProps will be called in response to this request
-    console.info(`Previewing [${path}]...`);
     res.setPreviewData({
-        contentPath: path
+        contentPath: path,
+        headers: {
+            [FROM_XP_PARAM]: req.headers[FROM_XP_PARAM],
+            [RENDER_MODE_HEADER]: req.headers[RENDER_MODE_HEADER],
+            [COMPONENT_SUBPATH_HEADER]: req.headers[COMPONENT_SUBPATH_HEADER],
+            [XP_BASE_URL_HEADER]: req.headers[XP_BASE_URL_HEADER],
+        }
     }, {
         maxAge: 10  // sec
     });
