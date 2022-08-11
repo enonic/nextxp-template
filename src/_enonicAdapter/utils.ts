@@ -24,7 +24,7 @@ export const APP_NAME_DASHED = (APP_NAME || '').replace(/\./g, '-')
 export const FROM_XP_PARAM = '__fromxp__';
 export const XP_BASE_URL_HEADER = 'xpbaseurl';
 export const COMPONENT_SUBPATH_HEADER = "xp-component-path";
-const RENDER_MODE_HEADER = 'content-studio-mode';
+export const RENDER_MODE_HEADER = 'content-studio-mode';
 
 export const PORTAL_COMPONENT_ATTRIBUTE = "data-portal-component-type";
 export const PORTAL_REGION_ATTRIBUTE = "data-portal-region";
