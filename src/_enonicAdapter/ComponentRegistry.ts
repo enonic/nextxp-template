@@ -38,18 +38,20 @@ interface ComponentDictionary {
 export type DataProcessor = (data: any, context?: Context) => Promise<Record<string, any>>;
 
 // TODO: also access as arguments: dataAsJson, pageAsJson, configAsJson from the first (meta) call here?
-//  To allow content or component config values to affect the query?
 //  Another option could be to let the component or page controller pass those values to nextjs by a header
 export type VariablesGetter = (path: string, context?: Context, config?: any) => VariablesGetterResult;
+
+export type QueryGetter = (config?: any) => string;
 
 export type VariablesGetterResult = {
     path: string,
     [variables: string]: any
 };
 
-export type SelectedQueryMaybeVariablesFunc = string |
-    { query: string, variables: VariablesGetter } |
-    [string, VariablesGetter];
+
+export type SelectedQueryMaybeVariablesFunc = string | QueryGetter |
+    { query: string | QueryGetter, variables: VariablesGetter } |
+    [string | QueryGetter, VariablesGetter];
 
 export const CATCH_ALL = "*";
 

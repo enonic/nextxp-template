@@ -577,7 +577,7 @@ function getQueryAndVariables(type: string,
 
     let query, getVariables;
 
-    if (typeof selectedQuery === 'string') {
+    if (typeof selectedQuery === 'string' || typeof selectedQuery === 'function') {
         query = selectedQuery;
 
     } else if (Array.isArray(selectedQuery)) {
@@ -593,13 +593,17 @@ function getQueryAndVariables(type: string,
         throw Error(`getVariables for content type ${type} should be a function, not: ${typeof getVariables}`);
     }
 
-    if (query && typeof query !== 'string') {
-        throw Error(`Query for content type ${type} should be a string, not: ${typeof query}`);
+    if (query && typeof query !== 'string' && typeof query !== 'function') {
+        throw Error(`Query for content type ${type} should be a string or function, not: ${typeof query}`);
+    }
+
+    if (typeof query === 'function') {
+        query = query(config);
     }
 
     if (query) {
         return {
-            query: query,
+            query,
             variables: getVariables ? getVariables(path, context, config) : {path},
         };
     }
