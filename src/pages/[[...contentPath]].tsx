@@ -26,6 +26,10 @@ export async function getStaticProps(context: Context) {
     const path = context.params?.contentPath || [];
     console.info(`Accessing static page ${context.preview ? '(preview) ' : ''}at: ${path}`);
 
+    if (context.preview) {
+        populateXPHeaders(context);
+    }
+
     const {
         common = null,
         data = null,
@@ -56,6 +60,16 @@ export async function getStaticProps(context: Context) {
         props,
         revalidate: false,
     }
+}
+
+function populateXPHeaders(context: Context) {
+    const pd = context.previewData;
+    if (!pd?.headers) {
+        return;
+    }
+    const req = context.req || {};
+    req.headers = Object.assign(req.headers || {}, pd.headers);
+    context.req = req;
 }
 
 export async function getStaticPaths() {
