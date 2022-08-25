@@ -1,5 +1,5 @@
 import {commonChars, CONTENT_API_URL, getUrl} from './utils';
-import {LinkData} from './guillotine/getMetaData';
+import {ImageData, LinkData} from './guillotine/getMetaData';
 
 export class RichTextProcessor {
     private static urlFunction: (url: string) => string;
@@ -27,6 +27,10 @@ export class RichTextProcessor {
 
     public static isMediaLink(ref: string, linkData: LinkData[]): boolean {
         return linkData.find(data => data.ref === ref)?.media !== null;
+    }
+
+    public static isContentImage(ref: string, linkData: ImageData[]): boolean {
+        return linkData.find(data => data.ref === ref)?.image !== null;
     }
 
     private static stripApiUrl(url: string): string {

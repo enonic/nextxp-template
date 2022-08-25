@@ -28,17 +28,18 @@ function replacerFactory(allData: RichTextData,
         case RichTextProcessor.IMG_TAG:
             ref = el.attribs[RichTextProcessor.IMG_ATTR];
             const src = el.attribs['src'];
-            if (ref && src) {
+            // do not process content images in next to keep it absolute
+            if (ref && src && !(mode === RENDER_MODE.NEXT && RichTextProcessor.isContentImage(ref, allData.images))) {
                 el.attribs['src'] = RichTextProcessor.processUrl(src);
             }
             break;
-        case RichTextProcessor.LINK_TAG:
-            ref = el.attribs[RichTextProcessor.LINK_ATTR];
-            const href = el.attribs['href'];
-            // do not process media links in next to keep it absolute
-            if (ref && href && !(mode === RENDER_MODE.NEXT && RichTextProcessor.isMediaLink(ref, allData.links))) {
-                el.attribs['href'] = RichTextProcessor.processUrl(href);
-            }
+            case RichTextProcessor.LINK_TAG:
+                ref = el.attribs[RichTextProcessor.LINK_ATTR];
+                const href = el.attribs['href'];
+                // do not process media links in next to keep it absolute
+                if (ref && href && !(mode === RENDER_MODE.NEXT && RichTextProcessor.isMediaLink(ref, allData.links))) {
+                    el.attribs['href'] = RichTextProcessor.processUrl(href);
+                }
             break;
         case RichTextProcessor.MACRO_TAG:
             ref = el.attribs[RichTextProcessor.MACRO_ATTR];
