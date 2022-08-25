@@ -71,6 +71,12 @@ export const richTextQuery = (fieldName: string) => {
                         }
                     }
                 }
+                images {
+                    ref
+                    image {
+                        _id
+                    }
+                }
             }`
 }
 
@@ -152,6 +158,7 @@ export interface RichTextData {
     processedHtml: string,
     links: LinkData[],
     macros: MacroData[],
+    images: ImageData[],
 }
 
 export interface LinkData {
@@ -170,6 +177,13 @@ export interface MacroData {
     config: {
         [name: string]: MacroConfig;
     };
+}
+
+export interface ImageData {
+    ref: string;
+    image: {
+        id: string,
+    } | null,
 }
 
 export interface MacroConfig {
