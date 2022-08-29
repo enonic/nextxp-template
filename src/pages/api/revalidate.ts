@@ -11,9 +11,9 @@ export default async function handler(req: any, res: any) {
         console.info(`Revalidating [${path}] done`);
         return res.json({revalidated: true});
     } catch (err) {
-        console.error(`Revalidating [${path}] error: ` + JSON.stringify(err));
+        console.error(`Revalidating [${path}] error: ` + err);
         // If there was an error, Next.js will continue
         // to show the last successfully generated page
-        return res.status(500).send('Error revalidating');
+        return res.status(500).send({revalidated: false, error: err});
     }
 }

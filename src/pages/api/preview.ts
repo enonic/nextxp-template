@@ -6,7 +6,7 @@ import {
 } from "../../_enonicAdapter/utils";
 
 export default async function handler(req: any, res: any) {
-    const {token: token, path} = req.query;
+    const {token, path} = req.query;
     if (token !== process.env.API_TOKEN) {
         return res.status(401).json({message: 'Invalid token'})
     }
