@@ -82,10 +82,10 @@ export async function getStaticPaths() {
 }
 
 interface Item {
-    params: { contentPath: string }
+    params: { contentPath: string[] }
 }
 
-async function recursiveFetchChildren(path: string, paths: Item[] = []): Promise<Item[]> {
+export async function recursiveFetchChildren(path: string, paths: Item[] = []): Promise<Item[]> {
     const body: ContentApiBaseBody = {
         query,
         variables: {path}
