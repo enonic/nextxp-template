@@ -1,4 +1,4 @@
-import {commonChars, CONTENT_API_URL, getUrl} from './utils';
+import {commonChars, getUrl} from './utils';
 import {ImageData, LinkData} from './guillotine/getMetaData';
 
 export class RichTextProcessor {
@@ -14,7 +14,8 @@ export class RichTextProcessor {
     public static MACRO_ATTR = 'data-macro-ref';
 
     public static processUrl(url: string): string {
-        return this.urlFunction(this.stripApiUrl(url));
+        const strippedUrl = this.stripApiUrl(url);
+        return this.urlFunction ? this.urlFunction(strippedUrl) : strippedUrl;
     }
 
     public static setUrlFunction(func: (url: string) => string): void {
@@ -38,9 +39,6 @@ export class RichTextProcessor {
         const remaining = common.length > 0 ? url.substring(common.length) : url;
         return (remaining.length > 0 && remaining.charAt(0) === '/') ? remaining.substring(1) : remaining;
     }
-
-
 }
 
 RichTextProcessor.setUrlFunction(getUrl);
-RichTextProcessor.setApiUrl(CONTENT_API_URL);

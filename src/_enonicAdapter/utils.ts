@@ -1,11 +1,12 @@
 /** Import config values from .env, .env.development and .env.production */
-import {Context} from './guillotine/fetchContent';
+import {Context, MinimalContext} from './guillotine/fetchContent';
 
 const mode = process.env.MODE || process.env.NEXT_PUBLIC_MODE;
 export const IS_DEV_MODE = (mode === 'development');
 
 /** URL to the guillotine API */
-export const CONTENT_API_URL = (process.env.CONTENT_API_URL || process.env.NEXT_PUBLIC_CONTENT_API_URL) as string
+const CONTENT_API_DRAFT = (process.env.CONTENT_API_DRAFT || process.env.NEXT_PUBLIC_CONTENT_API_DRAFT) as string
+const CONTENT_API_MASTER = (process.env.CONTENT_API_MASTER || process.env.NEXT_PUBLIC_CONTENT_API_MASTER) as string
 
 /** Optional utility value - defining in one place the name of the target app (the app that defines the content types, the app name is therefore part of the content type strings used both in typeselector and in query introspections) */
 
@@ -76,7 +77,7 @@ export const getXPRequestType = (context?: Context): XP_REQUEST_TYPE => {
     return enumValue || XP_REQUEST_TYPE.PAGE;   // need to have some defaults here in case of rendering without XP
 }
 
-const getRenderMode = (context?: Context): RENDER_MODE => {
+const getRenderMode = (context?: MinimalContext): RENDER_MODE => {
     const value = (context?.req?.headers || {})[RENDER_MODE_HEADER] as string | undefined;
     const enumValue = RENDER_MODE[<keyof typeof RENDER_MODE>value?.toUpperCase()];
     return enumValue || process.env.RENDER_MODE || RENDER_MODE.NEXT;
@@ -88,6 +89,20 @@ export const getXpBaseUrl = (context?: Context): string =>
 const getSingleComponentPath = (context?: Context): string | undefined => (
     (context?.req?.headers || {})[COMPONENT_SUBPATH_HEADER] as string | undefined
 );
+
+let contentApiUrl: string;
+
+export function setContentApiUrl(context?: MinimalContext) {
+    const mode = getRenderMode(context);
+    contentApiUrl = mode === RENDER_MODE.NEXT ? CONTENT_API_MASTER : CONTENT_API_DRAFT;
+}
+
+export function getContentApiUrl(): string {
+    if (!contentApiUrl?.length) {
+        throw 'content API url is null, did you forget to set it with setContentApiUrl() ?'
+    }
+    return contentApiUrl;
+}
 
 /** For '<a href="..."' link values in props when clicking the link should navigate to an XP content item page
  *  and the query returns the XP _path to the target content item:
@@ -149,8 +164,6 @@ export const sanitizeGraphqlName = (text: string) => {
 const adapterConstants = {
     IS_DEV_MODE,
 
-    CONTENT_API_URL,
-
     APP_NAME,
     APP_NAME_UNDERSCORED,
     APP_NAME_DASHED,
@@ -163,7 +176,8 @@ const adapterConstants = {
     getXpBaseUrl,
     getXPRequestType,
     getSingleComponentPath,
-    getRenderMode
+    getRenderMode,
+    getContentApiUrl,
 };
 
 // Verify required values

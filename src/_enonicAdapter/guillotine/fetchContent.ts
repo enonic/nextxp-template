@@ -18,6 +18,7 @@ import adapterConstants, {
     PAGE_TEMPLATE_FOLDER,
     RENDER_MODE,
     sanitizeGraphqlName,
+    setContentApiUrl,
     setXpBaseUrl,
     XP_COMPONENT_TYPE,
     XP_REQUEST_TYPE
@@ -25,14 +26,17 @@ import adapterConstants, {
 import {ComponentDefinition, ComponentRegistry, SelectedQueryMaybeVariablesFunc} from '../ComponentRegistry';
 import {ParsedUrlQuery} from 'node:querystring';
 import {GetServerSidePropsContext} from 'next';
+import {IncomingMessage} from "http";
+import {NextApiRequestCookies} from "next/dist/server/api-utils";
+import {RichTextProcessor} from "../RichTextProcessor";
 
 export type adapterConstants = {
     APP_NAME: string,
     APP_NAME_DASHED: string,
-    CONTENT_API_URL: string,
     getXPRequestType: (context?: Context) => XP_REQUEST_TYPE,
     getRenderMode: (context?: Context) => RENDER_MODE,
-    getSingleComponentPath: (context?: Context) => string | undefined
+    getSingleComponentPath: (context?: Context) => string | undefined,
+    getContentApiUrl: (context?: Context) => string,
 };
 
 type Result = {
@@ -95,6 +99,12 @@ export interface PreviewParams {
 }
 
 export type Context = GetServerSidePropsContext<ServerSideParams, PreviewParams>;
+
+export interface MinimalContext {
+    req: IncomingMessage & {
+        cookies: NextApiRequestCookies
+    }
+}
 
 /**
  * Sends one query to the guillotine API and asks for content type, then uses the type to select a second query and variables, which is sent to the API and fetches content data.
@@ -692,10 +702,10 @@ export const buildContentFetcher = <T extends adapterConstants>(config: FetcherC
     const {
         APP_NAME,
         APP_NAME_DASHED,
-        CONTENT_API_URL,
         getXPRequestType,
         getRenderMode,
         getSingleComponentPath,
+        getContentApiUrl,
         componentRegistry,
     } = config;
 
@@ -705,6 +715,7 @@ export const buildContentFetcher = <T extends adapterConstants>(config: FetcherC
     ): Promise<FetchContentResult> => {
 
         setXpBaseUrl(context);
+        setContentApiUrl(context);
 
         const requestType = getXPRequestType(context);
         const renderMode = getRenderMode(context);
@@ -718,8 +729,11 @@ export const buildContentFetcher = <T extends adapterConstants>(config: FetcherC
                 requestedComponentPath = getSingleComponentPath(context);
             }
 
+            const contentApiUrl = getContentApiUrl();
+            RichTextProcessor.setApiUrl(contentApiUrl);
+
             ///////////////  FIRST GUILLOTINE CALL FOR METADATA     /////////////////
-            const metaResult = await fetchMetaData(CONTENT_API_URL, '${site}/' + siteRelativeContentPath);
+            const metaResult = await fetchMetaData(contentApiUrl, '${site}/' + siteRelativeContentPath);
             /////////////////////////////////////////////////////////////////////////
 
             const {type, components, _path} = metaResult.meta || {};
@@ -794,7 +808,7 @@ export const buildContentFetcher = <T extends adapterConstants>(config: FetcherC
             }
 
             /////////////////    SECOND GUILLOTINE CALL FOR DATA   //////////////////////
-            const contentResults = await fetchContentData(CONTENT_API_URL, contentPath, query, variables);
+            const contentResults = await fetchContentData(contentApiUrl, contentPath, query, variables);
             /////////////////////////////////////////////////////////////////////////////
 
             // Apply processors to every component
