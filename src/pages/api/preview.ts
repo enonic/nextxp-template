@@ -1,9 +1,12 @@
 import {
     COMPONENT_SUBPATH_HEADER,
     FROM_XP_PARAM,
+    getContentApiUrl,
     RENDER_MODE_HEADER,
+    setContentApiUrl,
     XP_BASE_URL_HEADER
 } from "../../_enonicAdapter/utils";
+import {RichTextProcessor} from "../../_enonicAdapter/RichTextProcessor";
 
 export default async function handler(req: any, res: any) {
     const {token, path} = req.query;
@@ -13,8 +16,11 @@ export default async function handler(req: any, res: any) {
 
     // If the slug doesn't exist prevent preview mode from being enabled
     if (!path) {
-        return res.status(400).json({message: 'Invalid path'})
+        return res.status(400).json({message: 'Invalid path'});
     }
+
+    setContentApiUrl({req});
+    RichTextProcessor.setApiUrl(getContentApiUrl());
 
     console.info(`Previewing [${path}]...`);
     // Enable Preview Mode by setting the cookies

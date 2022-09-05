@@ -1,4 +1,6 @@
 import {recursiveFetchChildren} from "../[[...contentPath]]";
+import {getContentApiUrl, setContentApiUrl} from "../../_enonicAdapter/utils";
+import {RichTextProcessor} from "../../_enonicAdapter/RichTextProcessor";
 
 export default async function handler(req: any, res: any) {
     const {token, path, revalidateAll} = req.query;
@@ -6,6 +8,9 @@ export default async function handler(req: any, res: any) {
     if (token !== process.env.API_TOKEN) {
         return res.status(401).json({message: 'Invalid token'});
     }
+
+    setContentApiUrl({req});
+    RichTextProcessor.setApiUrl(getContentApiUrl());
 
     try {
         if (revalidateAll) {
