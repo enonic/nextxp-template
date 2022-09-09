@@ -14,6 +14,35 @@ import PanelMacro from './macros/PanelMacro';
 // You can set common query for all views here
 ComponentRegistry.setCommonQuery([commonQuery, commonVariables]);
 
+// Macro mappings (should come first as may be used in other components)
+const macroPanelConfig = {
+    view: PanelMacro,
+    configQuery: `{
+                      body
+                      header
+                  }`
+}
+
+ComponentRegistry.addMacro(`${APP_NAME}:panel2`, macroPanelConfig);
+/*
+// Following macros come from com.enonic.app.panelmacros app that you need to install separately
+ComponentRegistry.addMacro(`com.enonic.app.panelmacros:panel`, macroPanelConfig);
+ComponentRegistry.addMacro(`com.enonic.app.panelmacros:info`, macroPanelConfig);
+ComponentRegistry.addMacro(`com.enonic.app.panelmacros:note`, macroPanelConfig);
+ComponentRegistry.addMacro(`com.enonic.app.panelmacros:error`, macroPanelConfig);
+ComponentRegistry.addMacro(`com.enonic.app.panelmacros:success`, macroPanelConfig);
+
+// Following macro comes from com.enonic.app.socialmacros app that you need to install separately
+ComponentRegistry.addMacro('com.enonic.app.socialmacros:youtube', {
+    view: YoutubeMacro,
+    query: `{
+              body
+              title
+              url
+            }`
+});
+*/
+
 // Content type mappings
 ComponentRegistry.addContentType(`${APP_NAME}:person`, {
     query: getPerson,
@@ -46,33 +75,7 @@ ComponentRegistry.addPart(`${APP_NAME}:child-list`, {
     configQuery: `{sorting}`
 });
 
-// Macro mappings
-const macroPanelConfig = {
-    view: PanelMacro,
-    configQuery: `{
-                      body
-                      header
-                  }`
-}
-ComponentRegistry.addMacro(`${APP_NAME}:panel2`, macroPanelConfig);
 /*
-// Following macros come from com.enonic.app.panelmacros app that you need to install separately
-ComponentRegistry.addMacro(`com.enonic.app.panelmacros:panel`, macroPanelConfig);
-ComponentRegistry.addMacro(`com.enonic.app.panelmacros:info`, macroPanelConfig);
-ComponentRegistry.addMacro(`com.enonic.app.panelmacros:note`, macroPanelConfig);
-ComponentRegistry.addMacro(`com.enonic.app.panelmacros:error`, macroPanelConfig);
-ComponentRegistry.addMacro(`com.enonic.app.panelmacros:success`, macroPanelConfig);
-
-// Following macro comes from com.enonic.app.socialmacros app that you need to install separately
-ComponentRegistry.addMacro('com.enonic.app.socialmacros:youtube', {
-    view: YoutubeMacro,
-    query: `{
-              body
-              title
-              url
-            }`
-});
-
 // Debug
 ComponentRegistry.addContentType(CATCH_ALL, {
     view: PropsView

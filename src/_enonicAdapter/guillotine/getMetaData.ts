@@ -2,7 +2,7 @@ import {RENDER_MODE, sanitizeGraphqlName, XP_COMPONENT_TYPE, XP_REQUEST_TYPE} fr
 import {ComponentDefinition, ComponentRegistry} from '../ComponentRegistry';
 
 const macroConfigQuery = (): string => {
-    return configQuery(ComponentRegistry.getMacros(), false);
+    return configQuery(ComponentRegistry.getMacros(), false, false);
 }
 
 const partConfigQuery = (): string => {
@@ -17,10 +17,10 @@ const pageConfigQuery = (): string => {
     return configQuery(ComponentRegistry.getPages())
 }
 
-const configQuery = (list: [string, ComponentDefinition][], includeAppName: boolean = true): string => {
+const configQuery = (list: [string, ComponentDefinition][], includeAppName: boolean = true, canUseConfigAsJson: boolean = true): string => {
     const hasQueryList = list?.filter(([key, def]) => def.configQuery) || [];
     if (hasQueryList.length === 0) {
-        return 'configAsJson';
+        return canUseConfigAsJson ? 'configAsJson' : '';
     }
 
     const configsByApp: { [app: string]: string[] } = {};
@@ -39,7 +39,7 @@ const configQuery = (list: [string, ComponentDefinition][], includeAppName: bool
         })
 
     // Still query for configAsJson if at least one item has no configQuery defined
-    const configAsJsonQuery = hasQueryList.length < list.length ? 'configAsJson' : '';
+    const configAsJsonQuery = canUseConfigAsJson && hasQueryList.length < list.length ? 'configAsJson' : '';
 
     if (!includeAppName) {
         return `${configAsJsonQuery}
@@ -54,6 +54,9 @@ const configQuery = (list: [string, ComponentDefinition][], includeAppName: bool
     }
 }
 
+/*
+    IMPORTANT: make sure to transform your queries into functions too when using this function inside them !!!
+ */
 export const richTextQuery = (fieldName: string) => {
     return `${fieldName}(processHtml:{type:absolute, imageWidths:[400, 800, 1200], imageSizes:"(max-width: 400px) 400px, (max-width: 800px) 800px, 1200px"}) {
                 processedHtml
