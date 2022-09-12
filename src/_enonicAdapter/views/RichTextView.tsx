@@ -30,7 +30,7 @@ function replacerFactory(allData: RichTextData,
             const src = el.attribs['src'];
             // do not process content images in next to keep it absolute
             if (ref && src && !(mode === RENDER_MODE.NEXT && RichTextProcessor.isContentImage(ref, allData.images))) {
-                el.attribs['src'] = RichTextProcessor.processUrl(src);
+                el.attribs['src'] = RichTextProcessor.processUrl(src, meta);
             }
             break;
             case RichTextProcessor.LINK_TAG:
@@ -38,7 +38,7 @@ function replacerFactory(allData: RichTextData,
                 const href = el.attribs['href'];
                 // do not process media links in next to keep it absolute
                 if (ref && href && !(mode === RENDER_MODE.NEXT && RichTextProcessor.isMediaLink(ref, allData.links))) {
-                    el.attribs['href'] = RichTextProcessor.processUrl(href);
+                    el.attribs['href'] = RichTextProcessor.processUrl(href, meta);
                 }
             break;
         case RichTextProcessor.MACRO_TAG:

@@ -1,8 +1,8 @@
 import {commonChars, getUrl} from './utils';
-import {ImageData, LinkData} from './guillotine/getMetaData';
+import {ImageData, LinkData, MetaData} from './guillotine/getMetaData';
 
 export class RichTextProcessor {
-    private static urlFunction: (url: string) => string;
+    private static urlFunction: (url: string, meta: MetaData) => string;
     private static apiUrl: string;
 
     public static IMG_TAG = 'img';
@@ -13,12 +13,12 @@ export class RichTextProcessor {
     public static LINK_ATTR = 'data-link-ref';
     public static MACRO_ATTR = 'data-macro-ref';
 
-    public static processUrl(url: string): string {
+    public static processUrl(url: string, meta: MetaData): string {
         const strippedUrl = this.stripApiUrl(url);
-        return this.urlFunction ? this.urlFunction(strippedUrl) : strippedUrl;
+        return this.urlFunction ? this.urlFunction(strippedUrl, meta) : strippedUrl;
     }
 
-    public static setUrlFunction(func: (url: string) => string): void {
+    public static setUrlFunction(func: (url: string, meta: MetaData) => string): void {
         this.urlFunction = func;
     }
 

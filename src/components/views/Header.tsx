@@ -2,26 +2,26 @@ import React from 'react'
 import Link from 'next/link';
 import {getUrl} from '../../_enonicAdapter/utils';
 import styles from './Header.module.css';
+import {MetaData} from "../../_enonicAdapter/guillotine/getMetaData";
 
 export interface HeaderProps {
     title: string;
     logoUrl: string;
     path: string;
+    meta: MetaData;
 }
 
 
-const Header = ({title, logoUrl, path}: HeaderProps) => {
+const Header = ({title, logoUrl, path, meta}: HeaderProps) => {
 
     return <header className={styles.header}>
         <div className={styles.wrapper}>
             {title && (
                 <h1>
-                    <Link href={getUrl('')}>
-                        <a>{title}</a>
-                    </Link>
+                    <Link href={getUrl('', meta)}>{title}</Link>
                 </h1>
             )}
-            <a href="javascript:void(0);" onClick={revalidateRequest(path)}>Revalidate</a>
+            <a href="javascript:void(0);" onClick={revalidateRequest(getUrl(path, meta))}>Revalidate</a>
             {logoUrl && (
                 <img src={logoUrl}
                      width={33}
@@ -34,7 +34,7 @@ const Header = ({title, logoUrl, path}: HeaderProps) => {
 };
 
 function revalidateRequest(path: string) {
-    const encPath = encodeURIComponent(getUrl(path));
+    const encPath = encodeURIComponent(path);
     const encToken = encodeURIComponent(process.env.NEXT_PUBLIC_API_TOKEN as string);
     const url = `/api/revalidate?path=${encPath}&token=${encToken}`;
     return function () {

@@ -1,5 +1,6 @@
 /** Import config values from .env, .env.development and .env.production */
 import {Context, MinimalContext} from './guillotine/fetchContent';
+import {MetaData} from "./guillotine/getMetaData";
 
 const mode = process.env.MODE || process.env.NEXT_PUBLIC_MODE;
 export const IS_DEV_MODE = (mode === 'development');
@@ -83,18 +84,16 @@ const getRenderMode = (context?: MinimalContext): RENDER_MODE => {
     return enumValue || process.env.RENDER_MODE || RENDER_MODE.NEXT;
 };
 
-export const getXpBaseUrl = (context?: Context): string =>
-    ((context?.req?.headers || {})[XP_BASE_URL_HEADER] || "") as string;
-
 const getSingleComponentPath = (context?: Context): string | undefined => (
     (context?.req?.headers || {})[COMPONENT_SUBPATH_HEADER] as string | undefined
 );
 
 let contentApiUrl: string;
 
-export function setContentApiUrl(context?: MinimalContext) {
+export function setContentApiUrl(context?: MinimalContext): string {
     const mode = getRenderMode(context);
     contentApiUrl = mode === RENDER_MODE.NEXT ? CONTENT_API_MASTER : CONTENT_API_DRAFT;
+    return contentApiUrl;
 }
 
 export function getContentApiUrl(): string {
@@ -112,9 +111,15 @@ export function getContentApiUrl(): string {
  * */
 // export const getContentLinkUrlFromXpPath = (_path: string): string => _path.replace(siteNamePattern, '')
 
-let xpBaseUrl: string = "";
-export const setXpBaseUrl = (context: Context | undefined): void => {
-    xpBaseUrl = ((context?.req?.headers || {})[XP_BASE_URL_HEADER] || "") as string;
+let BASE_URL_MAP: { [mode: string]: string } = {};
+
+export const setXpBaseUrl = (context: Context | undefined): string => {
+    const mode = getRenderMode(context);
+    const header = ((context?.req?.headers || {})[XP_BASE_URL_HEADER] || "") as string;
+    //TODO: workaround for XP pattern controller mapping not picked up in edit mode
+    const headerInline = (header || '/').replace(/\/edit\//, '/inline/');
+    BASE_URL_MAP[mode] = headerInline;
+    return headerInline;
 };
 
 /**
@@ -122,12 +127,10 @@ export const setXpBaseUrl = (context: Context | undefined): void => {
  * @param resourcePath Relative resource path (Next pages, XP _path, public assets etc)
  * @returns absolute URL string (clientside)
  */
-export const getUrl = (resourcePath: string): string => {
+export const getUrl = (resourcePath: string, meta?: MetaData): string => {
 
-    //TODO: workaround for XP pattern controller mapping not picked up in edit mode
-    const xpSiteUrlWithoutEditMode = (xpBaseUrl || '/').replace(/\/edit\//, '/inline/');
-
-    return xpSiteUrlWithoutEditMode + resourcePath;
+    const prefix = meta?.renderMode !== undefined ? BASE_URL_MAP[meta.renderMode] : undefined;
+    return (prefix || '') + resourcePath;
 }
 
 
@@ -173,7 +176,6 @@ const adapterConstants = {
     PORTAL_COMPONENT_ATTRIBUTE,
     PORTAL_REGION_ATTRIBUTE,
 
-    getXpBaseUrl,
     getXPRequestType,
     getSingleComponentPath,
     getRenderMode,

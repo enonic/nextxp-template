@@ -72,7 +72,7 @@ interface ComponentDescriptor {
 export type FetchContentResult = Result & {
     data: Record<string, any> | null,
     common: Record<string, any> | null,
-    meta: MetaData | null,
+    meta: MetaData,
     page: PageComponent | null,
 };
 
