@@ -1,6 +1,7 @@
 import React from 'react'
 import {APP_NAME_UNDERSCORED, getUrl} from '../../_enonicAdapter/utils'
 import {PartProps} from '../../_enonicAdapter/views/BasePart';
+import {MetaData} from "../../_enonicAdapter/guillotine/getMetaData";
 
 
 export const getMovie = `
@@ -55,16 +56,17 @@ query($path:ID!){
 // Root component
 const MovieView = (props: PartProps) => {
     const data = props.data?.get.data as MovieInfoProps;
+    const meta = props.meta;
     const {displayName, parent = {}} = props.data.get;
     return (
         <>
             <div>
                 <h2>{displayName}</h2>
                 {data && <MovieInfo {...data}/>}
-                {data?.cast && <Cast cast={data.cast}/>}
+                {data?.cast && <Cast cast={data.cast} meta={meta}/>}
             </div>
             <p>
-              <a href={getUrl(parent._path)}>Back to Movies</a>
+                <a href={getUrl(parent._path, meta)}>Back to Movies</a>
             </p>
         </>
     );
@@ -103,6 +105,7 @@ const MovieInfo = (props: MovieInfoProps) => {
 
 interface CastProps {
     cast: CastMemberProps[];
+    meta: MetaData;
 }
 
 interface CastMemberProps {
@@ -128,7 +131,7 @@ const Cast = (props: CastProps) => (
         <ul style={{listStyle: "none", display: "flex", flexFlow: "row wrap"}}>
             {props.cast.map(
                 (person: CastMemberProps, i: number) => person && (
-                    <CastMember key={i} {...person} />
+                    <CastMember key={i} {...person} meta={props.meta}/>
                 )
             )}
         </ul>
@@ -136,8 +139,8 @@ const Cast = (props: CastProps) => (
 );
 
 
-const CastMember = (props: CastMemberProps) => {
-    const {character, actor} = props;
+const CastMember = (props: CastMemberProps & { meta: MetaData }) => {
+    const {character, actor, meta} = props;
     const {displayName, _path, data} = actor;
     const personPhoto = (data.photos || [])[0] || {};
 
@@ -151,7 +154,7 @@ const CastMember = (props: CastMemberProps) => {
             }
             <div>
                 <p>{character}</p>
-                <p><a href={getUrl(_path)}>
+                <p><a href={getUrl(_path, meta)}>
                     {displayName}
                 </a></p>
             </div>

@@ -29,7 +29,9 @@ function MyApp({Component, pageProps}: AppProps) {
             <Header
                 title="🔥 Next.XP"
                 path={pageProps.meta?.path}
-                logoUrl={getUrl('images/xp-shield.svg')}/>
+                logoUrl={getUrl('images/xp-shield.svg', pageProps.meta)}
+                meta={pageProps.meta}
+            />
             <main style={{
                 margin: `0 auto`,
                 maxWidth: 960,

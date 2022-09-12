@@ -44,6 +44,12 @@ export async function getStaticProps(context: Context) {
         throw error
     }
 
+    let canNotRender = false;
+    // catch-all rendering is ignored for isRenderableRequest in edit mode to allow selecting descriptors in page editor
+    if (meta && (!meta.canRender || meta.catchAll && isRenderableRequestEditMode(context))) {
+        canNotRender = true;
+    }
+
     let catchAllInNextProdMode = meta?.renderMode === RENDER_MODE.NEXT && !IS_DEV_MODE && meta?.catchAll;
 
     const props = {
@@ -54,13 +60,20 @@ export async function getStaticProps(context: Context) {
         page,
     }
 
-    const notFound = (error && error.code === '404') || context.res?.statusCode === 404 || catchAllInNextProdMode || undefined;
+    const notFound = (error && error.code === '404') || context.res?.statusCode === 404 || canNotRender || catchAllInNextProdMode || undefined;
 
     return {
         notFound,
         props,
         revalidate: false,
     }
+}
+
+function isRenderableRequestEditMode(context: Context): boolean {
+    // TODO: req.method is likely not available in static preview
+    const method = context.req.method;
+    const mode = context.query['mode'];
+    return method === 'HEAD' && mode === RENDER_MODE.EDIT;
 }
 
 function populateXPHeaders(context: Context) {

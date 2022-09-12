@@ -5,7 +5,7 @@ import {getUrl} from '../../_enonicAdapter/utils'
 import {Context} from '../../_enonicAdapter/guillotine/fetchContent';
 
 const ChildList = (props: PartProps) => {
-    const {data} = props;
+    const {data, meta} = props;
     const children = data.get.children;
     if (!children || children.length === 0) {
         return null;
@@ -21,7 +21,7 @@ const ChildList = (props: PartProps) => {
                 <ul>{
                     children.map((child: any, i: number) => (
                         <li key={i}>
-                            <a href={getUrl(child._path)}>
+                            <a href={getUrl(child._path, meta)}>
                                 {child.displayName}
                             </a>
                         </li>
