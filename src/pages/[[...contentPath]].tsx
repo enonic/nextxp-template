@@ -12,6 +12,7 @@ const query = `query($path: ID) {
                   guillotine {
                     getChildren(key: $path) {
                       _path
+                      _name
                       site {
                         _name
                       }
@@ -83,7 +84,7 @@ function populateXPHeaders(context: Context) {
 export async function getStaticPaths() {
     setContentApiUrl();
     RichTextProcessor.setApiUrl(getContentApiUrl());
-    const paths = await recursiveFetchChildren('\${site}/');
+    const paths = await recursiveFetchChildren('\${site}/', 4);
 
     return {
         paths: paths,
@@ -95,25 +96,35 @@ interface Item {
     params: { contentPath: string[] }
 }
 
-export async function recursiveFetchChildren(path: string, paths?: Item[]): Promise<Item[]> {
+export async function recursiveFetchChildren(path: string, maxLevel: number = 3, filter: (content: any) => boolean = filterUnderscores): Promise<Item[]> {
+    const contentApiUrl = getContentApiUrl();
+    return doRecursiveFetch(contentApiUrl, path, maxLevel, filter);
+}
+
+async function doRecursiveFetch(contentApiUrl: string, path: string, maxLevel: number = 0, filter?: (content: any) => boolean, paths?: Item[], currLevel: number = 1): Promise<Item[]> {
     const body: ContentApiBaseBody = {
         query,
         variables: {path}
     };
 
-    const contentApiUrl = getContentApiUrl();
     const result = await fetchGuillotine(contentApiUrl, body, path);
 
     return result?.guillotine?.getChildren.reduce(async (prevPromise: Promise<Item[]>, child: any) => {
         const prev = await prevPromise;
+        if (filter && !filter(child)) {
+            return prev;
+        }
+
         prev.push({
             params: {
                 contentPath: child._path.replace(`/${child.site?._name}/`, '').split('/')
             }
         });
 
-        if (child.contentType?.name === 'base:folder' || child.contentType?.superType === 'base:folder') {
-            await recursiveFetchChildren(child._path, prev);
+        if ((maxLevel === 0 || currLevel < maxLevel) &&
+            (child.contentType?.name === 'base:folder' || child.contentType?.superType === 'base:folder')) {
+
+            await doRecursiveFetch(contentApiUrl, child._path, maxLevel, filter, prev, currLevel + 1);
         }
         return prev;
     }, paths || [{
@@ -121,6 +132,10 @@ export async function recursiveFetchChildren(path: string, paths?: Item[]): Prom
             contentPath: [''],
         }
     }]);
+}
+
+function filterUnderscores(child: any): boolean {
+    return child._name && !child._name.startsWith("_");
 }
 
 export default MainView;

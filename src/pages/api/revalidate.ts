@@ -15,7 +15,7 @@ export default async function handler(req: any, res: any) {
     try {
         if (revalidateAll) {
             console.info('Started revalidating everything...');
-            const paths = await recursiveFetchChildren('\${site}/');
+            const paths = await getRevalidatePaths();
             const promises = paths.map(item => revalidatePath(res, item.params.contentPath));
             await Promise.all(promises);
             console.info(`Done revalidating everything`);
@@ -30,6 +30,10 @@ export default async function handler(req: any, res: any) {
         // to show the last successfully generated page
         return res.status(500).json({revalidated: false, error: err});
     }
+}
+
+async function getRevalidatePaths() {
+    return recursiveFetchChildren('\${site}/', 2);
 }
 
 async function revalidatePath(res: any, path: string[] | string) {
