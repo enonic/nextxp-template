@@ -1,5 +1,4 @@
 import React from 'react'
-import Link from 'next/link';
 import {getUrl} from '../../_enonicAdapter/utils';
 import styles from './Header.module.css';
 import {MetaData} from "../../_enonicAdapter/guillotine/getMetaData";
@@ -18,7 +17,7 @@ const Header = ({title, logoUrl, path, meta}: HeaderProps) => {
         <div className={styles.wrapper}>
             {title && (
                 <h1>
-                    <Link href={getUrl('', meta)}>{title}</Link>
+                    <a href={getUrl('', meta)}>{title}</a>
                 </h1>
             )}
             <a href="javascript:void(0);" onClick={revalidateRequest(getUrl(path, meta))}>Revalidate</a>
