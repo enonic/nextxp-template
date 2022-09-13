@@ -45,8 +45,9 @@ export async function getStaticProps(context: Context) {
     }
 
     let canNotRender = false;
-    // catch-all rendering is ignored for isRenderableRequest in edit mode to allow selecting descriptors in page editor
-    if (meta && (!meta.canRender || meta.catchAll && isRenderableRequestEditMode(context))) {
+    // we can not set 418 for static paths,
+    // but we can show 404 instead to be handled in CS
+    if (meta && !meta.canRender && meta.renderMode !== RENDER_MODE.EDIT) {
         canNotRender = true;
     }
 
@@ -67,13 +68,6 @@ export async function getStaticProps(context: Context) {
         props,
         revalidate: false,
     }
-}
-
-function isRenderableRequestEditMode(context: Context): boolean {
-    // TODO: req.method is likely not available in static preview
-    const method = context.req.method;
-    const mode = context.query['mode'];
-    return method === 'HEAD' && mode === RENDER_MODE.EDIT;
 }
 
 function populateXPHeaders(context: Context) {
