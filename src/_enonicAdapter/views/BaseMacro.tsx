@@ -12,6 +12,7 @@ export const MACRO_EMBED = 'system:embed';
 interface BaseMacroProps {
     data: MacroData;
     meta: MetaData;
+    renderInEditMode?: boolean;
 }
 
 export interface MacroProps {
@@ -21,7 +22,7 @@ export interface MacroProps {
 }
 
 const BaseMacro = (props: BaseMacroProps) => {
-    const {data, meta} = props;
+    const {data, meta, renderInEditMode} = props;
 
     let config = data.config[sanitizeGraphqlName(data.name)] || {};
     if (data.descriptor !== MACRO_DISABLE) {
@@ -29,7 +30,7 @@ const BaseMacro = (props: BaseMacroProps) => {
         config = normalizeValue(config);
     }
 
-    if (meta?.renderMode === RENDER_MODE.EDIT) {
+    if (!renderInEditMode && meta?.renderMode === RENDER_MODE.EDIT) {
         const attrs = formatAttributes(config);
         if (config.body) {
             // do not parse system macros (embed, disable) in edit mode
