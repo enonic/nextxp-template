@@ -20,6 +20,7 @@ import adapterConstants, {
     sanitizeGraphqlName,
     setContentApiUrl,
     setXpBaseUrl,
+    SITE_NAME,
     XP_COMPONENT_TYPE,
     XP_REQUEST_TYPE
 } from '../utils';
@@ -30,9 +31,10 @@ import {IncomingMessage} from "http";
 import {NextApiRequestCookies} from "next/dist/server/api-utils";
 import {RichTextProcessor} from "../RichTextProcessor";
 
-export type adapterConstants = {
+export type AdapterConstants = {
     APP_NAME: string,
     APP_NAME_DASHED: string,
+    SITE_NAME: string,
     getXPRequestType: (context?: Context) => XP_REQUEST_TYPE,
     getRenderMode: (context?: Context) => RENDER_MODE,
     getSingleComponentPath: (context?: Context) => string | undefined,
@@ -77,7 +79,7 @@ export type FetchContentResult = Result & {
 };
 
 
-type FetcherConfig<T extends adapterConstants> = T & {
+type FetcherConfig<T extends AdapterConstants> = T & {
     componentRegistry: typeof ComponentRegistry
 };
 
@@ -142,7 +144,8 @@ export const fetchFromApi = async (
         method,
         headers: {
             'Accept': 'application/json',
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'X-Guillotine-SiteKey': '/' + SITE_NAME,
         },
         body: JSON.stringify(body),
     };
@@ -701,7 +704,7 @@ function errorResponse(code: string = '500', message: string = 'Unknown error', 
  * @param componentRegistry ComponentRegistry object from ComponentRegistry.ts, holding user type mappings that are set in typesRegistration.ts file
  * @returns ContentFetcher
  */
-export const buildContentFetcher = <T extends adapterConstants>(config: FetcherConfig<T>): ContentFetcher => {
+export const buildContentFetcher = <T extends AdapterConstants>(config: FetcherConfig<T>): ContentFetcher => {
 
     const {
         APP_NAME,
@@ -890,7 +893,7 @@ export const buildContentFetcher = <T extends adapterConstants>(config: FetcherC
  * @param context object from Next, contains .query info
  * @returns FetchContentResult object: {data?: T, error?: {code, message}}
  */
-export const fetchContent: ContentFetcher = buildContentFetcher<adapterConstants>({
+export const fetchContent: ContentFetcher = buildContentFetcher<AdapterConstants>({
     ...adapterConstants,
     componentRegistry: ComponentRegistry,
 });
