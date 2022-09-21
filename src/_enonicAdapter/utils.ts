@@ -19,6 +19,8 @@ export const APP_NAME_UNDERSCORED = (APP_NAME || '').replace(/\./g, '_')
 
 export const APP_NAME_DASHED = (APP_NAME || '').replace(/\./g, '-')
 
+export const SITE_NAME = (process.env.SITE_NAME || process.env.NEXT_PUBLIC_SITE_NAME) as string;
+
 
 //////////////////////////////////////////////////////////////////////////  Hardcode-able constants
 
@@ -170,6 +172,7 @@ const adapterConstants = {
     APP_NAME,
     APP_NAME_UNDERSCORED,
     APP_NAME_DASHED,
+    SITE_NAME,
 
     FROM_XP_PARAM,
     COMPONENT_SUBPATH_HEADER,
