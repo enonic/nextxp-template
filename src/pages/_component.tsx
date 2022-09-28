@@ -3,6 +3,10 @@ import {Context, fetchContent} from "../_enonicAdapter/guillotine/fetchContent";
 import MainView from "../_enonicAdapter/views/MainView";
 import {IS_DEV_MODE, RENDER_MODE} from '../_enonicAdapter/utils';
 
+// Register component mappings
+import "../_enonicAdapter/baseMappings";
+import "../components/_mappings";
+
 //TODO: refactor this one to ONLY handle component requests
 export async function getServerSideProps(context: Context) {
     const path = context.query.contentPath || [];
