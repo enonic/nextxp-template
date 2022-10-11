@@ -1,8 +1,8 @@
 import React from 'react'
 import {PartProps} from '../../_enonicAdapter/views/BasePart';
 import {VariablesGetterResult} from '../../_enonicAdapter/ComponentRegistry';
-import {getUrl} from '../../_enonicAdapter/utils'
 import {Context} from '../../_enonicAdapter/guillotine/fetchContent';
+import {getUrl} from "../../_enonicAdapter/UrlProcessor";
 
 const ChildList = (props: PartProps) => {
     const {data, meta} = props;

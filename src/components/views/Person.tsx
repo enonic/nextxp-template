@@ -1,6 +1,6 @@
 import React from 'react'
 import {FetchContentResult} from '../../_enonicAdapter/guillotine/fetchContent';
-import {getUrl} from '../../_enonicAdapter/utils'
+import {getUrl} from "../../_enonicAdapter/UrlProcessor";
 
 const Person = (props: FetchContentResult) => {
     const {displayName, data, parent} = props.data?.get as any;

@@ -13,14 +13,14 @@ import adapterConstants, {
     APP_NAME_DASHED,
     FRAGMENT_CONTENTTYPE_NAME,
     FRAGMENT_DEFAULT_REGION_NAME,
+    getContentApiUrl,
+    getXpBaseUrl,
     IS_DEV_MODE,
     PAGE_TEMPLATE_CONTENTTYPE_NAME,
     PAGE_TEMPLATE_FOLDER,
     RENDER_MODE,
     sanitizeGraphqlName,
-    setContentApiUrl,
-    setXpBaseUrl,
-    SITE_NAME,
+    SITE_KEY,
     XP_COMPONENT_TYPE,
     XP_REQUEST_TYPE
 } from '../utils';
@@ -29,16 +29,14 @@ import {ParsedUrlQuery} from 'node:querystring';
 import {GetServerSidePropsContext} from 'next';
 import {IncomingMessage} from "http";
 import {NextApiRequestCookies} from "next/dist/server/api-utils";
-import {RichTextProcessor} from "../RichTextProcessor";
 
 export type AdapterConstants = {
     APP_NAME: string,
     APP_NAME_DASHED: string,
-    SITE_NAME: string,
+    SITE_KEY: string,
     getXPRequestType: (context?: Context) => XP_REQUEST_TYPE,
     getRenderMode: (context?: Context) => RENDER_MODE,
     getSingleComponentPath: (context?: Context) => string | undefined,
-    getContentApiUrl: (context?: Context) => string,
 };
 
 type Result = {
@@ -145,7 +143,7 @@ export const fetchFromApi = async (
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
-            'X-Guillotine-SiteKey': '/' + SITE_NAME,
+            'X-Guillotine-SiteKey': SITE_KEY,
         },
         body: JSON.stringify(body),
     };
@@ -640,7 +638,9 @@ function createPageData(contentType: string, components?: PageComponent[]): Page
 }
 
 
-function createMetaData(contentType: string, contentPath: string, requestType: XP_REQUEST_TYPE, renderMode: RENDER_MODE,
+function createMetaData(contentType: string, contentPath: string,
+                        requestType: XP_REQUEST_TYPE, renderMode: RENDER_MODE,
+                        apiUrl: string, baseUrl: string,
                         requestedComponentPath: string | undefined,
                         pageCmp?: PageComponent, components: PageComponent[] = []): MetaData {
     // .meta will be visible in final rendered inline props.
@@ -653,6 +653,8 @@ function createMetaData(contentType: string, contentPath: string, requestType: X
         renderMode: renderMode,
         canRender: false,
         catchAll: false,
+        apiUrl,
+        baseUrl,
     }
 
     if (requestedComponentPath) {
@@ -675,8 +677,9 @@ function createMetaData(contentType: string, contentPath: string, requestType: X
     return meta;
 }
 
-function errorResponse(code: string = '500', message: string = 'Unknown error', requestType: XP_REQUEST_TYPE, renderMode: RENDER_MODE,
-                       contentPath?: string): FetchContentResult {
+function errorResponse(code: string = '500', message: string = 'Unknown error',
+                       requestType: XP_REQUEST_TYPE, renderMode: RENDER_MODE,
+                       apiUrl: string, baseUrl: string, contentPath?: string): FetchContentResult {
     return {
         error: {
             code,
@@ -692,6 +695,8 @@ function errorResponse(code: string = '500', message: string = 'Unknown error', 
             path: contentPath || '',
             canRender: false,
             catchAll: false,
+            apiUrl,
+            baseUrl,
         },
     };
 }
@@ -712,7 +717,6 @@ export const buildContentFetcher = <T extends AdapterConstants>(config: FetcherC
         getXPRequestType,
         getRenderMode,
         getSingleComponentPath,
-        getContentApiUrl,
         componentRegistry,
     } = config;
 
@@ -721,8 +725,8 @@ export const buildContentFetcher = <T extends AdapterConstants>(config: FetcherC
         context?: Context
     ): Promise<FetchContentResult> => {
 
-        setXpBaseUrl(context);
-        setContentApiUrl(context);
+        const xpBaseUrl = getXpBaseUrl(context);
+        const contentApiUrl = getContentApiUrl(context);
 
         const requestType = getXPRequestType(context);
         const renderMode = getRenderMode(context);
@@ -736,9 +740,6 @@ export const buildContentFetcher = <T extends AdapterConstants>(config: FetcherC
                 requestedComponentPath = getSingleComponentPath(context);
             }
 
-            const contentApiUrl = getContentApiUrl();
-            RichTextProcessor.setApiUrl(contentApiUrl);
-
             ///////////////  FIRST GUILLOTINE CALL FOR METADATA     /////////////////
             const metaResult = await fetchMetaData(contentApiUrl, '${site}/' + siteRelativeContentPath);
             /////////////////////////////////////////////////////////////////////////
@@ -747,23 +748,23 @@ export const buildContentFetcher = <T extends AdapterConstants>(config: FetcherC
             contentPath = _path || '';
 
             if (metaResult.error) {
-                return errorResponse(metaResult.error.code, metaResult.error.message, requestType, renderMode, contentPath);
+                return errorResponse(metaResult.error.code, metaResult.error.message, requestType, renderMode, contentApiUrl, xpBaseUrl, contentPath);
             }
 
             if (!metaResult.meta) {
                 return errorResponse('404', "No meta data found for content, most likely content does not exist", requestType, renderMode,
-                    contentPath)
+                    contentApiUrl, xpBaseUrl, contentPath);
 
             } else if (!type) {
                 return errorResponse('500', "Server responded with incomplete meta data: missing content 'type' attribute.", requestType,
-                    renderMode, contentPath)
+                    renderMode, contentApiUrl, xpBaseUrl, contentPath)
 
             } else if (renderMode === RENDER_MODE.NEXT && !IS_DEV_MODE &&
-                       (type === FRAGMENT_CONTENTTYPE_NAME ||
-                        type === PAGE_TEMPLATE_CONTENTTYPE_NAME ||
-                        type === PAGE_TEMPLATE_FOLDER)) {
+                (type === FRAGMENT_CONTENTTYPE_NAME ||
+                    type === PAGE_TEMPLATE_CONTENTTYPE_NAME ||
+                    type === PAGE_TEMPLATE_FOLDER)) {
                 return errorResponse('404', `Content type [${type}] is not accessible in ${renderMode} mode`, requestType, renderMode,
-                    contentPath);
+                    contentApiUrl, xpBaseUrl, contentPath);
             }
 
 
@@ -811,7 +812,7 @@ export const buildContentFetcher = <T extends AdapterConstants>(config: FetcherC
 
             if (!query.trim()) {
                 return errorResponse('400', `Missing or empty query override for content type ${type}`, requestType, renderMode,
-                    contentPath)
+                    contentApiUrl, xpBaseUrl, contentPath);
             }
 
             /////////////////    SECOND GUILLOTINE CALL FOR DATA   //////////////////////
@@ -854,7 +855,7 @@ export const buildContentFetcher = <T extends AdapterConstants>(config: FetcherC
             }
 
             const page = createPageData(type, components);
-            const meta = createMetaData(type, siteRelativeContentPath, requestType, renderMode, requestedComponentPath, page, components);
+            const meta = createMetaData(type, siteRelativeContentPath, requestType, renderMode, contentApiUrl, xpBaseUrl, requestedComponentPath, page, components);
 
             return {
                 data: contentData,
@@ -877,7 +878,7 @@ export const buildContentFetcher = <T extends AdapterConstants>(config: FetcherC
                     message: e.message
                 }
             }
-            return errorResponse(error.code, error.message, requestType, renderMode, contentPath);
+            return errorResponse(error.code, error.message, requestType, renderMode, contentApiUrl, xpBaseUrl, contentPath);
         }
     };
 };

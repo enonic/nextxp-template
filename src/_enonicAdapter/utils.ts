@@ -1,6 +1,5 @@
 /** Import config values from .env, .env.development and .env.production */
 import {Context, MinimalContext} from './guillotine/fetchContent';
-import {MetaData} from "./guillotine/getMetaData";
 
 const mode = process.env.MODE || process.env.NEXT_PUBLIC_MODE;
 export const IS_DEV_MODE = (mode === 'development');
@@ -19,7 +18,7 @@ export const APP_NAME_UNDERSCORED = (APP_NAME || '').replace(/\./g, '_')
 
 export const APP_NAME_DASHED = (APP_NAME || '').replace(/\./g, '-')
 
-export const SITE_NAME = (process.env.SITE_NAME || process.env.NEXT_PUBLIC_SITE_NAME) as string;
+export const SITE_KEY = (process.env.SITE_KEY || process.env.NEXT_PUBLIC_SITE_KEY) as string;
 
 
 //////////////////////////////////////////////////////////////////////////  Hardcode-able constants
@@ -90,19 +89,9 @@ const getSingleComponentPath = (context?: Context): string | undefined => (
     (context?.req?.headers || {})[COMPONENT_SUBPATH_HEADER] as string | undefined
 );
 
-let contentApiUrl: string;
-
-export function setContentApiUrl(context?: MinimalContext): string {
+export function getContentApiUrl(context?: MinimalContext): string {
     const mode = getRenderMode(context);
-    contentApiUrl = mode === RENDER_MODE.NEXT ? CONTENT_API_MASTER : CONTENT_API_DRAFT;
-    return contentApiUrl;
-}
-
-export function getContentApiUrl(): string {
-    if (!contentApiUrl?.length) {
-        throw 'content API url is null, did you forget to set it with setContentApiUrl() ?'
-    }
-    return contentApiUrl;
+    return mode === RENDER_MODE.NEXT ? CONTENT_API_MASTER : CONTENT_API_DRAFT;
 }
 
 /** For '<a href="..."' link values in props when clicking the link should navigate to an XP content item page
@@ -113,26 +102,24 @@ export function getContentApiUrl(): string {
  * */
 // export const getContentLinkUrlFromXpPath = (_path: string): string => _path.replace(siteNamePattern, '')
 
-let BASE_URL_MAP: { [mode: string]: string } = {};
+const xpBaseUrlMap: Record<string, string> = {};
 
-export const setXpBaseUrl = (context: Context | undefined): string => {
+export const getXpBaseUrl = (context?: MinimalContext): string => {
     const mode = getRenderMode(context);
+
+    const existingUrl = xpBaseUrlMap[mode];
+    if (existingUrl) {
+        return existingUrl;
+    }
+
     const header = ((context?.req?.headers || {})[XP_BASE_URL_HEADER] || "") as string;
+
     //TODO: workaround for XP pattern controller mapping not picked up in edit mode
-    const headerInline = (header || '/').replace(/\/edit\//, '/inline/');
-    BASE_URL_MAP[mode] = headerInline;
-    return headerInline;
-};
+    const resultingUrl = (header || '/').replace(/\/edit\//, '/inline/');
 
-/**
- *
- * @param resourcePath Relative resource path (Next pages, XP _path, public assets etc)
- * @returns absolute URL string (clientside)
- */
-export const getUrl = (resourcePath: string, meta?: MetaData): string => {
+    xpBaseUrlMap[mode] = resultingUrl;
 
-    const prefix = meta?.renderMode !== undefined ? BASE_URL_MAP[meta.renderMode] : undefined;
-    return (prefix || '') + resourcePath;
+    return resultingUrl;
 }
 
 
@@ -172,7 +159,7 @@ const adapterConstants = {
     APP_NAME,
     APP_NAME_UNDERSCORED,
     APP_NAME_DASHED,
-    SITE_NAME,
+    SITE_KEY,
 
     FROM_XP_PARAM,
     COMPONENT_SUBPATH_HEADER,
@@ -182,7 +169,6 @@ const adapterConstants = {
     getXPRequestType,
     getSingleComponentPath,
     getRenderMode,
-    getContentApiUrl,
 };
 
 // Verify required values

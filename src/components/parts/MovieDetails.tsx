@@ -1,7 +1,8 @@
 import React from 'react'
-import {APP_NAME_UNDERSCORED, getUrl} from '../../_enonicAdapter/utils'
+import {APP_NAME_UNDERSCORED} from '../../_enonicAdapter/utils'
 import {PartProps} from '../../_enonicAdapter/views/BasePart';
 import {MetaData} from "../../_enonicAdapter/guillotine/getMetaData";
+import {getUrl} from "../../_enonicAdapter/UrlProcessor";
 
 
 export const getMovie = `

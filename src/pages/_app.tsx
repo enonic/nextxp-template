@@ -1,10 +1,11 @@
 import type {AppProps} from 'next/app'
 import '../styles/globals.css'
 import React from 'react';
-import {getUrl, RENDER_MODE, XP_REQUEST_TYPE} from '../_enonicAdapter/utils';
+import {RENDER_MODE, XP_REQUEST_TYPE} from '../_enonicAdapter/utils';
 import Header from '../components/views/Header';
 import Footer from '../components/views/Footer';
 import {FetchContentResult} from "../_enonicAdapter/guillotine/fetchContent";
+import {getUrl} from "../_enonicAdapter/UrlProcessor";
 
 /**
  * Wraps all rendered components
