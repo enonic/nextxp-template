@@ -1,7 +1,7 @@
 import React from 'react'
-import {getUrl} from '../../_enonicAdapter/utils';
 import styles from './Header.module.css';
 import {MetaData} from "../../_enonicAdapter/guillotine/getMetaData";
+import {getUrl} from "../../_enonicAdapter/UrlProcessor";
 
 export interface HeaderProps {
     title: string;

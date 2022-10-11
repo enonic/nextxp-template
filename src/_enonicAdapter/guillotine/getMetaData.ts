@@ -238,4 +238,6 @@ export interface MetaData {
     requestedComponent?: PageComponent,
     canRender: boolean,
     catchAll: boolean,
+    apiUrl: string,
+    baseUrl: string,
 }

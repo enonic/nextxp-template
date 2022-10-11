@@ -1,11 +1,10 @@
 import React from 'react'
-import {RichTextProcessor} from '../RichTextProcessor';
+import {getUrl, UrlProcessor} from '../UrlProcessor';
 import {MetaData, RichTextData} from '../guillotine/getMetaData';
 import HTMLReactParser, {DOMNode} from 'html-react-parser';
 import {ElementType} from 'domelementtype';
 import {Element} from 'domhandler/lib';
 import BaseMacro from './BaseMacro';
-import {RENDER_MODE} from '../utils';
 
 type Props = {
     data: RichTextData,
@@ -27,24 +26,24 @@ function replacerFactory(allData: RichTextData, meta: MetaData, renderMacroInEdi
         const el = domNode as Element;
         let ref: string;
         switch (el.tagName) {
-            case RichTextProcessor.IMG_TAG:
-                ref = el.attribs[RichTextProcessor.IMG_ATTR];
+            case UrlProcessor.IMG_TAG:
+                ref = el.attribs[UrlProcessor.IMG_ATTR];
                 const src = el.attribs['src'];
                 // do not process content images in next to keep it absolute
-                if (ref && src && !(mode === RENDER_MODE.NEXT && RichTextProcessor.isContentImage(ref, allData.images))) {
-                    el.attribs['src'] = RichTextProcessor.processUrl(src, meta);
+                if (ref && src && UrlProcessor.isContentImage(ref, allData.images)) {
+                    el.attribs['src'] = getUrl(src, meta);
                 }
                 break;
-            case RichTextProcessor.LINK_TAG:
-                ref = el.attribs[RichTextProcessor.LINK_ATTR];
+            case UrlProcessor.LINK_TAG:
+                ref = el.attribs[UrlProcessor.LINK_ATTR];
                 const href = el.attribs['href'];
-                // do not process media links in next to keep it absolute
-                if (ref && href && !(mode === RENDER_MODE.NEXT && RichTextProcessor.isMediaLink(ref, allData.links))) {
-                    el.attribs['href'] = RichTextProcessor.processUrl(href, meta);
+
+                if (ref && href) {
+                    el.attribs['href'] = getUrl(href, meta);
                 }
                 break;
-            case RichTextProcessor.MACRO_TAG:
-                ref = el.attribs[RichTextProcessor.MACRO_ATTR];
+            case UrlProcessor.MACRO_TAG:
+                ref = el.attribs[UrlProcessor.MACRO_ATTR];
                 const data = ref && allData.macros.find((d) => d.ref === ref);
                 if (data) {
                     return <BaseMacro data={data} meta={meta} renderInEditMode={renderMacroInEditMode}/>

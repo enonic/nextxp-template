@@ -1,12 +1,11 @@
 import React from 'react';
 import {ContentApiBaseBody, Context, fetchContent, fetchGuillotine} from "../_enonicAdapter/guillotine/fetchContent";
 import MainView from "../_enonicAdapter/views/MainView";
-import {getContentApiUrl, IS_DEV_MODE, RENDER_MODE, setContentApiUrl} from "../_enonicAdapter/utils";
+import {getContentApiUrl, IS_DEV_MODE, RENDER_MODE} from "../_enonicAdapter/utils";
 
 // Register component mappings
 import "../_enonicAdapter/baseMappings";
 import "../components/_mappings";
-import {RichTextProcessor} from "../_enonicAdapter/RichTextProcessor";
 
 const query = `query($path: ID) {
                   guillotine {
@@ -81,9 +80,8 @@ function populateXPHeaders(context: Context) {
 }
 
 export async function getStaticPaths() {
-    setContentApiUrl();
-    RichTextProcessor.setApiUrl(getContentApiUrl());
-    const paths = await recursiveFetchChildren('\${site}/', 4);
+    const contentApiUrl = getContentApiUrl();
+    const paths = await recursiveFetchChildren(contentApiUrl, '\${site}/', 4);
 
     return {
         paths: paths,
@@ -95,8 +93,7 @@ interface Item {
     params: { contentPath: string[] }
 }
 
-export async function recursiveFetchChildren(path: string, maxLevel: number = 3, filter: (content: any) => boolean = filterUnderscores): Promise<Item[]> {
-    const contentApiUrl = getContentApiUrl();
+export async function recursiveFetchChildren(contentApiUrl: string, path: string, maxLevel: number = 3, filter: (content: any) => boolean = filterUnderscores): Promise<Item[]> {
     return doRecursiveFetch(contentApiUrl, path, maxLevel, filter);
 }
 
