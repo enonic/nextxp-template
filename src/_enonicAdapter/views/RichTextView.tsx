@@ -6,19 +6,22 @@ import {ElementType} from 'domelementtype';
 import {Element} from 'domhandler/lib';
 import BaseMacro from './BaseMacro';
 
+export type ReplacerResult = JSX.Element | object | void | undefined | null | false;
+
+export type Replacer = (domNode: DOMNode, data: RichTextData, meta: MetaData, renderMacroInEditMode: boolean) => ReplacerResult;
+
 type Props = {
     data: RichTextData,
     meta: MetaData,
     tag?: string,
     renderMacroInEditMode?: boolean,
+    customReplacer?: Replacer,
 }
 
-function replacerFactory(allData: RichTextData, meta: MetaData, renderMacroInEditMode: boolean = true):
-    (domNode: DOMNode) => JSX.Element | object | void | undefined | null | false {
+export function createReplacer(allData: RichTextData, meta: MetaData, renderMacroInEditMode: boolean = true, customReplacer?: Replacer): (domNode: DOMNode) => ReplacerResult {
 
-    const mode = meta.renderMode;
     // eslint-disable-next-line react/display-name
-    return (domNode: DOMNode): JSX.Element | object | void | undefined | null | false => {
+    return (domNode: DOMNode): ReplacerResult => {
         if (domNode.type !== ElementType.Tag) {
             return domNode;
         }
@@ -48,15 +51,24 @@ function replacerFactory(allData: RichTextData, meta: MetaData, renderMacroInEdi
                 if (data) {
                     return <BaseMacro data={data} meta={meta} renderInEditMode={renderMacroInEditMode}/>
                 }
+                break;
+            default:
+                if (customReplacer) {
+                    const result = customReplacer(domNode, allData, meta, renderMacroInEditMode);
+                    if (result) {
+                        return result;
+                    }
+                }
+                break;
         }
         return el;
     }
 }
 
-const RichTextView = ({tag, data, meta, renderMacroInEditMode}: Props) => {
+const RichTextView = ({tag, data, meta, renderMacroInEditMode, customReplacer}: Props) => {
     const CustomTag = tag as keyof JSX.IntrinsicElements || 'section';
     return <CustomTag>
-        {data.processedHtml ? HTMLReactParser(data.processedHtml, {replace: replacerFactory(data, meta, renderMacroInEditMode)}) : ''}
+        {data.processedHtml ? HTMLReactParser(data.processedHtml, {replace: createReplacer(data, meta, renderMacroInEditMode, customReplacer)}) : ''}
     </CustomTag>
 }
 

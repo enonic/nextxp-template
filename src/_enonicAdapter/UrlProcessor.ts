@@ -50,8 +50,7 @@ export class UrlProcessor {
     }
 
     private static isPageUrl(url: string): boolean {
-        const isPage = !this.IMG_ATMT_REGEXP.test(url);
-        return isPage;
+        return !this.IMG_ATMT_REGEXP.test(url);
     }
 
     private static getApiUrl(meta: MetaData) {
