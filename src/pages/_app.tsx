@@ -30,7 +30,6 @@ function MyApp({Component, pageProps}: AppProps<FetchContentResult>) {
         <>
             <Header
                 title="🔥 Next.XP"
-                path={pageProps.meta?.path}
                 logoUrl={getUrl('images/xp-shield.svg', pageProps.meta)}
                 meta={pageProps.meta}
             />
