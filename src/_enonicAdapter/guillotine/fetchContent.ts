@@ -337,17 +337,15 @@ function parseComponentPath(contentType: string, path: string): PathFragment[] {
     return matches;
 }
 
-function getParentRegion(source: RegionTree, contentType: string, cmpPath: string, components: PageComponent[] = [],
+function getParentRegion(source: RegionTree, contentType: string, cmpPath: PathFragment[], components: PageComponent[] = [],
                          createMissing?: boolean): PageRegion | undefined {
-
-    const path = parseComponentPath(contentType, cmpPath);
 
     let currentTree: RegionTree = source;
     let currentRegion: PageRegion | undefined;
     let parentPath = '';
 
-    for (let i = 0; i < path.length; i++) {
-        const pathFragment = path[i];
+    for (let i = 0; i < cmpPath.length; i++) {
+        const pathFragment = cmpPath[i];
         const regionName = pathFragment.region;
         parentPath += `/${pathFragment.region}/${pathFragment.index}`;
         currentRegion = currentTree[regionName];
@@ -364,14 +362,14 @@ function getParentRegion(source: RegionTree, contentType: string, cmpPath: strin
             }
         }
 
-        if (i < path.length - 1) {
+        if (i < cmpPath.length - 1) {
             // look for layouts inside if this is not the last path fragment
 
             const layout = components.find((cmp: PageComponent) => {
                 return cmp.type === XP_COMPONENT_TYPE.LAYOUT && prefixLayoutPath(contentType, cmp.path) === parentPath;
             });
             if (!layout) {
-                throw `Layout [${parentPath}] not found among components, but needed for component [${cmpPath}]`
+                throw `Layout [${parentPath}] not found among components, but needed for component [${JSON.stringify(cmpPath, null, 2)}]`
             }
             if (!layout.regions) {
                 layout.regions = {};
@@ -401,7 +399,12 @@ function buildPage(contentType: string, comps: PageComponent[] = []): PageCompon
         path: '/',
     };
     const tree = {};
+    if (contentType === FRAGMENT_CONTENTTYPE_NAME) {
+        page.regions = tree;
+    }
+
     comps.forEach(cmp => {
+        const cmpPath = parseComponentPath(contentType, cmp.path);
         let region;
         if (cmp.path === '/' && cmp.type === XP_COMPONENT_TYPE.PAGE) {
             // add page values to page object
@@ -409,17 +412,16 @@ function buildPage(contentType: string, comps: PageComponent[] = []): PageCompon
             page.page!.regions = tree;
             return;
         } else {
-            region = getParentRegion(tree, contentType, cmp.path, comps, true);
+            region = getParentRegion(tree, contentType, cmpPath, comps, true);
         }
 
         if (region) {
             // getting the index of component from string like '/main/0/left/11'
-            const pathArr = cmp.path.split('/');
-            const cmpIndex = +(pathArr[pathArr.length - 1] || -1);
+            const cmpIndex = cmpPath[cmpPath.length - 1]?.index;
             if (cmpIndex >= 0) {
                 region.components.splice(cmpIndex, 0, cmp);
             } else {
-                throw Error(`Could not find [${cmp.type}] component index at ${cmp.path}, rendering not possible.`)
+                throw Error(`Could not find [${cmp.type}] component index at ${JSON.stringify(cmpPath, null, 2)}, rendering not possible.`)
             }
         }
     });
