@@ -2,67 +2,72 @@
 :toc: right
 :imagesdir: media/
 
-In this chapter, we'll enable editors to preview the Next rendering directly from Content Studio.
+In this chapter, you'll enable Content Studio to load the preview directly from Next.
 
 ## Task: Enable preview 
 
-To get preview working, we need to make a few changes to the Enonic application:
+To get preview going, you need to make a few changes to the Enonic app:
 
-Follow the steps below to get it working:
-
-. **Add a proxy controller**, that can fetch rendered HTML and assets from the Next server
+. **Add the NextJS integration**:
 +
-Rather than implementing this ourselves, we'll simply add the https://github.com/enonic/lib-nextjs-proxy[Nextjs proxy library] to the Enonic application we created earlier. 
+The https://github.com/enonic/lib-nextjs[Nextjs library] will provide the features we need to setup the preview, and then some. Add it to your dependencies list by adding the following line:
 +
-The proxy is optimized for Next, as it performs some special handling and processing related to assets and the /_next path.
-+
-.Add the include line below to your project's build.gradle file
+./build.gradle
 [source, groovy, options="nowrap"]
 ----
 dependencies {
     ...
-    include 'com.enonic.lib:lib-nextjs-proxy:<version>'
+    include 'com.enonic.lib:lib-nextjs:<version>'
     ...
 }
 ----
 +
-NOTE: <version> must be replaced by the current version. Visit the library on link:https://market.enonic.com/vendors/enonic/nextjs-proxy-lib[Enonic Market]. Click `Get started` and choose the latest version.
+IMPORTANT: Ensure <version> is replaced by the most current version available. Visit the library on link:https://market.enonic.com/vendors/enonic/nextjs-lib[Enonic Market]. Click `Get started` and choose the latest version.
 +
-. *Add a controller mapping*
+. *Update site configuration*
 +
-In this step, we will activate Content Studio's preview to use the proxy
-+
-Update the `site.xml` , https://developer.enonic.com/docs/xp/stable/components/mappings[mappings] section to look like this:
+To trigger the next.js integration in Content Studio, we must update the https://developer.enonic.com/docs/xp/stable/components/mappings[controller mappings], and add a configuration form to the site. Replace your current site.xml with this:
 +
 .src/main/resources/site/site.xml
 [source, xml]
 ----
-...
+<?xml version="1.0" encoding="UTF-8"?>
+<site xmlns="urn:enonic:xp:model:1.0">
+  <x-data name="SoMe" allowContentTypes="person|movie"/>
+  <x-data name="spotlight" allowContentTypes="media:image"/>
+  <form>
+    <input type="TextLine" name="nextjsUrl">
+      <label>NextJS server URL</label>
+    </input>
+    <input type="TextLine" name="nextjsToken">
+      <label>NextJS API token</label>
+    </input>
+  </form>
   <mappings>
-    <mapping controller="/controllers/graphql.js" order="50">
-      <pattern>/_graphql</pattern>
-    </mapping>
-    <mapping controller="/lib/nextjs-proxy/proxy.js" order="99">
+    <mapping controller="/lib/nextjs/proxy.js" order="99">
       <pattern>/.*</pattern>
     </mapping>
   </mappings>
-...
+</site>
 ----
 +
-This effectively replaces the preview that shipped with the app, with the proxy. All requests excluding `/_graphql` (which contains the headless API) will now be be handled by the proxy instead - as you can see from the `/.*` pattern, which essentially means "catch all" URL patterns.
+TIP: Studying the file above, you will see the proxy mapping to `/.*`, which essentially means "catch all" URL patterns. The form contains one field for the server URL, and one for the API token.
 +
-NOTE: If the headless API mappings come in conflicts with your Next.js app, you can always change the mapping above.
-+
-Redeploy the Enonic app after saving the changes:
+. **Redeploy the Enonic app** to activate the changes:
 +
     enonic project deploy
 +
-. *Verify the preview*
+. *Activate the preview*
 +
-By default, the proxy is configured to access the Next.js server on localhost:3000, later we will look into how this can be changed - but essentially this means everything should be working instantly.
+Select the root item `Headless Movie Database` and click edit.
++ Configure the "Headless Movie DB" application by clicking the pencil icon.
 +
-From Content Studio, select (or edit) any item in the content hierarchy, and it should be rendered by Next.js and visible in the preview panel on the right:
+image:configure-preview.png[title="Form with fields for server url and nextjs token", width=804px]
++
+If you did not change the API token in the Next app, use these values: `http://localhost:3000`, and `mySecretKey`.
+
+. After applying and saving the changes, you should be able see the live preview in Content Studio.
 +
 image:morgan-freeman-preview.png[title="Next.js-rendered preview in Content Studio",width=1072px]
 
-That completes the preview setup, moving forward, we'll make it possible to <<pages#, build pages editorially>>.
+That completes the preview setup, moving forward, we'll make it possible to <<pages#, create pages editorially>>.

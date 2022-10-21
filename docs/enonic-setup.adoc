@@ -2,42 +2,43 @@
 :toc: right
 :imagesdir: media/
 
-In this chapter, we will build a custom app based on the HMDB project, and play around with the Headless API
+In this chapter, we will create an Enonic app based on the Headless Movie DB project, and play around with the Headless API
 
 TIP: For an in-depth introduction to Enonic, visit the official link:https://developer.enonic.com/guides/developer-101/xp7[Enonic Developer 101] guide.
 
 [[xp-at-a-glance]]
 == Enonic at a glance
 
-Our platform is actually called Enonic XP (XP, or Enonic for short).
+Our platform is called Enonic XP (XP, or Enonic for short).
 
 === Enonic apps
 Enonic XP allows you to install and run one or more link:https://developer.enonic.com/guides/developer-101/xp7/apps[**applications**] in a single instance.
 
 You can discover ready to run applications on link:https://market.enonic.com/[Enonic Market], or you may build your own, like we will be doing in this tutorial.
-Each app may provide specific functionality. It may for instance be everything you need for a large website, or provide only specific services, such as an **API**. An app is given an <<#new-project, **app name**>> when it's built.
 
-Apps may provide a range of different functionality. For this tutorial we will focus on headless CMS capabilities.
+Each app may provide specific functionality. It may for instance be everything you need for a large website, or provide specific services, such as an **API**. An app is given a unique <<#new-project, **app name**>> when it's built.
 
 TIP: Useful terminology: A **sandbox** is a local Enonic server running on your laptop. Apps are built from **projects** which are basically a folder that contains the app's source code. Once it is built, it can be **deployed** to the sandbox - where it will be started and made available.
 
-For production use and CI/CD, Enonic apps may be installed in many different ways, typically using link:https://developer.enonic.com/docs/enonic-cli/master[enonic CLI]. In some cases, apps may even be installed directly via the Enonic link:https://developer.enonic.com/docs/xp/stable/admin#admin_console[Admin console].
-
 === Content
 
-Apps typically ship with one or more link:https://developer.enonic.com/guides/developer-101/xp7/content[**content types**]. Content types typically define data structures (similar to fields in classes in object-oriented languages). Each content type gets a unique name which is automatically pre-fixed with the app-name. e.g. `<appName>:<contentTypeName>`.
+Apps typically ship with one or more link:https://developer.enonic.com/guides/developer-101/xp7/content[**content types**]. Content types typically define data structures, JSON style. Each content type gets a unique name which is automatically pre-fixed with the app-name. e.g. `<appName>:<contentTypeName>`.
 
-Content types are used to create **content items**. Content is commonly created and handled via Enonic's link:https://enonic.com/blog/publishing-power-enonic-content-studio-cheat-sheet[**Content Studio**]. Content may be organised in tree structures, which can be useful both for internal purposes, but also externally - as we will see in this tutorial.
+Content types are used to create **content items**. Content is commonly created and handled via Enonic's link:https://enonic.com/blog/publishing-power-enonic-content-studio-cheat-sheet[**Content Studio**]. Content may be organised in tree structures, which can be useful both for internal, and external purposes - as you will see in this tutorial.
 
-All content items get a unique path **name** when creating it - this is similar to a filename - and a human-friendly displayName.
+Content items get a unique path **name** - similar to a filename - and a human-friendly displayName.
 
-Content can exist on two different link:https://developer.enonic.com/docs/xp/stable/storage/branches[**branches**]: When creating or editing in Content Studio, you're always working on the `draft` branch. When publishing, new items and changes are copied to the `master` branch - which is often publicly accessible.
+Content items can exist in two different link:https://developer.enonic.com/docs/xp/stable/storage/branches[**branches**]: When creating or editing in Content Studio, you're always working in the `draft` branch. When publishing, new items and changes are copied to the `master` branch.
 
 == The Headless Movie Database
 
-With Enonic, you may obviously create your own content model, but to save time, we'll be using a demo-app known as the link:https://market.enonic.com/vendors/enonic/headless-movie-db[Headless Movie Database] (HMDB) as our starting point.
+With Enonic, you may obviously create your own content model, but to save time in this tutorial, we'll be using a demo-app known as the link:https://market.enonic.com/vendors/enonic/headless-movie-db[Headless Movie Database] (HMDB) as our starting point.
 
-HMDB ships with a pre-defined content-model and some useful sample content. It also exposes the content through a link:https://graphql.org/[graphQL] API. This API gives us access to the content.
+HMDB ships with a pre-defined content-model and some useful sample content.
+
+== The Guillotine API
+
+Finally, to expose you content, we'll install an app called Guillotine. Once installed, Guillotine automatically exposes a GraphQL API for your applications and content.
 
 Let's get going!
 
@@ -51,26 +52,27 @@ Run the following command from your terminal
 +
   enonic project create -r app-hmdb
 +
-NOTE: Stick with the standard values and keep the suggested project name `com.example.myproject` for the examples in the tutorial to work properly.
+IMPORTANT: Stick with the standard values and keep the suggested project name `com.example.myproject` for the examples in the tutorial to work properly.
 This will be referred to as **app name** later in this tutorial.
 +
 . **Deploy the application** by running this command from your freshly created project folder.
 +
   enonic project deploy
 +
-The application will now be built. When asked to start a sandbox (a local instance of XP running its own content storage area), hit _Yes_. Enonic starts, outputs some server logs, and the sample content is imported.
-+
-. **Install and test Content Studio**.
-+
+When asked to create a sandbox (a local instance of Enonic XP), just give it a name i.e. `next-demo` and go with the default values. When the sandbox has started, it outputs some server logs, and the sample content gets imported automatically.
+
+=== Task: Install Content Studio
+
 Navigate to http://localhost:8080 and log in to the admin console (you don't have to create a user for this tutorial).
+
+. Install **Content Studio** (it's an XP app of its own) by completing the _XP Tour_ , or via the `Applications` admin app.
 +
-Install **Content Studio** (it's an XP app of its own) by completing the _XP Tour_ , or via the Applications admin app.
-+
-From the _XP_ menu, open `Content Studio`, and choose the `Headless demo` project if needed. You should see something like this:
+. From the _XP_ menu, open `Content Studio`, and choose the `Headless demo` project if needed. You should see something like this:
 +
 image:hmdb-content.png[title="HMDB in Content Studio", width=600px]
 +
 NOTE: Some items have a default preview. That's okay for now - as we will customize this preview later.
+
 
 **Congrats on setting up the Enonic development environment**
 

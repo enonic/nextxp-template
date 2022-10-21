@@ -29,10 +29,7 @@ The following file structure should now exist within your new project folder:
 .Next project files:
 [source,files]
 ----
-next.config.js <!--1-->
-.env
-.env.production
-.env.development
+.evn <!--1-->
 src/
     _enonicAdapter/ <!--2-->
     components/ <!--3-->
@@ -40,26 +37,49 @@ src/
         [[...contentPath]].tsx <!--4-->
         _app.tsx <!--5-->
         _document.tsx <!--6-->
+        _component.tsx <!--7-->
+        _renderable.tsx
+        api/ <!--8-->
+            revalidate.ts
+            preview.ts
 ----
 
-<1> Next.js config and environment variables are placed in these files
+<1> Environment variables are placed in this file
 <2> Contains integration and rendering logic to work smoothly together with Enonic XP. You should never need to modify these files. Planned to be released as an NPM in the future.
-<3> Your Next implementation of CMS components can be placed here
+<3> Contains your implementation of CMS components
 <4> The fallback next.js router. Enables dynamic rendering based on content in the CMS. File name is not a typo, but Next.js syntax that makes it catch all HTTP requests.
 <5> Invoked on every request. Add common structures here (eg. `<head>` etc), but be careful not to remove functionality needed by Content Studio
 <6> Vanilla Next.js file that outlines the basic document structure of all pages.
+<7> Files supporting the visual page editor in Content Studio
+<8> These files support preview mode and regeneration of cached pages
 
 
 == Task: Configure application
 
-Before booting the application, you'll need to add some essential configuration.
+By default, the configuration should work for your setup, but have a look to be sure:
 
-. Verify or update your `.env.development` file to reference the drafts API:
+. Verify your configuration
++
+The following configuration values should match your environment
++
+..env extract:
+[source,files]
+----
+# Provide a unique value which will be used to secure the preview mode
+API_TOKEN=mySecretKey
 
-CONTENT_API_URL=http://localhost:8080/site/hmdb/draft/hmdb/_graphql:: Must specify the absolute url to the Content API
+# Enonic app name, must match the name of your app
+APP_NAME=com.example.myproject
 
-TIP: These configuration values can be overridden when deplying your app to a live server later.
+# Path to site, or site ID
+SITE_KEY=/hmdb
 
+# Absolute URL to Content API
+CONTENT_API_DRAFT=http://127.0.0.1:8080/site/hmdb/draft
+CONTENT_API_MASTER=http://127.0.0.1:8080/site/hmdb/master
+----
+
+TIP: The configuration values can be overridden later when deplying your app to a live server.
 
 == Task: Boot the server
 
@@ -107,4 +127,4 @@ Give the default rendering a spin by trying out some other URLs, for example: +
 
 **That's it for the basic Next.js setup.**
 
-Next (pun intended), well have a closer look at <<rendering-basics#, how to customize the rendering>>.
+Next, well have a closer look at <<rendering-basics#, how to customize the rendering>>.

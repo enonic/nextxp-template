@@ -6,7 +6,9 @@
 So far, rendering has been based on hardcoded mappings made by the developer. In this chaper we will enable editors to compose their own pages.
 
 == Task: Disable debug view
-For every page you select, the debug view keeps appearing - even in Content Studio. You may disable this, simply by commenting out the `CATCH_ALL` content type view at the bottom of your mappings file - like this: 
+For every page you select, the debug view keeps appearing - even in Content Studio. Disable this by following the steps below.
+
+. **Comment out the `CATCH_ALL`** content type view at the bottom of your mappings file - like this: 
 +
 .src/components/_mappings.ts
 [source,TypeScript]
@@ -20,13 +22,17 @@ ComponentRegistry.addContentType(CATCH_ALL, {
 });
 */
 ----
++
+. **Verify that pages are no longer rendering** by visting your site on `http://localhost:3000`.
++
+You the same will now apply to Content Studio.
 
 
 == Task: Setup page rendering
 
 Content types need to exist in Enonic before an editor can create content. Similarly, page components must be defined before Content Studio can enable editors to create pages.
 
-. *Add a page descriptor* to the Enonic app 
+. *Add a page component* to the Enonic app 
 +
 .src/main/resources/site/pages/main/main.xml
 [source,xml]
@@ -42,7 +48,7 @@ Content types need to exist in Enonic before an editor can create content. Simil
 </page>
 ----
 +
-NOTE: The definition of the region `main`, enable Content Studio editors to add components to the page, as you will see later.
+NOTE: The definition of the region `main`, allows Content Studio editors to add components to the page, as you will see later.
 +
 Redploy the Enonic app to register the page component.
 +
@@ -55,7 +61,7 @@ On the Next side of things, rendering a page is similar to rendering a content t
 include::{sourcedir}/components/pages/Main.tsx[]
 ----
 +
-NOTE: Notice the <RegionsView> element, referring to the 'main' region
+NOTE: The <RegionsView> element is referring to the 'main' region we defined in the page component earlier.
 +
 Finally, register it in the component mappings by adding the following lines to _mappings.ts
 +
@@ -102,6 +108,25 @@ image:text-component.png[title="Next.js-rendered text component with an image",w
 +
 . After saving, visit the Next.js rendering directly on http://localhost:3000/ to see the result.
 +
-. You may also click the `Preview` button in Content Studio for a full screen version, rendered via the proxy.
+. You may also click the `Preview` button in Content Studio for a full screen version.
 
-That completes the introduction to page rendering, coming up we'll add <<parts#, dynamic page components>> to play with.
+== Task: Publish page
+Your fresh new page is looking good. However, if you visit `http://localhost:3000` - you'll get a "404 page not found" error. This is because only published changes are visible from the front end
+
+Content Studio uses NextJS's preview mode, which uses the drafts API. When accessing the front-end directly, NextJS fetches published content from the master branch.
+
+. **Publish the page** from by clicking `Mark as ready`, and then `Publish`.
++
+image:publish.png[title="Publishing wizard",width=810px]
++
+. **Verify that your page is live** by visiting `http://localhost:3000` once again.
+
+== Troubleshooting
+
+NOTE: Using Content Studio preview in combination with `NextJS dev mode` (running on port 3000) may randomly produce **hydration error**. 
+
+image:hydration-error.png[title="Hydration error",width=566px]
+
+We are working to resolve the issue. In the meantime, refresh your browser tab if this happens.
+
+That completes the introduction to page rendering, coming up we'll add some <<parts#, dynamic page components>> to play with.

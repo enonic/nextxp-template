@@ -37,8 +37,8 @@
             "document": "templates"
         },
         {
-            "title": "10 - Production mode",
-            "document": "prod-mode"
+            "title": "10 - Revalidation",
+            "document": "revalidation"
         },
         {
             "title": "11 - Deployment",

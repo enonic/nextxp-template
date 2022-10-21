@@ -2,24 +2,29 @@
 :toc: right
 :imagesdir: media/
 
-Based on the developer environment you setup in the previous chapter, you'll now learn about Enonic's headless graphql API, aka Guillotine
+Based on the developer environment you created in the previous chapter, you'll now install and use Enonic's headless graphql API, aka Guillotine
 
 == Headless API
 
-Enonic provides and out-of-the-box GraphQL API that dynamically to reflects your site's content types and data model. The API is very flexible, and the developer controls the version of the API being used, and may even customize it. For more details on the foundations of the API, visit the link:https://developer.enonic.com/docs/guillotine/stable[Guillotine documentation].
+Enonic provides and out-of-the-box GraphQL API that dynamically to reflects your applications and content. The API is very flexible, and may even be customized. For a deep dive, visit the link:https://developer.enonic.com/docs/guillotine/stable[Guillotine documentation].
 
 TIP: New to GraphQL? Check out the link:https://graphql.org/[GraphQL documentation]
 
+== Task: Install API
+
+Like Content Studio, the headless API is available from an application called `Guillotine``.
+
+. If Guillotine was not installed in a previous step. `XP menu` -> `Applications` -> `Install`. Search for `Guillotine` and install it.
++
+. Once installed, Guillotine will automatically create and expose a GraphQL API for your application and project. Verify that Guillotine is working by opening Content Studio. Look for a new menu item on the left called `Query playground`.
++
+image:query-playground.png[title="Browsing the Guillotine API using Query Playground", width=1024px]
+
+
 == Task: Run a simple query
 
-. **Access the guillotine API:**
-+
-Visit this link http://localhost:8080/site/hmdb/draft/hmdb/_graphql to access the Headless API, and the draft content items.
-+
-image:graphql-playground.png[title="The built-in API: GraphQL Playground", width=768px]
-+
-The interface served when we access the endpoint lets us browse the API directly. Use the tabs on the far right to discover. Use the left hand field to type/paste in queries, press the "play" button in the middle to **run the query**, and the result will be presented in the right hand field.
-+
+Query playground lets us browse and use the API directly. Use the left hand field to type/paste in queries, press the "play" button to **run the query**, and the result will be presented in the right hand field.
+
 . **Query movies**:
 +
 One of the objectives in this tutorial is listing and presenting movie details. Run this simple query that retrieves the ID and displayName of some movies:
@@ -40,7 +45,7 @@ One of the objectives in this tutorial is listing and presenting movie details. 
 . **View the Result**
 +
 After executing the query, you should get a result in the right panel.
-image:graphql-query.png[title="Running a query for movies in the GraphQL playground", width=1440px]
+image:query-playground-example.png[title="Running a query for movies in Query Playground", width=1024px]
 
 == Task: Query variables
 
@@ -69,13 +74,43 @@ query($path:ID!){               <!--1-->
 [source,JSON]
 ----
 {
-    "path": "${site}/movies/se7en"
+    "path": "/hmdb/movies/se7en"
 }
 ----
 +
-NOTE: ${site} is a valid path element in Guillotine paths, and will internally resolve the path of the site and expand it - in this case the full path will be expanded to `/hmdb/movies/se7en`.
+. **Run the query** to validate that the parameter working as expected.
+
+== Task: Site context
+
+Throughout this tutorial you'll be building a site, and the content tree structure will be relevant for us. The HMDB sample content has a special root content item with the content type "site". However, a content project may even contain multiple sites.
+
+To simplify our queries, we will use a so-called "site context". This is activated by passing an HTTP header along with our queries. 
+
+. Specify header
 +
-. **Run the query** with the variables, and see the result.
+From Query Playground, open the "Request Headers" panel at the bottom, and add the following configuration:
++
+.Configure HTTP headers
+[source,JSON]
+----
+{
+  "X-Guillotine-SiteKey": "/hmdb"
+}
+----
++
+NOTE: Site key can be either path, the site's unique ID. A benefit of using the ID is that you change the location and path of the site without it affecting your queries.
++
+. Run a query with the site context
++
+One of the new features we get from the site context is the ${site} placeholder, which we can use in paths. Update your path parameter as follows, and run the movie query once more: 
+[source,JSON]
+----
+{
+    "path": "${site}/movies/se7en"
+}
+----
+
+NOTE: ${site} will internally resolve the path of the site and expand it - in this case the full path will be expanded to `/hmdb/movies/se7en`.
 
 == Task: Type introspection
 

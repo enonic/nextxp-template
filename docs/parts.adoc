@@ -32,7 +32,7 @@ We'll start off by adding a simple component that lists child items in the tree 
 </part>
 ----
 +
-NOTE: This part descriptor also contains a form, similar to content types, which enable editors to configure it - sorting Ascending or Descending.
+NOTE: This component also contains a form, similar to content types. This means editors can configure it - sorting Ascending or Descending.
 +
 To work seamlessly with Content Studio's WYSIWYG preview, in the Enonic app, parts need a special controller file that helps the preview reload the component when there are changes, without having to refreshing the entire page.
 +
@@ -43,7 +43,7 @@ This controller simply is triggered when a component is updated in the page edit
 .src/main/resources/site/parts/child-list/child-list.js
 [source,JavaScript]
 ----
-var proxy = require('/lib/nextjs-proxy/proxy');
+var proxy = require('/lib/nextjs/proxy');
 
 exports.get = proxy.get;
 ----
@@ -52,17 +52,15 @@ exports.get = proxy.get;
 +
 . **Add parts to the page**
 +
-After the app has deployed, head over to Content Studio. This time, lets edit the `Persons` folder. Create the page and drag'n drop the new part into the region (`right-click -> Insert`, or drag-n-drop from the `Insert panel`` on the right).
+Once the app has deployed, head over to Content Studio. This time, edit the `Persons` folder item. Create the page and drag'n drop the new part into the region (`right-click -> Insert`, or drag-n-drop from the `Insert panel`` on the right).
 +
-TIP: The part will appear without making any changes to Next, this is because the Enonic adapter contains fallback part rendering, when Next is running in DEV mode.
+TIP: The part will appear without making any changes to Next, this is because the Enonic Adapter contains fallback part rendering, as long as NextJS is running in DEV mode.
 +
 image:missing-component.png[title="Next.js dev mode renderes nice feedback when components are missing",width=1440px]
-+
-TIP: As usual, you can navigate to http://localhost:3000/persons to verify it directly from Next.js.
 
 == Task: Configure part rendering in Next
 
-Moving over to the Next app, we must register the new component that support actual rendering of this part.
+Heading over to the front-end code, we must register a new component that support actual rendering of this part.
 
 . **Add the part implementation to the Next app**
 +
@@ -92,7 +90,7 @@ ComponentRegistry.addPart(`${APP_NAME}:child-list`, {
 +
 As you may have noticed this component has a query, a view and a processor. Processors are optional JavaScript functions that can do whatever you need it to. For instance fetch data from another source than the CMS, or post-process the query response before it is passed to the view etc.
 +
-The Enonic adapter will execute the query, pass the result via the processor, then to the view which finally renders the part.
+The Enonic adapter will execute the query, pass the result via the processor, then to the view which then renders the component.
 +
 image:child-list-rendered.png[title="Part rendered with list of persons as seen from Content Studio",width=1440px]
 + 
@@ -124,7 +122,7 @@ This part definition includes a form, with an link:https://developer.enonic.com/
 .src/main/resources/site/parts/heading/heading.js
 [source,JavaScript]
 ----
-var proxy = require('/lib/nextjs-proxy/proxy');
+var proxy = require('/lib/nextjs/proxy');
 
 exports.get = proxy.get;
 ----

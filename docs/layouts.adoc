@@ -33,14 +33,14 @@ NOTE: Just like a page, layouts may declare named regions.
 .src/main/resources/site/parts/2-column/2-column.js
 [source,JavaScript]
 ----
-var proxy = require('/lib/nextjs-proxy/proxy');
+var proxy = require('/lib/nextjs/proxy');
 
 exports.get = proxy.get;
 ----
 +
 When completed, as always redeploy the Enonic app.
 
-== Task: Setup layout rendering in Next
+== Task: Add layout rendering to the front-end
 
 Moving over to the the Next app, you must add the the component that will render the layout.
 

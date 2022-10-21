@@ -1,0 +1,105 @@
+= Page cache and revalidation
+:toc: right
+:imagesdir: media/
+
+In this chapter you will learn about NextJS' static pages and how Enonic can be configured to instantly trigger re-generation of pages when publishing.
+
+== Introduction
+Our app is setup to use NextJS' static page generation (ISR), which basically means you get lightning fast pages, but also with specific limitations, such as getting new pages and changes instantly live on your site. 
+
+TIP: NextJS also supports Server Side Rendering (SSR) which can be enabled by modifying the `[[...contentPath]].tsx` page handler.
+
+== Prod mode
+So far, you have been running NextJS in dev mode. 
+
+By starting NextJS in `prod` mode, the application is automatically optimized, and in our case, pages get rendered statically before the app goes live.
+
+== Task: Activate prod mode
+
+TIP: Remember to stop your existing NextJS dev instance before continuing.
+
+. **Start NextJS in prod mode**:
++
+    npm run prod
++
+This will take a while longer as when compared to dev mode.
+
+. **Verify** by pointing your browser to http://localhost:4242, you should see see the published items, just like in dev mode. **Sweet!**
+
+. **Fix the preview** by updating the site configuration to use the new URL `http://localhost:4242` 
+
+. **Try updating and publishing some changes** to your front page. Everything will look good in Content Studio, but sadly, nothing changes on the the live site. 😔
+
+== Task: Enable smart hook
+
+Our nextjs library integration has yet another trick up it's sleeve: Automatically forcing NextJS to regenerate pages - aka revalidation using an event-driven webhook.
+
+. **Activate the event listener** by updating the `/src/main/resources/main.js` controller in your Enonic app with the following lines:
++
+In the top of the file, add this:
++
+[source,JavaScript]
+----
+...
+const nextjsEventLib = require('/lib/nextjs/event');
+...
+----
++
+and then this line to the very end of the initialize() function:
++
+[source,JavaScript]
+----
+...
+nextjsEventLib.subscribe();
+...
+----
++
+Your updated initialize() function should look something like this:
++
+./src/main/resource/main.js
+[source,JavaScript]
+----
+...
+const initialize = function () {
+    runInContext(() => {
+        const project = getProject();
+        if (!project) {
+            taskLib.executeFunction({
+                description: 'Importing content',
+                func: initProject
+            });
+        } else {
+            log.debug(`Project ${project.id} exists, skipping import`);
+        }
+    });
+    nextjsEventLib.subscribe();
+};
+...
+----
+
+. **Check the Enonic log** after redeploying the Enonic app to confirm it is working.
++
+You should see something like this:
++
+.Enonic log:
+[source,log]
+----
+2022-10-21 20:09:59,911 INFO  com.example.myproject - (/lib/nextjs/event.js) Subscribed to content update events for repos: com.enonic.cms.hmdb,com.enonic.cms.hmdb
+2022-10-21 20:09:59,914 INFO  com.example.myproject - (/lib/nextjs/event.js) Subscribed to repository update events...
+----
+
+== Task: Revalidate pages
+
+The app is already connected to the NextJS server, and has the API token. Its time to test if it is working.
+
+**Edit and publish changes to your front page** once again
+
+This time the page should get updated with your latest changes. 🎉
+
+
+NOTE: You should also be able to tell from the NextJS log that the revalidation was triggered.
+
+With prod mode and revalidation sorted out, its about time you <<deploy#, deploy your apps to live servers>>.
+
+
+

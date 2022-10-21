@@ -109,6 +109,7 @@ Update `src/pages/_app.tsx`` with the following changes:
 ----
 import Header from '../components/views/Header';
 import Footer from '../components/views/Footer';
+import { getUrl } from '../_enonicAdapter/UrlProcessor';
 ----
 +
 . And **replace this line**:
@@ -122,24 +123,26 @@ with this:
 +
 [source,TypeScript]
 ----
-return (          
-<>
-  <Header 
-    title="🔥 Next.XP"
-    logoUrl={getUrl('images/xp-shield.svg')}/>
-    <main style={{
-      margin: `0 auto`,
-      maxWidth: 960,
-      padding: `0 1rem`,
-      }}>
-      <Component {...pageProps} />
-    </main>
-  <Footer/>
-</>
+return (
+    <>
+        <Header
+            title="🔥 Next.XP"
+            logoUrl={getUrl('images/xp-shield.svg', pageProps.meta)}
+            meta={pageProps.meta}
+        />
+        <main style={{
+            margin: `0 auto`,
+            maxWidth: 960,
+            padding: `0 1rem`,
+        }}>
+            <Component {...pageProps} />
+        </main>
+        <Footer/>
+    </>
 );
 ----
 
-NOTE: Pay attention to the `getUrl('')` function. It ensures that links to assets and pages are working seamlessly in Next.js, as well as in Content Studio preview mode - as you will see later.
+NOTE: Pay attention to the `getUrl()` function. It ensures that links to assets and pages are working seamlessly in Next.js, as well as in Content Studio preview mode - as you will see later.
 
 Morgan Freeman's page should now look like this
 

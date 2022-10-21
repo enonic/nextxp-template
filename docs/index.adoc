@@ -1,95 +1,102 @@
 = Next.XP - Next.JS sites powered by Enonic XP
-This is a step-by-step tutorial for building Next.js sites, where content editors get real-time WYSIWTYG page editing and preview capabilities.
+This is a step-by-step tutorial to build Next.js sites with full visual editing capabilities, using Enonic XP as the backend. It uses a standard integration between Next.js and Enonic XP called Next.XP.
 
 :toc: right
 :imagesdir: media/
 
 [NOTE]
 ====
-This guide assumes you are already somewhat familiar with link:https://nextjs.org/[Next.js]. Experience with Enonic is recommended, but not required. 
+This guide assumes you are already somewhat familiar with link:https://nextjs.org/[Next.js]. Experience with Enonic is recommended, but not required. Visit our https://developer.enonic.com/docs/tutorials[Tutorials] for an introduction to Enonic. 
 ====
 
-== Introduction
+== Intro
 
-In this tutorial we will demonstrate a close integration between Next.js and Enonic, where the structure and content in the CMS determines the URLs and pages available in the front-end.
+This tutorial is a step-by-step introduction to building Next.js sites, using Enonic XP as your CMS and back-end. 
 
-The editors get an editing experience they are accustomed to, and developers get a front-end that is cleanly separated from the CMS. The headless architecture ensures the content can be accessed and used by other clients as well - naturally.
+The tree structure and content in the CMS is used to directly manage the URLs and pages in the front-end.
 
-image:nextjs-xp-flow.png[title="Illustration showing request flow through from browser, via next, getting content in Enonic, and then rendered and returned to user as a regular web page.",width=912px]
-
-== Overview
+image:cloud-preview.png[title="Editors enjoy WYSIWYG editing and live preview, even when using statically generated pages",width=1419px]
 
 You will complete the following steps:
 
-* Setup Enonic SDK and content via template
-* Run queries against the Headless API
+* Set up the Enonic SDK and demo content
+* Get familiar with the headless API
 * Create a Next.js app using a template 
-* Setting up preview in Enonic
-* Rendering content based on types
-* Using components to build landing pages
-* Setting up page templates
-* Deploying to live servers 
+* Activate live preview in Enonic
+* Render content based on type
+* Build landing pages using components
+* Create page templates
+* Deploy to live servers 
+
+== How does it work?
+
+=== Static rendering
+The integrations defaults to using Next.js's Incremental Static Rendering (ISR) for extremely fast websites, but also supports the more traditional (and flexible) Server Side Rendered (SSR) approach.
+
+=== The Enonic Adapter
+The "Enonic adapter" extends Next.js by giving developers an intuitive way of working with and rendering editorially managed components and pages.
+
+=== Preview and publishing
+A Next.js extension for Content Studio seamlessly activates Next.js's preview mode, giving editors a familiar and instant visual editing experience. Also, when publishing, the extension will automatically clear cache and trigger new rendering in the front-end.
 
 [[tldr]]
-== TLDR;
+== TL;DR
 
-The impatient may skip to the end of the tutorial, and get a live demo by following these instructions: If you want to learn what is really happening, head on to the <<enonic-setup#, first chapter>> instead.
+NOTE: **Impatient?** Skip to the end of the tutorial and get a live demo by following these instructions:
+
+To learn what is really happening, head on to the <<enonic-setup#, first chapter>> instead.
 
 === 1. Setup Enonic
 
 . Sign up to Enonic Cloud: https://enonic.com/sign-up/cloud-trial
 . Create a new solution based on the `Next.js demo` template
-. From `solution/environments` **open the "Drafts" route** in your browser
+. From `solution/environments`: Notice the links to the "Drafts API" and "Live API". you will need them later.
 +
-By adding `/_graphql` to the end of this URL, you should be able to browse the API. Take a note of this URL, as you will need it later.
+TIP: Visiting these link will give you a 404 page because the GraphQL APIs communicate via HTTP `POST` requests rather than `GET`.
 
 === 2. Create Git repo
 
-Vercel, which we will be using to host the Next.js project requires access to a Git repo,  where your account has write access.
+The front-end hosting service requires access to a Git repo where your account has write access.
 
 . Clone or fork https://github.com/enonic/nextjs-enonic-demo/ to a Github/Bitbucket/Gitlab account you have access to
 +
 NOTE: If you are using Github, simply press the `Fork` button at the top right.
 +
-. Note the URL to your new Git repository, you will need it in the next step (pun intended).
+. Notice the URL to your new Git repository, you will need it in the Next step (pun intended).
 
 === 3. Deploy Next app
-For simplicity, you'll be using Vercel to host the Next.js app. Vercel are the makers of Next.js.
+Vercel are the makers of Next.js, and you'll be using their service to host the front-end.
 
 . Sign up to Vercel: https://vercel.com/ 
-. Create a new project `enonic-demo-drafts` and connect it to the repo you created in step 2.
-. **Add environment variables** referencing the URL to the drafts API - like this:
+. Create a new project `enonic-demo-drafts`, and connect it to the repo you created in step 2.
+. **Add environment variables** telling the app where it will find the draft and live API, as well as token you will need to access preview mode in a later step.
 +
-KEY:: CONTENT_API_URL
-VALUE:: <absolute url to the content drafts API> 
+KEY:VALUE:: CONTENT_API_DRAFT:<URL to the drafts API>
+KEY:VALUE:: CONTENT_API_MASTER:<URL to the live API> 
+KEY:VALUE:: API_TOKEN:<yoursecretstring>
 +
-. After deploying, the Next app should now render the front page:
+. After deploying, your Vercel app should now render the front page:
 +
 image:front-page.png[title="Front page showing some text, links and a picture", width=1003px]
 +
 TIP: Check the Vercel function logs if you are not getting the expected result.
 
 === 4. Enable preview
-With a Next.js preview server running, we may link it to Content Studio.
+With the front-end running, it is time to activate preview in Content Studio.
 
-. In Enonic, go to solution/applications/Nextjs demo and **edit the application configuration**.
+. From the Enonic Cloud, **Launch the Enonic XP admin**, and open Content Studio
+. Select the root item `Headless Movie Database` and click edit.
+. Configure the application called "Next.js demo" by clicking the pencil icon.
 +
-`nextjsUrl=<absolute url to your next.js drafts server>`
+image:configure-preview.png[title="Form with fields for server url and nextjs token", width=804px]
 +
-. **Launch the Enonic XP admin**, and open Content Studio. You should now be able to see the preview in the right hand panel.
+NextJS server URL:: <absolute url to your vercel app>
+NextJS API token:: <secret you added to Vercel in step 3>
++
+. After applying and saving the changes, you should instantly see the live preview in Content Studio.
 +
 image:cloud-preview.png[title="Front page as seen from Content Studio", width=1419px]
 
-=== 5. Go live
+TIP: How does this work? Content Studio uses the token to activates Next.js' preview mode automatically. Changes made in content studio will only be visible here until published. Upon publishing, CS will force Next.js to revalidate the pages and changes will be live as soon as next has rendered the items.
 
-The final step is to launch a Vercel project that renders the published (aka live) content.
-
-. **Create a new `nextjs-demo-live` project** in Vercel, using the same Github repo as before
-. This time however, **Configure the project** to access the "Live" API instead of "Drafts".
-+
-Once the the server has started, it should render a 404 page. This is simply because your content has not yet been published.
-+
-. **Publish the content** from Content Studio by selecting the site, and then `Publish Tree` from the top right menu.
-. After publishing, your site should be live and kicking
-+
-Congratulations, you now have a Next.js site powered by Enonic!
+Congratulations, you now have a Next.js site powered by Enonic! 🚀

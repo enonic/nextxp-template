@@ -25,7 +25,7 @@ To complete this section, we'll need one final part for listing movie details. T
 .src/main/resources/site/parts/movie-details/movie-details.js
 [source,JavaScript]
 ----
-var proxy = require('/lib/nextjs-proxy/proxy');
+var proxy = require('/lib/nextjs/proxy');
 
 exports.get = proxy.get;
 ----
@@ -81,4 +81,4 @@ image:movie-template.png[title="Content item of type template, configure to supp
 +
 . Try visiting other movie items to **verify they now automatically render**.
 
-With templates sorted out, the development is more or less complete - and you are ready to test <<prod-mode#, the production mode>>.
+With templates sorted out, let's dive into  <<revalidation#, production mode and page revalidation>>.
