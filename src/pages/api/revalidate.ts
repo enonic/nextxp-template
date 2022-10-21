@@ -5,7 +5,8 @@ export default async function handler(req: any, res: any) {
     const {token, path, revalidateAll} = req.query;
     // Check for secret to confirm this is a valid request
     if (token !== process.env.API_TOKEN) {
-        return res.status(401).json({message: 'Invalid token'});
+        // XP hijacks 401 to show login page, so send 407 instead
+        return res.status(407).json({message: 'Invalid token'});
     }
 
     const contentApiUrl = getContentApiUrl({req});
