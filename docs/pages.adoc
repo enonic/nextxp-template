@@ -8,7 +8,7 @@ So far, rendering has been based on hardcoded mappings made by the developer. In
 == Task: Disable debug view
 For every page you select, the debug view keeps appearing - even in Content Studio. Disable this by following the steps below.
 
-. **Comment out the `CATCH_ALL`** content type view at the bottom of your mappings file - like this: 
+. **Comment out the `CATCH_ALL`** content type view at the bottom of your mappings file - like this:
 +
 .src/components/_mappings.ts
 [source,TypeScript]
@@ -32,7 +32,7 @@ You the same will now apply to Content Studio.
 
 Content types need to exist in Enonic before an editor can create content. Similarly, page components must be defined before Content Studio can enable editors to create pages.
 
-. *Add a page component* to the Enonic app 
+. *Add a page component* to the Enonic app
 +
 .src/main/resources/site/pages/main/main.xml
 [source,xml]
@@ -123,7 +123,7 @@ image:publish.png[title="Publishing wizard",width=810px]
 
 == Troubleshooting
 
-NOTE: Using Content Studio preview in combination with `NextJS dev mode` (running on port 3000) may randomly produce **hydration error**. 
+NOTE: Using Content Studio preview in combination with `NextJS dev mode` (running on port 3000) may randomly produce **hydration error**.
 
 image:hydration-error.png[title="Hydration error",width=566px]
 

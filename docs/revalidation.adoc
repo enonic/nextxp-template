@@ -26,7 +26,7 @@ This will take a while longer as when compared to dev mode.
 
 . **Verify** by pointing your browser to http://localhost:4242[http://localhost:4242^], you should see see the published items, just like in dev mode. **Sweet!**
 
-. **Fix the preview** by updating the site configuration to use the new URL `http://localhost:4242[http://localhost:4242^]` 
+. **Fix the preview** by updating the site configuration to use the new URL `http://localhost:4242[http://localhost:4242^]`
 
 . **Try updating and publishing some changes** to your front page. Everything will look good in Content Studio, but sadly, nothing changes on the the live site. 😔
 

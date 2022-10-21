@@ -10,9 +10,9 @@ To complete this chapter, we recommend using Enonic to host the XP side of thing
 NOTE: Enonic and Next.js are both open source software projects and can be deployed more or less anywhere. Have a look at the https://developer.enonic.com/docs/kubernetes-operator-for-xp[Kubernetes operator for Enonic XP] if you are keen on hosting it yourself.
 
 == Prod mode
-So far, you have been running Next in dev mode. 
+So far, you have been running Next in dev mode.
 
-Before adding your app to the cloud, you should verify that everything is working as expected in production mode as well. 
+Before adding your app to the cloud, you should verify that everything is working as expected in production mode as well.
 
 When running in production mode, Next verifies and optimizes the build, and creates static pages for high performance.
 
@@ -30,7 +30,7 @@ This will take a while longer when compared to dev mode.
 +
 This time however - Next is running in optimized mode, which is what you will normally use for server deployments. **Sweet!**
 
-NOTE: To make preview work again, simply update the site configuration to use the new URL `http://localhost:4242[http://localhost:4242^]` 
+NOTE: To make preview work again, simply update the site configuration to use the new URL `http://localhost:4242[http://localhost:4242^]`
 
 
 == Task: Sign up to Enonic and deploy your app
@@ -107,13 +107,13 @@ With the front-end running, you can finally connect Content Studio with it and s
 
 NOTE: If yo don't want to re-create your content, you may export and then import content from your local machine, to the server using the https://market.enonic.com/vendors/glenn-ricaud/data-toolbox[Data Toolbox application].
 
-. **Activate preview** from Content Studio by editing the site configuration. 
+. **Activate preview** from Content Studio by editing the site configuration.
 +
 This time use the URL to the Vercel server, i.e. `enonic-tutorial.blabla.vercel.app`. For the api token, use the secret from the environment variable you specified above.
 . **Create your front-page** once more using the page editor. Maybe something like this?
 +
 image:cloud-preview.png[title="Front page as seen from Content Studio", width=1419px]
-. **Go live** by publishing the new page, and verify that your live site gets updated. Voila! 
+. **Go live** by publishing the new page, and verify that your live site gets updated. Voila!
 +
 image:live.png[title="Content rendered on the live server", width=1033px]
 

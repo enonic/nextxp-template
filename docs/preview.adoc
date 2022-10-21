@@ -62,11 +62,11 @@ TIP: Studying the file above, you will see the proxy mapping to `/.*`, which ess
 Select the root item `Headless Movie Database` and click edit.
 +
 image:edit-site.png[title="Select site item and click edit", width=650px]
-+ 
++
 Configure the "Headless Movie DB" application by clicking the pencil icon.
 +
 image:edit-site-app.png[title="Open app config by pressing pencil icon", width=597px]
-+ 
++
 Finally - if you did not change the API token in the Next app, use these values: `http://localhost:3000[http://localhost:3000^]`, and `mySecretKey`.
 +
 image:edit-hmdb-app.png[title="Form with fields for server url and nextjs token", width=771px]
