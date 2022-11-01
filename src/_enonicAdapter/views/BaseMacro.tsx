@@ -1,16 +1,18 @@
-import React from "react"
-import {MacroConfig, MacroData, MetaData} from "../guillotine/getMetaData";
+import React from 'react'
+import {MacroConfig, MacroData, MetaData} from '../guillotine/getMetaData';
 import {ComponentRegistry} from '../ComponentRegistry';
-import {RENDER_MODE} from '../utils';
+import {RENDER_MODE, sanitizeGraphqlName} from '../utils';
 import HTMLReactParser from 'html-react-parser';
 
 const unescape = require('unescape');
 
-export const DISABLE_MACRO = 'system:disable';
+export const MACRO_DISABLE = 'system:disable';
+export const MACRO_EMBED = 'system:embed';
 
 interface BaseMacroProps {
     data: MacroData;
     meta: MetaData;
+    renderInEditMode?: boolean;
 }
 
 export interface MacroProps {
@@ -20,15 +22,15 @@ export interface MacroProps {
 }
 
 const BaseMacro = (props: BaseMacroProps) => {
-    const {data, meta} = props;
+    const {data, meta, renderInEditMode} = props;
 
-    let config = data.config[data.name] || {};
-    if (data.descriptor !== DISABLE_MACRO) {
+    let config = data.config[sanitizeGraphqlName(data.name)] || {};
+    if (data.descriptor !== MACRO_DISABLE) {
         // do not do any processing for disable macro
         config = normalizeValue(config);
     }
 
-    if (meta?.renderMode === RENDER_MODE.EDIT) {
+    if (!renderInEditMode && meta?.renderMode === RENDER_MODE.EDIT) {
         const attrs = formatAttributes(config);
         if (config.body) {
             // do not parse system macros (embed, disable) in edit mode

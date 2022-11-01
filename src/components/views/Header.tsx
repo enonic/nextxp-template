@@ -1,42 +1,22 @@
-import React from "react"
-import Link from "next/link";
-import {getUrl} from "../../_enonicAdapter/utils";
+import React from 'react'
+import styles from './Header.module.css';
+import {MetaData} from "../../_enonicAdapter/guillotine/getMetaData";
+import {getUrl} from "../../_enonicAdapter/UrlProcessor";
 
 export interface HeaderProps {
     title: string;
     logoUrl: string;
+    meta: MetaData;
 }
 
 
-const Header = ({title, logoUrl}: HeaderProps) => {
+const Header = ({title, logoUrl, meta}: HeaderProps) => {
 
-    return (<header
-        style={{
-            background: `rebeccapurple`,
-            marginBottom: `1.45rem`,
-        }}
-    >
-        <div
-            style={{
-                margin: `0 auto`,
-                maxWidth: 960,
-                padding: `1.45rem 1.0875rem`,
-                display: `flex`,
-                justifyContent: 'space-between'
-            }}
-        >
+    return <header className={styles.header}>
+        <div className={styles.wrapper}>
             {title && (
-                <h1 style={{margin: 0}}>
-                    <Link
-                        href={getUrl('')}>
-                        <a style={{
-                            color: `white`,
-                            textDecoration: `none`,
-                        }}
-                        >
-                            {title}
-                        </a>
-                    </Link>
+                <h1>
+                    <a href={getUrl('', meta)}>{title}</a>
                 </h1>
             )}
             {logoUrl && (
@@ -48,7 +28,6 @@ const Header = ({title, logoUrl}: HeaderProps) => {
             )}
         </div>
     </header>
-)};
-
+};
 
 export default Header

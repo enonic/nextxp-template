@@ -1,8 +1,8 @@
-import React from "react"
+import React from 'react'
 import {PORTAL_REGION_ATTRIBUTE, RENDER_MODE} from '../utils';
 
-import BaseComponent from "./BaseComponent";
-import {MetaData, PageComponent, PageData} from "../guillotine/getMetaData";
+import BaseComponent from './BaseComponent';
+import {MetaData, PageComponent, PageData} from '../guillotine/getMetaData';
 
 export interface RegionProps {
     name: string;
@@ -28,9 +28,11 @@ export const RegionView = (props: RegionProps) => {
         regionAttrs.className = className;
     }
 
-    const children = (components || []).map((component: PageComponent, i: number) => (
-        <BaseComponent key={regionAttrs.id + "-" + i} component={component} common={common} meta={meta}/>
-    ))
+    const children = (components || [])
+        .sort(sortPageComponentsByPath)
+        .map((component: PageComponent, i: number) => (
+            <BaseComponent key={regionAttrs.id + "-" + i} component={component} common={common} meta={meta}/>
+        ));
 
     if (meta.renderMode === RENDER_MODE.EDIT) {
         regionAttrs.id = name + "Region";
@@ -73,6 +75,18 @@ const RegionsView = (props: RegionsProps) => {
             }
         </>
     );
+}
+
+function sortPageComponentsByPath(aComp: PageComponent, bComp: PageComponent): number {
+    // sort according to index in region, otherwise there will be a mismatch of views and data
+    // because after 10 components the order will be: /main/1, /main/11, /main/2, /main/3,...
+
+    let pathArr = aComp.path.split('/');
+    const aIndex = +(pathArr[pathArr.length - 1] || 0);
+    pathArr = bComp.path.split('/');
+    const bIndex = +(pathArr[pathArr.length - 1] || 0);
+
+    return aIndex - bIndex;
 }
 
 export default RegionsView;

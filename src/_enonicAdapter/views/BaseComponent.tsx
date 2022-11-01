@@ -1,7 +1,7 @@
-import React from "react";
+import React from 'react';
 
-import {IS_DEV_MODE, PORTAL_COMPONENT_ATTRIBUTE, RENDER_MODE, XP_COMPONENT_TYPE} from "../utils";
-import {MetaData, PageComponent} from "../guillotine/getMetaData";
+import {IS_DEV_MODE, PORTAL_COMPONENT_ATTRIBUTE, RENDER_MODE, XP_COMPONENT_TYPE} from '../utils';
+import {MetaData, PageComponent} from '../guillotine/getMetaData';
 import {ComponentRegistry} from '../ComponentRegistry';
 import Empty from './Empty';
 import * as ReactDOMServer from 'react-dom/server';
@@ -110,6 +110,7 @@ function createComponentAttrs(component: PageComponent, meta: MetaData, common?:
     const {type, data, error} = component;
     const cmpAttrs: { [key: string]: any } = {
         component: component[type],
+        path: component.path,
         meta,
         common,
     };

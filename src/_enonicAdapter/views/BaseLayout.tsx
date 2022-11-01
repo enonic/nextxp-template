@@ -1,17 +1,19 @@
-import React from "react"
-import {LayoutData, MetaData, RegionTree} from "../guillotine/getMetaData";
+import React from 'react'
+import {LayoutData, MetaData, RegionTree} from '../guillotine/getMetaData';
 import {ComponentRegistry} from '../ComponentRegistry';
 import {XP_COMPONENT_TYPE} from '../utils';
 import {MissingComponent, shouldShowMissingView} from './BaseComponent';
 
 export interface LayoutProps {
     layout: LayoutData;
+    path: string;
     common: any;
     meta: MetaData;
 }
 
 interface BaseLayoutProps {
     component?: LayoutData;
+    path: string;
     regions?: RegionTree;
     common?: any;
     meta: MetaData;
@@ -19,7 +21,7 @@ interface BaseLayoutProps {
 
 const BaseLayout = (props: BaseLayoutProps) => {
 
-    const {component, common, regions, meta} = props;
+    const {component, common, regions, meta, path} = props;
     let layoutSelection;
     if (component) {
         layoutSelection = ComponentRegistry.getLayout(component.descriptor);
@@ -27,6 +29,7 @@ const BaseLayout = (props: BaseLayoutProps) => {
     const SelectedLayoutView = layoutSelection?.view;
     if (SelectedLayoutView) {
         return <SelectedLayoutView layout={{descriptor: component?.descriptor, regions: regions || {}, config: component?.config}}
+                                   path={path}
                                    common={common}
                                    meta={meta}/>;
     } else if (component?.descriptor) {

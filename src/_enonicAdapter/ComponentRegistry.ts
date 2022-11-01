@@ -1,6 +1,6 @@
-import {Context} from "../pages/[[...contentPath]]";
 import {PageComponent} from './guillotine/getMetaData';
 import {XP_COMPONENT_TYPE} from './utils';
+import {Context} from './guillotine/fetchContent';
 
 
 /**
@@ -12,6 +12,7 @@ import {XP_COMPONENT_TYPE} from './utils';
 export interface ComponentDefinition {
     catchAll?: boolean; // will be set automatically depending on the binding
     query?: SelectedQueryMaybeVariablesFunc,
+    configQuery?: string,
     processor?: DataProcessor,
     view?: React.FunctionComponent<any>
 }
@@ -126,6 +127,18 @@ export class ComponentRegistry {
 
     public static getMacros(): [string, ComponentDefinition][] {
         return Object.entries(this.macros);
+    }
+
+    public static getParts(): [string, ComponentDefinition][] {
+        return Object.entries(this.parts);
+    }
+
+    public static getLayouts(): [string, ComponentDefinition][] {
+        return Object.entries(this.layouts);
+    }
+
+    public static getPages(): [string, ComponentDefinition][] {
+        return Object.entries(this.pages);
     }
 
     public static addContentType(name: string, obj: ComponentDefinition): void {

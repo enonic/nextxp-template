@@ -1,5 +1,5 @@
-import React from "react";
-import {FetchContentResult} from "../guillotine/fetchContent";
+import React from 'react';
+import {FetchContentResult} from '../guillotine/fetchContent';
 import {ComponentRegistry} from '../ComponentRegistry';
 import BasePage, {BasePageProps} from './BasePage';
 
@@ -24,6 +24,7 @@ const BaseContent = (props: FetchContentResult) => {
         // console.info(`BaseContent: rendering '${meta.type}' with page: ${BasePage.name}`);
         const pageAttrs: BasePageProps = {
             component: pageData,
+            path: page?.path,
             meta,
             common,
         };

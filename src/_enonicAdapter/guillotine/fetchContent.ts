@@ -1,29 +1,42 @@
-import {getMetaQuery, MetaData, PageComponent, PageData, pageFragmentQuery, PageRegion, RegionTree} from "./getMetaData";
-
-import {Context} from "../../pages/[[...contentPath]]";
+import {
+    getMetaQuery,
+    MetaData,
+    PageComponent,
+    PageData,
+    pageFragmentQuery,
+    PageRegion,
+    RegionTree
+} from './getMetaData';
 
 import adapterConstants, {
     APP_NAME,
     APP_NAME_DASHED,
     FRAGMENT_CONTENTTYPE_NAME,
     FRAGMENT_DEFAULT_REGION_NAME,
+    getContentApiUrl,
+    getXpBaseUrl,
     IS_DEV_MODE,
     PAGE_TEMPLATE_CONTENTTYPE_NAME,
     PAGE_TEMPLATE_FOLDER,
     RENDER_MODE,
-    setXpBaseUrl,
+    sanitizeGraphqlName,
+    SITE_KEY,
     XP_COMPONENT_TYPE,
     XP_REQUEST_TYPE
-} from "../utils";
+} from '../utils';
 import {ComponentDefinition, ComponentRegistry, SelectedQueryMaybeVariablesFunc} from '../ComponentRegistry';
+import {ParsedUrlQuery} from 'node:querystring';
+import {GetServerSidePropsContext} from 'next';
+import {IncomingMessage} from "http";
+import {NextApiRequestCookies} from "next/dist/server/api-utils";
 
-export type adapterConstants = {
+export type AdapterConstants = {
     APP_NAME: string,
     APP_NAME_DASHED: string,
-    CONTENT_API_URL: string,
+    SITE_KEY: string,
     getXPRequestType: (context?: Context) => XP_REQUEST_TYPE,
     getRenderMode: (context?: Context) => RENDER_MODE,
-    getSingleComponentPath: (context?: Context) => string | undefined
+    getSingleComponentPath: (context?: Context) => string | undefined,
 };
 
 type Result = {
@@ -59,18 +72,38 @@ interface ComponentDescriptor {
 export type FetchContentResult = Result & {
     data: Record<string, any> | null,
     common: Record<string, any> | null,
-    meta: MetaData | null,
+    meta: MetaData,
     page: PageComponent | null,
 };
 
 
-type FetcherConfig<T extends adapterConstants> = T & {
+type FetcherConfig<T extends AdapterConstants> = T & {
     componentRegistry: typeof ComponentRegistry
 };
 
 interface QueryAndVariables {
     query: string;
     variables?: Record<string, any>;
+}
+
+export interface ServerSideParams
+    extends ParsedUrlQuery {
+    // String array catching a sub-path assumed to match the site-relative path of an XP content.
+    contentPath?: string[];
+    mode?: string;
+}
+
+export interface PreviewParams {
+    contentPath: string[];
+    headers: Record<string, string>;
+}
+
+export type Context = GetServerSidePropsContext<ServerSideParams, PreviewParams>;
+
+export interface MinimalContext {
+    req: IncomingMessage & {
+        cookies: NextApiRequestCookies
+    }
 }
 
 /**
@@ -92,7 +125,7 @@ const GRAPHQL_FRAGMENTS_REGEXP = /fragment\s+.+\s+on\s+.+\s*{[\s\w{}().,:"'`]+}/
 ///////////////////////////////////////////////////////////////////////////////// Data
 
 // Shape of content base-data API body
-type ContentApiBaseBody = {
+export type ContentApiBaseBody = {
     query?: string,                 // Override the default base-data query
     variables?: {                   // GraphQL variables inserted into the query
         path?: string,              // Full content item _path
@@ -109,7 +142,8 @@ export const fetchFromApi = async (
         method,
         headers: {
             'Accept': 'application/json',
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'X-Guillotine-SiteKey': SITE_KEY,
         },
         body: JSON.stringify(body),
     };
@@ -153,7 +187,7 @@ export const fetchFromApi = async (
 };
 
 /** Guillotine-specialized fetch, using the generic fetch above */
-const fetchGuillotine = async (
+export const fetchGuillotine = async (
     contentApiUrl: string,
     body: ContentApiBaseBody,
     xpContentPath: string,
@@ -303,17 +337,15 @@ function parseComponentPath(contentType: string, path: string): PathFragment[] {
     return matches;
 }
 
-function getParentRegion(source: RegionTree, contentType: string, cmpPath: string, components: PageComponent[] = [],
+function getParentRegion(source: RegionTree, contentType: string, cmpPath: PathFragment[], components: PageComponent[] = [],
                          createMissing?: boolean): PageRegion | undefined {
-
-    const path = parseComponentPath(contentType, cmpPath);
 
     let currentTree: RegionTree = source;
     let currentRegion: PageRegion | undefined;
     let parentPath = '';
 
-    for (let i = 0; i < path.length; i++) {
-        const pathFragment = path[i];
+    for (let i = 0; i < cmpPath.length; i++) {
+        const pathFragment = cmpPath[i];
         const regionName = pathFragment.region;
         parentPath += `/${pathFragment.region}/${pathFragment.index}`;
         currentRegion = currentTree[regionName];
@@ -330,14 +362,14 @@ function getParentRegion(source: RegionTree, contentType: string, cmpPath: strin
             }
         }
 
-        if (i < path.length - 1) {
+        if (i < cmpPath.length - 1) {
             // look for layouts inside if this is not the last path fragment
 
             const layout = components.find((cmp: PageComponent) => {
                 return cmp.type === XP_COMPONENT_TYPE.LAYOUT && prefixLayoutPath(contentType, cmp.path) === parentPath;
             });
             if (!layout) {
-                throw `Layout [${parentPath}] not found among components, but needed for component [${cmpPath}]`
+                throw `Layout [${parentPath}] not found among components, but needed for component [${JSON.stringify(cmpPath, null, 2)}]`
             }
             if (!layout.regions) {
                 layout.regions = {};
@@ -367,7 +399,12 @@ function buildPage(contentType: string, comps: PageComponent[] = []): PageCompon
         path: '/',
     };
     const tree = {};
+    if (contentType === FRAGMENT_CONTENTTYPE_NAME) {
+        page.regions = tree;
+    }
+
     comps.forEach(cmp => {
+        const cmpPath = parseComponentPath(contentType, cmp.path);
         let region;
         if (cmp.path === '/' && cmp.type === XP_COMPONENT_TYPE.PAGE) {
             // add page values to page object
@@ -375,13 +412,17 @@ function buildPage(contentType: string, comps: PageComponent[] = []): PageCompon
             page.page!.regions = tree;
             return;
         } else {
-            region = getParentRegion(tree, contentType, cmp.path, comps, true);
+            region = getParentRegion(tree, contentType, cmpPath, comps, true);
         }
 
         if (region) {
-            // getting the index of component from string like '/main/0/left/1'
-            const cmpIndex = +cmp.path.substr(cmp.path.length - 1);
-            region.components.splice(cmpIndex, 0, cmp);
+            // getting the index of component from string like '/main/0/left/11'
+            const cmpIndex = cmpPath[cmpPath.length - 1]?.index;
+            if (cmpIndex >= 0) {
+                region.components.splice(cmpIndex, 0, cmp);
+            } else {
+                throw Error(`Could not find [${cmp.type}] component index at ${JSON.stringify(cmpPath, null, 2)}, rendering not possible.`)
+            }
         }
     });
 
@@ -471,7 +512,6 @@ async function applyProcessors(componentDescriptors: ComponentDescriptor[], cont
         let data;
         if (desc.queryAndVariables) {
             // if there is a query then there must be a result for it
-            // they are not
             data = contentResults.contents![dataCounter++];
         }
 
@@ -524,11 +564,29 @@ function collectComponentDescriptors(components: PageComponent[],
 
 function processComponentConfig(myAppName: string, myAppNameDashed: string, cmp: PageComponent) {
     const cmpData = cmp[cmp.type];
-    if (cmpData && 'descriptor' in cmpData && cmpData.descriptor && 'configAsJson' in cmpData && cmpData.configAsJson) {
+    if (cmpData && 'descriptor' in cmpData && cmpData.descriptor) {
         const [appName, cmpName] = cmpData.descriptor.split(':');
-        if (appName === myAppName && cmpData.configAsJson[myAppNameDashed][cmpName]) {
-            cmpData.config = cmpData.configAsJson[myAppNameDashed][cmpName];
-            delete cmpData.configAsJson;
+        if (appName !== myAppName) {
+            return;
+        }
+        let config;
+        const configArray: Object[] = [];
+        if ('configAsJson' in cmpData && cmpData.configAsJson && cmpData.configAsJson[myAppNameDashed]) {
+            config = cmpData.configAsJson[myAppNameDashed][cmpName];
+            if (config) {
+                configArray.push(config);
+                delete cmpData.configAsJson;
+            }
+        }
+        let sanitizedAppName = sanitizeGraphqlName(appName);
+        if ('config' in cmpData && cmpData.config && cmpData.config[sanitizedAppName]) {
+            config = cmpData.config[sanitizedAppName][sanitizeGraphqlName(cmpName)];
+            if (config) {
+                configArray.push(config);
+            }
+        }
+        if (configArray.length) {
+            cmpData.config = Object.assign({}, ...configArray);
         }
     }
 }
@@ -578,7 +636,9 @@ function createPageData(contentType: string, components?: PageComponent[]): Page
 }
 
 
-function createMetaData(contentType: string, contentPath: string, requestType: XP_REQUEST_TYPE, renderMode: RENDER_MODE,
+function createMetaData(contentType: string, contentPath: string,
+                        requestType: XP_REQUEST_TYPE, renderMode: RENDER_MODE,
+                        apiUrl: string, baseUrl: string,
                         requestedComponentPath: string | undefined,
                         pageCmp?: PageComponent, components: PageComponent[] = []): MetaData {
     // .meta will be visible in final rendered inline props.
@@ -591,6 +651,8 @@ function createMetaData(contentType: string, contentPath: string, requestType: X
         renderMode: renderMode,
         canRender: false,
         catchAll: false,
+        apiUrl,
+        baseUrl,
     }
 
     if (requestedComponentPath) {
@@ -613,8 +675,9 @@ function createMetaData(contentType: string, contentPath: string, requestType: X
     return meta;
 }
 
-function errorResponse(code: string = '500', message: string = 'Unknown error', requestType: XP_REQUEST_TYPE, renderMode: RENDER_MODE,
-                       contentPath?: string): FetchContentResult {
+function errorResponse(code: string = '500', message: string = 'Unknown error',
+                       requestType: XP_REQUEST_TYPE, renderMode: RENDER_MODE,
+                       apiUrl: string, baseUrl: string, contentPath?: string): FetchContentResult {
     return {
         error: {
             code,
@@ -630,6 +693,8 @@ function errorResponse(code: string = '500', message: string = 'Unknown error', 
             path: contentPath || '',
             canRender: false,
             catchAll: false,
+            apiUrl,
+            baseUrl,
         },
     };
 }
@@ -642,12 +707,11 @@ function errorResponse(code: string = '500', message: string = 'Unknown error', 
  * @param componentRegistry ComponentRegistry object from ComponentRegistry.ts, holding user type mappings that are set in typesRegistration.ts file
  * @returns ContentFetcher
  */
-export const buildContentFetcher = <T extends adapterConstants>(config: FetcherConfig<T>): ContentFetcher => {
+export const buildContentFetcher = <T extends AdapterConstants>(config: FetcherConfig<T>): ContentFetcher => {
 
     const {
         APP_NAME,
         APP_NAME_DASHED,
-        CONTENT_API_URL,
         getXPRequestType,
         getRenderMode,
         getSingleComponentPath,
@@ -659,7 +723,8 @@ export const buildContentFetcher = <T extends adapterConstants>(config: FetcherC
         context?: Context
     ): Promise<FetchContentResult> => {
 
-        setXpBaseUrl(context);
+        const xpBaseUrl = getXpBaseUrl(context);
+        const contentApiUrl = getContentApiUrl(context);
 
         const requestType = getXPRequestType(context);
         const renderMode = getRenderMode(context);
@@ -674,30 +739,30 @@ export const buildContentFetcher = <T extends adapterConstants>(config: FetcherC
             }
 
             ///////////////  FIRST GUILLOTINE CALL FOR METADATA     /////////////////
-            const metaResult = await fetchMetaData(CONTENT_API_URL, '${site}/' + siteRelativeContentPath);
+            const metaResult = await fetchMetaData(contentApiUrl, '${site}/' + siteRelativeContentPath);
             /////////////////////////////////////////////////////////////////////////
 
             const {type, components, _path} = metaResult.meta || {};
             contentPath = _path || '';
 
             if (metaResult.error) {
-                return errorResponse(metaResult.error.code, metaResult.error.message, requestType, renderMode, contentPath);
+                return errorResponse(metaResult.error.code, metaResult.error.message, requestType, renderMode, contentApiUrl, xpBaseUrl, contentPath);
             }
 
             if (!metaResult.meta) {
                 return errorResponse('404', "No meta data found for content, most likely content does not exist", requestType, renderMode,
-                    contentPath)
+                    contentApiUrl, xpBaseUrl, contentPath);
 
             } else if (!type) {
                 return errorResponse('500', "Server responded with incomplete meta data: missing content 'type' attribute.", requestType,
-                    renderMode, contentPath)
+                    renderMode, contentApiUrl, xpBaseUrl, contentPath)
 
             } else if (renderMode === RENDER_MODE.NEXT && !IS_DEV_MODE &&
-                       (type === FRAGMENT_CONTENTTYPE_NAME ||
-                        type === PAGE_TEMPLATE_CONTENTTYPE_NAME ||
-                        type === PAGE_TEMPLATE_FOLDER)) {
+                (type === FRAGMENT_CONTENTTYPE_NAME ||
+                    type === PAGE_TEMPLATE_CONTENTTYPE_NAME ||
+                    type === PAGE_TEMPLATE_FOLDER)) {
                 return errorResponse('404', `Content type [${type}] is not accessible in ${renderMode} mode`, requestType, renderMode,
-                    contentPath);
+                    contentApiUrl, xpBaseUrl, contentPath);
             }
 
 
@@ -745,11 +810,11 @@ export const buildContentFetcher = <T extends adapterConstants>(config: FetcherC
 
             if (!query.trim()) {
                 return errorResponse('400', `Missing or empty query override for content type ${type}`, requestType, renderMode,
-                    contentPath)
+                    contentApiUrl, xpBaseUrl, contentPath);
             }
 
             /////////////////    SECOND GUILLOTINE CALL FOR DATA   //////////////////////
-            const contentResults = await fetchContentData(CONTENT_API_URL, contentPath, query, variables);
+            const contentResults = await fetchContentData(contentApiUrl, contentPath, query, variables);
             /////////////////////////////////////////////////////////////////////////////
 
             // Apply processors to every component
@@ -788,7 +853,7 @@ export const buildContentFetcher = <T extends adapterConstants>(config: FetcherC
             }
 
             const page = createPageData(type, components);
-            const meta = createMetaData(type, siteRelativeContentPath, requestType, renderMode, requestedComponentPath, page, components);
+            const meta = createMetaData(type, siteRelativeContentPath, requestType, renderMode, contentApiUrl, xpBaseUrl, requestedComponentPath, page, components);
 
             return {
                 data: contentData,
@@ -811,7 +876,7 @@ export const buildContentFetcher = <T extends adapterConstants>(config: FetcherC
                     message: e.message
                 }
             }
-            return errorResponse(error.code, error.message, requestType, renderMode, contentPath);
+            return errorResponse(error.code, error.message, requestType, renderMode, contentApiUrl, xpBaseUrl, contentPath);
         }
     };
 };
@@ -827,7 +892,7 @@ export const buildContentFetcher = <T extends adapterConstants>(config: FetcherC
  * @param context object from Next, contains .query info
  * @returns FetchContentResult object: {data?: T, error?: {code, message}}
  */
-export const fetchContent: ContentFetcher = buildContentFetcher<adapterConstants>({
+export const fetchContent: ContentFetcher = buildContentFetcher<AdapterConstants>({
     ...adapterConstants,
     componentRegistry: ComponentRegistry,
 });

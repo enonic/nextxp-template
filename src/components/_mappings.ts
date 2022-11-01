@@ -1,3 +1,4 @@
+import {APP_NAME} from '../_enonicAdapter/utils';
 import {CATCH_ALL, ComponentRegistry} from '../_enonicAdapter/ComponentRegistry';
 import {commonQuery, commonVariables} from './queries/common';
 import PropsView from './views/Props';

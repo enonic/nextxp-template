@@ -1,12 +1,12 @@
-import {Context} from "../pages/[[...contentPath]]";
-
-
 /** Import config values from .env, .env.development and .env.production */
+import {Context, MinimalContext} from './guillotine/fetchContent';
+
 const mode = process.env.MODE || process.env.NEXT_PUBLIC_MODE;
 export const IS_DEV_MODE = (mode === 'development');
 
 /** URL to the guillotine API */
-export const CONTENT_API_URL = (process.env.CONTENT_API_URL || process.env.NEXT_PUBLIC_CONTENT_API_URL) as string
+const CONTENT_API_DRAFT = (process.env.CONTENT_API_DRAFT || process.env.NEXT_PUBLIC_CONTENT_API_DRAFT) as string
+const CONTENT_API_MASTER = (process.env.CONTENT_API_MASTER || process.env.NEXT_PUBLIC_CONTENT_API_MASTER) as string
 
 /** Optional utility value - defining in one place the name of the target app (the app that defines the content types, the app name is therefore part of the content type strings used both in typeselector and in query introspections) */
 
@@ -18,6 +18,8 @@ export const APP_NAME_UNDERSCORED = (APP_NAME || '').replace(/\./g, '_')
 
 export const APP_NAME_DASHED = (APP_NAME || '').replace(/\./g, '-')
 
+export const SITE_KEY = (process.env.SITE_KEY || process.env.NEXT_PUBLIC_SITE_KEY) as string;
+
 
 //////////////////////////////////////////////////////////////////////////  Hardcode-able constants
 
@@ -25,7 +27,7 @@ export const APP_NAME_DASHED = (APP_NAME || '').replace(/\./g, '-')
 export const FROM_XP_PARAM = '__fromxp__';
 export const XP_BASE_URL_HEADER = 'xpbaseurl';
 export const COMPONENT_SUBPATH_HEADER = "xp-component-path";
-const RENDER_MODE_HEADER = 'content-studio-mode';
+export const RENDER_MODE_HEADER = 'content-studio-mode';
 
 export const PORTAL_COMPONENT_ATTRIBUTE = "data-portal-component-type";
 export const PORTAL_REGION_ATTRIBUTE = "data-portal-region";
@@ -77,18 +79,20 @@ export const getXPRequestType = (context?: Context): XP_REQUEST_TYPE => {
     return enumValue || XP_REQUEST_TYPE.PAGE;   // need to have some defaults here in case of rendering without XP
 }
 
-const getRenderMode = (context?: Context): RENDER_MODE => {
+const getRenderMode = (context?: MinimalContext): RENDER_MODE => {
     const value = (context?.req?.headers || {})[RENDER_MODE_HEADER] as string | undefined;
     const enumValue = RENDER_MODE[<keyof typeof RENDER_MODE>value?.toUpperCase()];
-    return enumValue || RENDER_MODE.NEXT;
+    return enumValue || process.env.RENDER_MODE || RENDER_MODE.NEXT;
 };
-
-export const getXpBaseUrl = (context?: Context): string =>
-    ((context?.req?.headers || {})[XP_BASE_URL_HEADER] || "") as string;
 
 const getSingleComponentPath = (context?: Context): string | undefined => (
     (context?.req?.headers || {})[COMPONENT_SUBPATH_HEADER] as string | undefined
 );
+
+export function getContentApiUrl(context?: MinimalContext): string {
+    const mode = getRenderMode(context);
+    return mode === RENDER_MODE.NEXT ? CONTENT_API_MASTER : CONTENT_API_DRAFT;
+}
 
 /** For '<a href="..."' link values in props when clicking the link should navigate to an XP content item page
  *  and the query returns the XP _path to the target content item:
@@ -98,22 +102,24 @@ const getSingleComponentPath = (context?: Context): string | undefined => (
  * */
 // export const getContentLinkUrlFromXpPath = (_path: string): string => _path.replace(siteNamePattern, '')
 
-let xpBaseUrl: string = "";
-export const setXpBaseUrl = (context: Context | undefined): void => {
-    xpBaseUrl = ((context?.req?.headers || {})[XP_BASE_URL_HEADER] || "") as string;
-};
+const xpBaseUrlMap: Record<string, string> = {};
 
-/**
- *
- * @param resourcePath Relative resource path (Next pages, XP _path, public assets etc)
- * @returns absolute URL string (clientside)
- */
-export const getUrl = (resourcePath: string): string => {
+export const getXpBaseUrl = (context?: MinimalContext): string => {
+    const mode = getRenderMode(context);
+
+    const existingUrl = xpBaseUrlMap[mode];
+    if (existingUrl) {
+        return existingUrl;
+    }
+
+    const header = ((context?.req?.headers || {})[XP_BASE_URL_HEADER] || "") as string;
 
     //TODO: workaround for XP pattern controller mapping not picked up in edit mode
-    const xpSiteUrlWithoutEditMode = (xpBaseUrl || '/').replace(/\/edit\//, '/inline/');
+    const resultingUrl = (header || '/').replace(/\/edit\//, '/inline/');
 
-    return xpSiteUrlWithoutEditMode + resourcePath;
+    xpBaseUrlMap[mode] = resultingUrl;
+
+    return resultingUrl;
 }
 
 
@@ -133,27 +139,36 @@ export const commonChars = (s1?: string, s2?: string) => {
 
     return result;
 }
+// sanitizes text according to graphql naming spec http://spec.graphql.org/October2021/#sec-Names
+export const sanitizeGraphqlName = (text: string) => {
+    if (!text || text.trim().length === 0) {
+        return '';
+    }
+    let result = text.replace(/([^0-9A-Za-z])+/g, '_');
+    if (result.length > 0 && /[0-9]/.test(result.charAt(0))) {
+        result = '_' + result;
+    }
+    return result;
+}
 
 // ---------------------------------------------------------------------------------------------------------------- Export
 
 const adapterConstants = {
     IS_DEV_MODE,
 
-    CONTENT_API_URL,
-
     APP_NAME,
     APP_NAME_UNDERSCORED,
     APP_NAME_DASHED,
+    SITE_KEY,
 
     FROM_XP_PARAM,
     COMPONENT_SUBPATH_HEADER,
     PORTAL_COMPONENT_ATTRIBUTE,
     PORTAL_REGION_ATTRIBUTE,
 
-    getXpBaseUrl,
     getXPRequestType,
     getSingleComponentPath,
-    getRenderMode
+    getRenderMode,
 };
 
 // Verify required values
