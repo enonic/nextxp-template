@@ -26,7 +26,7 @@ You will complete the following steps:
 * Render content based on type
 * Build landing pages using components
 * Create page templates
-* Deploy to live servers 
+* Deploy to live servers
 
 == How does it work?
 
@@ -50,9 +50,9 @@ To learn what is really happening, head on to the <<enonic-setup#, first chapter
 
 . Sign up to Enonic Cloud: https://enonic.com/sign-up/cloud-trial
 . Create a new solution based on the `Next.js demo` template
-. From `solution/environments`: Notice the links to the "Drafts API" and "Live API". you will need them later.
+. From `solution/environments`: Notice the links to the "API" route, you will need it later.
 +
-TIP: Visiting these link will give you a 404 page because the GraphQL APIs communicate via HTTP `POST` requests rather than `GET`.
+TIP: Visiting the API link will give you a 404 page, because the GraphQL APIs are located on /draft and /master respectively, and communicate via HTTP `POST` requests rather than `GET`.
 
 === 2. Create Git repo
 
@@ -67,17 +67,17 @@ NOTE: If you are using Github, simply press the `Fork` button at the top right.
 === 3. Deploy Next app
 Vercel are the makers of Next.js, and you'll be using their service to host the front-end.
 
-. Sign up to Vercel: https://vercel.com/ 
+. Sign up to Vercel: https://vercel.com/
 . Create a new project `enonic-demo-drafts`, and connect it to the repo you created in step 2.
 . **Add environment variables** telling the app where it will find the draft and live API, as well as token you will need to access preview mode in a later step.
 +
-KEY:VALUE:: CONTENT_API_DRAFT:<URL to the drafts API>
-KEY:VALUE:: CONTENT_API_MASTER:<URL to the live API> 
+KEY:VALUE:: CONTENT_API_DRAFT:<API URL>/draft
+KEY:VALUE:: CONTENT_API_MASTER:<API URL>/master
 KEY:VALUE:: API_TOKEN:<yoursecretstring>
 +
 . After deploying, your Vercel app should now render the front page:
 +
-image:front-page.png[title="Front page showing some text, links and a picture", width=1003px]
+image:front-page.png[title="Front page showing some text, links and a picture",width=1003px]
 +
 TIP: Check the Vercel function logs if you are not getting the expected result.
 
@@ -90,13 +90,13 @@ With the front-end running, it is time to activate preview in Content Studio.
 +
 image:configure-preview.png[title="Form with fields for server url and nextjs token", width=804px]
 +
-NextJS server URL:: <absolute url to your vercel app>
+NextJS server URL:: <URL to your vercel app>
 NextJS API token:: <secret you added to Vercel in step 3>
 +
 . After applying and saving the changes, you should instantly see the live preview in Content Studio.
 +
-image:cloud-preview.png[title="Front page as seen from Content Studio", width=1419px]
+image:cloud-preview.png[title="Front page as seen from Content Studio",width=1419px]
 
-TIP: How does this work? Content Studio uses the token to activates Next.js' preview mode automatically. Changes made in content studio will only be visible here until published. Upon publishing, CS will force Next.js to revalidate the pages and changes will be live as soon as next has rendered the items.
+TIP: How does this work?Content Studio uses the token to activates Next.js' preview mode automatically.Changes made in content studio will only be visible here until published.Upon publishing, CS will force Next.js to revalidate the pages and changes will be live as soon as next has rendered the items.
 
-Congratulations, you now have a Next.js site powered by Enonic! 🚀
+Congratulations, you now have a Next.js site powered by Enonic!🚀
