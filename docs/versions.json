@@ -1,7 +1,7 @@
 {
   "versions": [
     {
-      "label": "latest",
+      "label": "stable",
       "checkout": "master",
       "latest": true
     },
