@@ -51,7 +51,6 @@ To learn what is really happening, head on to the <<enonic-setup#, first chapter
 . Sign up to Enonic Cloud: https://enonic.com/sign-up/cloud-trial
 . Create a new solution based on the `Next.js demo` template
 . From `solution/environments`: Notice the links to the "API" route, you will need it later.
-. From `solution/environments`: Notice the links to the "Drafts API" and "Live API". you will need them later.
 +
 TIP: Visiting the API link will give you a 404 page, because the GraphQL APIs are located on /draft and /master respectively, and communicate via HTTP `POST` requests rather than `GET`.
 
