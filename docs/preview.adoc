@@ -60,11 +60,17 @@ TIP: Studying the file above, you will see the proxy mapping to `/.*`, which ess
 . *Activate the preview*
 +
 Select the root item `Headless Movie Database` and click edit.
-+ Configure the "Headless Movie DB" application by clicking the pencil icon.
 +
-image:configure-preview.png[title="Form with fields for server url and nextjs token", width=804px]
+image:edit-site.png[title="Select site item and click edit", width=650px]
++ 
+Configure the "Headless Movie DB" application by clicking the pencil icon.
 +
-If you did not change the API token in the Next app, use these values: `http://localhost:3000[http://localhost:3000^]`, and `mySecretKey`.
+image:edit-site-app.png[title="Select site item and click edit", width=650px]
++ 
+Finally - if you did not change the API token in the Next app, use these values: `http://localhost:3000[http://localhost:3000^]`, and `mySecretKey`.
++
+image:edit-hmdb-app.png[title="Form with fields for server url and nextjs token", width=804px]
+
 
 . After applying and saving the changes, you should be able see the live preview in Content Studio.
 +
