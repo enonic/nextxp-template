@@ -10,8 +10,8 @@ const TwoColumnLayout = (props: LayoutProps) => {
     return (
         <>
             <div className={styles.row}>
-                <RegionView className="col-sm-6" name="left" components={regions['left']?.components} common={common} meta={meta}/>
-                <RegionView className="col-sm-6" name="right" components={regions['right']?.components} common={common} meta={meta}/>
+                <RegionView name="left" components={regions['left']?.components} common={common} meta={meta}/>
+                <RegionView name="right" components={regions['right']?.components} common={common} meta={meta}/>
             </div>
         </>
     );

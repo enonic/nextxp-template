@@ -17,10 +17,8 @@ const Person = (props: FetchContentResult) => {
                     photos.map((photo: any, i: number) => (
                         <img key={i}
                              src={photo.imageUrl}
-                             title={
-                                 (photo.attachments || [])[0].name ||
-                                 displayName
-                             }
+                             title={getTitle(photo, displayName)}
+                             alt={getTitle(photo, displayName)}
                              width="500"
                         />
                     ))
@@ -32,3 +30,7 @@ const Person = (props: FetchContentResult) => {
 }
 
 export default Person;
+
+function getTitle(photo: any, displayName: string) {
+    return (photo.attachments || [])[0].name || displayName;
+}
