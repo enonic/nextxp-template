@@ -42,6 +42,8 @@ One of the objectives in this tutorial is listing and presenting movie details. 
 }
 ----
 +
+NOTE: `com.example.myproject:movie` refers to the name of the application you created in the previous chapter.
++
 . **View the Result**
 +
 After executing the query, you should get a result in the right panel.
@@ -54,7 +56,7 @@ Variables enable you to re-use the same query, but for instance fetch different 
 
 . **Add query** to the GraphQL playground:
 +
-[source,JavaScript]
+[source,GraphQL]
 ----
 query($path:ID!){               <!--1-->
   guillotine {

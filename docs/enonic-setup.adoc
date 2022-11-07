@@ -63,7 +63,7 @@ When asked to create a sandbox (a local instance of Enonic XP), just give it a n
 
 === Task: Install Content Studio
 
-Navigate to http://localhost:8080 and log in to the admin console (you don't have to create a user for this tutorial).
+Navigate to http://localhost:8080[http://localhost:8080^] and log in to the admin console (you don't have to create a user for this tutorial).
 
 . Install **Content Studio** (it's an XP app of its own) by completing the _XP Tour_ , or via the `Applications` admin app.
 +
