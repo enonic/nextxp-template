@@ -64,7 +64,7 @@ Select the root item `Headless Movie Database` and click edit.
 +
 image:configure-preview.png[title="Form with fields for server url and nextjs token", width=804px]
 +
-If you did not change the API token in the Next app, use these values: `http://localhost:3000`, and `mySecretKey`.
+If you did not change the API token in the Next app, use these values: `http://localhost:3000[http://localhost:3000^]`, and `mySecretKey`.
 
 . After applying and saving the changes, you should be able see the live preview in Content Studio.
 +

@@ -26,11 +26,11 @@ TIP: Remember to stop your existing Next instance.
 +
 This will take a while longer when compared to dev mode.
 +
-. **Verify** by pointing your browser to http://localhost:4242, you should see see the published items, just like in dev mode.
+. **Verify** by pointing your browser to http://localhost:4242[http://localhost:4242^], you should see see the published items, just like in dev mode.
 +
 This time however - Next is running in optimized mode, which is what you will normally use for server deployments. **Sweet!**
 
-NOTE: To make preview work again, simply update the site configuration to use the new URL `http://localhost:4242` 
+NOTE: To make preview work again, simply update the site configuration to use the new URL `http://localhost:4242[http://localhost:4242^]` 
 
 
 == Task: Sign up to Enonic and deploy your app

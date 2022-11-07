@@ -50,7 +50,7 @@ ComponentRegistry.addContentType(`${APP_NAME}:person`, {
 +
 . **View the result**
 +
-By visiting a person item - like `http://localhost:3000/persons/morgan-freeman` you should now see data props being listed in the view.
+By visiting a person item - like `http://localhost:3000/persons/morgan-freeman[http://localhost:3000/persons/morgan-freeman^]` you should now see data props being listed in the view.
 +
 image:morgan-freeman-props.png[title="Page showing data props for Morgan Freeman content item",width=767px]
 
@@ -91,7 +91,7 @@ ComponentRegistry.addContentType(`${APP_NAME}:person`, {
 +
 image:morgan-freeman-render.png[title="Person rendering with query and view",width=768px]
 
-The content type mapping applies to every `person` content item in the site, regardless of it's location in the hierarchy. Try looking at some other persons, eg. http://localhost:3000/persons/uma-thurman
+The content type mapping applies to every `person` content item in the site, regardless of it's location in the hierarchy. Try looking at some other persons, eg. http://localhost:3000/persons/uma-thurman[http://localhost:3000/persons/uma-thurman^]
 
 == Task: Add custom header and footer
 

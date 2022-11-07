@@ -106,12 +106,12 @@ Content Studio's ships with a built-in Text component which is handy when compos
 +
 image:text-component.png[title="Next.js-rendered text component with an image",width=1440px]
 +
-. After saving, visit the Next.js rendering directly on http://localhost:3000/ to see the result.
+. After saving, visit the Next.js rendering directly on http://localhost:3000/[http://localhost:3000/^] to see the result.
 +
 . You may also click the `Preview` button in Content Studio for a full screen version.
 
 == Task: Publish page
-Your fresh new page is looking good. However, if you visit `http://localhost:3000` - you'll get a "404 page not found" error. This is because only published changes are visible from the front end
+Your fresh new page is looking good. However, if you visit `http://localhost:3000[http://localhost:3000^]` - you'll get a "404 page not found" error. This is because only published changes are visible from the front end
 
 Content Studio uses NextJS's preview mode, which uses the drafts API. When accessing the front-end directly, NextJS fetches published content from the master branch.
 
@@ -119,7 +119,7 @@ Content Studio uses NextJS's preview mode, which uses the drafts API. When acces
 +
 image:publish.png[title="Publishing wizard",width=810px]
 +
-. **Verify that your page is live** by visiting `http://localhost:3000` once again.
+. **Verify that your page is live** by visiting `http://localhost:3000[http://localhost:3000^]` once again.
 
 == Troubleshooting
 
