@@ -1,4 +1,4 @@
-import {COMPONENT_SUBPATH_HEADER, FROM_XP_PARAM, getContentApiUrl, RENDER_MODE_HEADER, XP_BASE_URL_HEADER} from "@enonic/nextjs-adapter";
+import {COMPONENT_SUBPATH_HEADER, FROM_XP_PARAM, JSESSIONID_HEADER, RENDER_MODE_HEADER, XP_BASE_URL_HEADER} from "@enonic/nextjs-adapter";
 
 export default async function handler(req: any, res: any) {
     const {token, path} = req.query;
@@ -12,8 +12,6 @@ export default async function handler(req: any, res: any) {
         return res.status(400).json({message: 'Invalid path'});
     }
 
-    const contentApiUrl = getContentApiUrl({req});
-
     console.info(`Previewing [${path}]...`);
     // Enable Preview Mode by setting the cookies
     // getStaticProps will be called in response to this request
@@ -26,6 +24,7 @@ export default async function handler(req: any, res: any) {
             [RENDER_MODE_HEADER]: req.headers[RENDER_MODE_HEADER],
             [COMPONENT_SUBPATH_HEADER]: req.headers[COMPONENT_SUBPATH_HEADER],
             [XP_BASE_URL_HEADER]: req.headers[XP_BASE_URL_HEADER],
+            [JSESSIONID_HEADER]: req.headers[JSESSIONID_HEADER]
         }
     });
 
