@@ -16,6 +16,7 @@ import adapterConstants, {
     getContentApiUrl,
     getXpBaseUrl,
     IS_DEV_MODE,
+    JSESSIONID_HEADER,
     PAGE_TEMPLATE_CONTENTTYPE_NAME,
     PAGE_TEMPLATE_FOLDER,
     RENDER_MODE,
@@ -135,7 +136,8 @@ export type ContentApiBaseBody = {
 /** Generic fetch */
 export const fetchFromApi = async (
     apiUrl: string,
-    body: {},
+    body: ContentApiBaseBody,
+    headers?: {},
     method = "POST"
 ) => {
     const options = {
@@ -147,6 +149,10 @@ export const fetchFromApi = async (
         },
         body: JSON.stringify(body),
     };
+
+    if (headers) {
+        Object.assign(options.headers, headers);
+    }
 
     let res;
     try {
@@ -191,7 +197,7 @@ export const fetchGuillotine = async (
     contentApiUrl: string,
     body: ContentApiBaseBody,
     xpContentPath: string,
-): Promise<GuillotineResult> => {
+    headers?: {}): Promise<GuillotineResult> => {
     if (typeof body.query !== 'string' || !body.query.trim()) {
         return {
             error: {
@@ -203,7 +209,8 @@ export const fetchGuillotine = async (
 
     const result = await fetchFromApi(
         contentApiUrl,
-        body
+        body,
+        headers
     )
         .then(json => {
             let errors: any[] = (json || {}).errors;
@@ -243,14 +250,14 @@ export const fetchGuillotine = async (
 
 ///////////////////////////////////////////////////////////////////////////////// Specific fetch wrappers:
 
-const fetchMetaData = async (contentApiUrl: string, xpContentPath: string): Promise<MetaResult> => {
+const fetchMetaData = async (contentApiUrl: string, xpContentPath: string, headers?: {}): Promise<MetaResult> => {
     const body: ContentApiBaseBody = {
         query: getMetaQuery(pageFragmentQuery()),
         variables: {
             path: xpContentPath
         }
     };
-    const metaResult = await fetchGuillotine(contentApiUrl, body, xpContentPath);
+    const metaResult = await fetchGuillotine(contentApiUrl, body, xpContentPath, headers);
     if (metaResult.error) {
         return metaResult;
     } else {
@@ -265,14 +272,15 @@ const fetchContentData = async <T>(
     contentApiUrl: string,
     xpContentPath: string,
     query: string,
-    variables?: {}
+    variables?: {},
+    headers?: {}
 ): Promise<ContentResult> => {
 
     const body: ContentApiBaseBody = {query};
     if (variables && Object.keys(variables).length > 0) {
         body.variables = variables;
     }
-    const contentResults = await fetchGuillotine(contentApiUrl, body, xpContentPath);
+    const contentResults = await fetchGuillotine(contentApiUrl, body, xpContentPath, headers);
 
     if (contentResults.error) {
         return contentResults;
@@ -727,6 +735,14 @@ export const buildContentFetcher = <T extends AdapterConstants>(config: FetcherC
         context?: Context
     ): Promise<FetchContentResult> => {
 
+        let headers;
+        const jsessionid = context?.req?.headers[JSESSIONID_HEADER]
+        if (jsessionid) {
+            headers = {
+                "Cookie": `${JSESSIONID_HEADER}=${jsessionid}`
+            }
+        }
+
         const xpBaseUrl = getXpBaseUrl(context);
         const contentApiUrl = getContentApiUrl(context);
 
@@ -743,7 +759,7 @@ export const buildContentFetcher = <T extends AdapterConstants>(config: FetcherC
             }
 
             ///////////////  FIRST GUILLOTINE CALL FOR METADATA     /////////////////
-            const metaResult = await fetchMetaData(contentApiUrl, '${site}/' + siteRelativeContentPath);
+            const metaResult = await fetchMetaData(contentApiUrl, '${site}/' + siteRelativeContentPath, headers);
             /////////////////////////////////////////////////////////////////////////
 
             const {type, components, _path} = metaResult.meta || {};
@@ -818,7 +834,7 @@ export const buildContentFetcher = <T extends AdapterConstants>(config: FetcherC
             }
 
             /////////////////    SECOND GUILLOTINE CALL FOR DATA   //////////////////////
-            const contentResults = await fetchContentData(contentApiUrl, contentPath, query, variables);
+            const contentResults = await fetchContentData(contentApiUrl, contentPath, query, variables, headers);
             /////////////////////////////////////////////////////////////////////////////
 
             // Apply processors to every component
