@@ -73,6 +73,7 @@ export async function getStaticProps(context: Context) {
     return {
         notFound,
         props,
+        revalidate: 3600,   // In seconds, meaning every hour
     }
 }
 
