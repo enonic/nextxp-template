@@ -11,15 +11,17 @@
     "lint": "npx next lint"
   },
   "dependencies": {
+    "@enonic/nextjs-adapter": "0.10.0",
     "html-react-parser": "^3.0.4",
     "next": "^13.0.3",
+    "next-transpile-modules": "^10.0.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "unescape": "^1.0.1"
   },
   "devDependencies": {
-    "@types/node": "^18.11.8",
     "@types/next": "^9.0.0",
+    "@types/node": "^18.11.8",
     "@types/react": "18.0.25",
     "@types/react-dom": "^18.0.8",
     "eslint": "8.26.0",
