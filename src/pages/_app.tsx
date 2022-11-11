@@ -1,8 +1,7 @@
 import type {AppProps} from 'next/app'
 import '../styles/globals.css'
 import React from 'react';
-import {RENDER_MODE, XP_REQUEST_TYPE} from '../_enonicAdapter/utils';
-import {FetchContentResult} from "../_enonicAdapter/guillotine/fetchContent";
+import {FetchContentResult, RENDER_MODE, XP_REQUEST_TYPE} from '@enonic/nextjs-adapter';
 
 /**
  * Wraps all rendered components
