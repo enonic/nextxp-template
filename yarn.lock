@@ -17,10 +17,10 @@
   dependencies:
     regenerator-runtime "^0.13.4"
 
-"@enonic/nextjs-adapter@0.10.0":
-  version "0.10.0"
-  resolved "https://registry.npmjs.org/@enonic/nextjs-adapter/-/nextjs-adapter-0.10.0.tgz"
-  integrity sha512-eEb19MhiYDlBIz3KvZcv2bjxamIgf8e8siE7u9BrhSm7uhcJp3brVHe0fbk4cD8jjNGw3saZgTOBzUeCxLtb4Q==
+"@enonic/nextjs-adapter@0.10.1":
+  version "0.10.1"
+  resolved "https://registry.npmjs.org/@enonic/nextjs-adapter/-/nextjs-adapter-0.10.1.tgz"
+  integrity sha512-RA/L97mz3h2BWLvilT56R7Xgj3jG8sIZM1ul+i1N0PiiGc87/iCeLgucRzW1b+mCXnGzhuFV0WyN/3hBPOeywQ==
   dependencies:
     html-react-parser "^3.0.4"
     next "^13.0.3"
