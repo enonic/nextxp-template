@@ -1,10 +1,9 @@
 import React from 'react';
-import {Context, fetchContent} from "../_enonicAdapter/guillotine/fetchContent";
-import MainView from "../_enonicAdapter/views/MainView";
-import {IS_DEV_MODE, RENDER_MODE} from '../_enonicAdapter/utils';
+import {Context, fetchContent, IS_DEV_MODE, RENDER_MODE} from '@enonic/nextjs-adapter';
+import MainView from '@enonic/nextjs-adapter/views/MainView';
 
 // Register component mappings
-import "../_enonicAdapter/baseMappings";
+import "@enonic/nextjs-adapter/baseMappings";
 import "../components/_mappings";
 
 //TODO: refactor this one to ONLY handle component requests

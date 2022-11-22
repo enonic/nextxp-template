@@ -1,10 +1,9 @@
 import React from 'react';
-import {Context, fetchContent} from "../_enonicAdapter/guillotine/fetchContent";
-import {IS_DEV_MODE, RENDER_MODE} from '../_enonicAdapter/utils';
-import Empty from "../_enonicAdapter/views/Empty";
+import {Context, fetchContent, IS_DEV_MODE, RENDER_MODE} from '@enonic/nextjs-adapter';
+import Empty from '@enonic/nextjs-adapter/views/Empty';
 
 // Register component mappings
-import "../_enonicAdapter/baseMappings";
+import "@enonic/nextjs-adapter/baseMappings";
 import "../components/_mappings";
 
 export async function getServerSideProps(context: Context) {

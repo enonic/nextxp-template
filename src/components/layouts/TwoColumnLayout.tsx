@@ -1,6 +1,6 @@
 import React from 'react'
-import {RegionView} from '../../_enonicAdapter/views/Region';
-import {LayoutProps} from '../../_enonicAdapter/views/BaseLayout';
+import {LayoutProps} from '@enonic/nextjs-adapter/views/BaseLayout';
+import {RegionView} from '@enonic/nextjs-adapter/views/Region';
 import styles from './TwoColumnLayout.module.css';
 
 const TwoColumnLayout = (props: LayoutProps) => {

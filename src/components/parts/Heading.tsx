@@ -1,6 +1,6 @@
 import React from 'react'
-import {APP_NAME} from '../../_enonicAdapter/utils';
-import {PartData} from '../../_enonicAdapter/guillotine/getMetaData';
+import {APP_NAME} from '@enonic/nextjs-adapter';
+import {PartData} from '@enonic/nextjs-adapter/guillotine/getMetaData';
 
 // fully qualified XP part name:
 export const HEADING_PART_NAME = `${APP_NAME}:heading`;

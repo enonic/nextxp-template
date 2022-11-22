@@ -1,3 +1,5 @@
+const withTM = require('next-transpile-modules')(['@enonic/nextjs-adapter']);
+
 // neededed to eval inline react scripts
 const cspHeaders = [
     {
@@ -6,7 +8,7 @@ const cspHeaders = [
     }
 ]
 
-module.exports = {
+module.exports = withTM({
     reactStrictMode: true,
 
     async headers() {
@@ -18,4 +20,4 @@ module.exports = {
             },
         ]
     },
-}
+});

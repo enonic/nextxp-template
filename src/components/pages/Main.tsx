@@ -1,6 +1,6 @@
 import React from 'react'
-import {PageProps} from '../../_enonicAdapter/views/BasePage';
-import RegionsView from '../../_enonicAdapter/views/Region';
+import {PageProps} from '@enonic/nextjs-adapter/views/BasePage';
+import RegionsView from '@enonic/nextjs-adapter/views/Region';
 
 const MainPage = (props: PageProps) => {
     const page = props.page;

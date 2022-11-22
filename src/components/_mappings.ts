@@ -1,5 +1,5 @@
-import {APP_NAME} from '../_enonicAdapter/utils'
-import {ComponentRegistry} from '../_enonicAdapter/ComponentRegistry';
+import {APP_NAME} from '@enonic/nextjs-adapter'
+import {ComponentRegistry} from "@enonic/nextjs-adapter/ComponentRegistry";
 import Person from './views/Person';
 import getPerson from './queries/getPerson';
 import MainPage from './pages/Main';

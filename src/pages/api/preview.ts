@@ -1,10 +1,4 @@
-import {
-    COMPONENT_SUBPATH_HEADER,
-    FROM_XP_PARAM,
-    JSESSIONID_HEADER,
-    RENDER_MODE_HEADER,
-    XP_BASE_URL_HEADER
-} from "../../_enonicAdapter/utils";
+import {COMPONENT_SUBPATH_HEADER, FROM_XP_PARAM, JSESSIONID_HEADER, RENDER_MODE_HEADER, XP_BASE_URL_HEADER} from '@enonic/nextjs-adapter';
 
 export default async function handler(req: any, res: any) {
     const {token, path} = req.query;

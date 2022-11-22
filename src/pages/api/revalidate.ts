@@ -1,5 +1,5 @@
 import {recursiveFetchChildren} from "../[[...contentPath]]";
-import {getContentApiUrl} from "../../_enonicAdapter/utils";
+import {getContentApiUrl} from '@enonic/nextjs-adapter';
 
 export default async function handler(req: any, res: any) {
     const {token, path, revalidateAll} = req.query;

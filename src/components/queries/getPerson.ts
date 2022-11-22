@@ -1,4 +1,4 @@
-import {APP_NAME_UNDERSCORED} from '../../_enonicAdapter/utils'
+import {APP_NAME_UNDERSCORED} from '@enonic/nextjs-adapter';
 
 const getPerson = `
 query($path:ID!){
