@@ -34,7 +34,7 @@ You will complete the following steps:
 The integrations defaults to using Next.js's Incremental Static Rendering (ISR) for extremely fast websites, but also supports the more traditional (and flexible) Server Side Rendered (SSR) approach.
 
 === The Enonic Adapter
-The "Enonic adapter" extends Next.js by giving developers an intuitive way of working with and rendering editorially managed components and pages.
+The "Enonic adapter" extends Next.js by giving developers an intuitive way of working with and rendering editorially managed components and pages from Enonic XP.
 
 === Preview and publishing
 A Next.js extension for Content Studio seamlessly activates Next.js's preview mode, giving editors a familiar and instant visual editing experience. Also, when publishing, the extension will automatically clear cache and trigger new rendering in the front-end.

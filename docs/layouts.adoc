@@ -7,7 +7,7 @@ Layouts are essentially parts, with an extra trick up their sleve. Regions. This
 
 == Task: Add layout to Enonic
 
-Adding layouts is more or less identical to pages and parts. Simply follow the steps below: 
+Adding layouts is more or less identical to pages and parts. Simply follow the steps below:
 
 . **Add the `2-column` layout** to the Enonic app
 +
@@ -38,7 +38,7 @@ var proxy = require('/lib/nextjs/proxy');
 exports.get = proxy.get;
 ----
 +
-When completed, as always redeploy the Enonic app.
+When completed, as always *redeploy the Enonic app*.
 
 == Task: Add layout rendering to the front-end
 

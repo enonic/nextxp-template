@@ -20,7 +20,7 @@ npx degit git@github.com:enonic/nextjs-enonic-template.git
 
 The "nextjs-enonic-template" is based on link:https://nextjs.org/docs/getting-started[Next.js' own introduction app], so if you're familiar with that, you'll recognize the structure of the files.
 
-The template includes some boilerplate we will customize, and some additional code that facilitates and simplifies integration with Enonic - aka **"the Enonic adapter"**.
+The template includes some boilerplate we will customize, and a npm dependency that facilitates and simplifies integration with Enonic - **"the Enonic adapter"**.
 
 === Code overview
 
@@ -31,27 +31,28 @@ The following file structure should now exist within your new project folder:
 ----
 .evn <!--1-->
 src/
-    _enonicAdapter/ <!--2-->
-    components/ <!--3-->
+    components/ <!--2-->
     pages/
-        [[...contentPath]].tsx <!--4-->
-        _app.tsx <!--5-->
-        _document.tsx <!--6-->
-        _component.tsx <!--7-->
+        [[...contentPath]].tsx <!--3-->
+        _app.tsx <!--4-->
+        _document.tsx <!--5-->
+        _component.tsx <!--6-->
         _renderable.tsx
-        api/ <!--8-->
+        api/ <!--7-->
             revalidate.ts
             preview.ts
 ----
 
 <1> Environment variables are placed in this file
-<2> Contains integration and rendering logic to work smoothly together with Enonic XP. You should never need to modify these files. Planned to be released as an NPM in the future.
-<3> Contains your implementation of CMS components
-<4> The fallback next.js router. Enables dynamic rendering based on content in the CMS. File name is not a typo, but Next.js syntax that makes it catch all HTTP requests.
-<5> Invoked on every request. Add common structures here (eg. `<head>` etc), but be careful not to remove functionality needed by Content Studio
-<6> Vanilla Next.js file that outlines the basic document structure of all pages.
-<7> Files supporting the visual page editor in Content Studio
-<8> These files support preview mode and regeneration of cached pages
+<2> Contains your implementation of CMS components
+<3> The fallback next.js router.
+Enables dynamic rendering based on content in the CMS.
+File name is not a typo, but Next.js syntax that makes it catch all HTTP requests.
+<4> Invoked on every request.
+Add common structures here (eg. `<head>` etc), but be careful not to remove functionality needed by Content Studio
+<5> Vanilla Next.js file that outlines the basic document structure of all pages.
+<6> Files supporting the visual page editor in Content Studio
+<7> These files support preview mode and regeneration of cached pages
 
 
 == Task: Configure application

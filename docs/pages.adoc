@@ -50,7 +50,7 @@ Content types need to exist in Enonic before an editor can create content. Simil
 +
 NOTE: The definition of the region `main`, allows Content Studio editors to add components to the page, as you will see later.
 +
-Redploy the Enonic app to register the page component.
+**Redploy the Enonic app to register the page component.**
 +
 . **Configure page rendering in Next**
 On the Next side of things, rendering a page is similar to rendering a content type. Add the following file to your Next project.

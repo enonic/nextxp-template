@@ -90,16 +90,16 @@ You should see something like this:
 
 == Task: Revalidate pages
 
-The app is already connected to the NextJS server, and has the API token. Its time to test if it is working.
+The app is already connected to the NextJS server, and has the API token.Its time to test if it is working.
 
 **Edit and publish changes to your front page** once again
 
-This time the page should get updated with your latest changes. 🎉
-
+This time, despite running in production static mode, that page should get updated at `http://localhost:4242` with your latest changes same way as it was in development mode.
+🎉
 
 NOTE: You should also be able to tell from the NextJS log that the revalidation was triggered.
 
-With prod mode and revalidation sorted out, its about time you <<deploy#, deploy your apps to live servers>>.
+With prod mode and revalidation sorted out, its about time you <<deployment#, deploy your apps to live servers>>.
 
 
 

@@ -69,10 +69,10 @@ TIP: The purpose of routes is to expose APIs and other endpoints like `:8080/sit
 Use the following settings:
 +
 Internal path:: `/site/hmdb`
-Public path:: `/drafts`
+Public path:: `/hmdb`
 ID provider:: -empty-
 +
-. **Verify that the route is working** by clicking the link in the route details. TODO
+. **Verify that the route is working** by clicking the link in the route details.
 
 == Task: Add your next.js app to Git
 
@@ -88,12 +88,12 @@ Make a note of the URL to the new repo, as you will need this in the next step
 == Taks: Deploy Next app
 You are now ready to deploy the the front-end application.
 
-. Sign up to Vercel: https://vercel.com/ 
+. Sign up to Vercel: https://vercel.com/
 . Create a new project `enonic-tutorial` and connect it to the repo you created in step 2.
 . **Add the following environment variables** to the project (name:value):
 +
-* CONTENT_API_DRAFT:https://nissen-tutorial-production.enonic.net/hmdb/draft
-* CONTENT_API_MASTER:https://nissen-tutorial-production.enonic.net/hmdb/master
+* CONTENT_API_DRAFT:https://<your cloud deployment url>.enonic.net/hmdb/draft
+* CONTENT_API_MASTER:https://<your cloud deployment url>.enonic.net/hmdb/master
 * API_TOKEN:<yoursecretstring>
 
 . **Verify the result** by visiting the app, it will try to render your front-page, you should see a 404 - because you are now back to the automatically imported content again.

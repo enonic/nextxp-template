@@ -10,10 +10,10 @@ To get preview going, you need to make a few changes to the Enonic app:
 
 . **Add the NextJS integration**:
 +
-The https://github.com/enonic/lib-nextjs[Nextjs library] will provide the features we need to setup the preview, and then some. Add it to your dependencies list by adding the following line:
+The https://github.com/enonic/lib-nextjs[Nextjs library] will provide the features we need to setup the preview, and then some.Add it to your dependencies list by adding the following line:
 +
 ./build.gradle
-[source, groovy, options="nowrap"]
+[source,groovy,options="nowrap"]
 ----
 dependencies {
     ...
@@ -22,14 +22,17 @@ dependencies {
 }
 ----
 +
-IMPORTANT: Ensure <version> is replaced by the most current version available. Visit the library on link:https://market.enonic.com/vendors/enonic/nextjs-lib[Enonic Market]. Click `Get started` and choose the latest version.
+IMPORTANT: Ensure <version> is replaced by the most current version available.
+Visit the library on link:https://market.enonic.com/vendors/enonic/nextjs-lib[Enonic Market].
+Click `Get started` and choose the latest version.
 +
 . *Update site configuration*
 +
-To trigger the next.js integration in Content Studio, we must update the https://developer.enonic.com/docs/xp/stable/components/mappings[controller mappings], and add a configuration form to the site. Replace your current site.xml with this:
+To trigger the next.js integration in Content Studio, we must update the https://developer.enonic.com/docs/xp/stable/cms/mappings[controller mappings], and add a configuration form to the site.
+Replace your current site.xml with this:
 +
 .src/main/resources/site/site.xml
-[source, xml]
+[source,xml]
 ----
 <?xml version="1.0" encoding="UTF-8"?>
 <site xmlns="urn:enonic:xp:model:1.0">
@@ -51,7 +54,7 @@ To trigger the next.js integration in Content Studio, we must update the https:/
 </site>
 ----
 +
-TIP: Studying the file above, you will see the proxy mapping to `/.*`, which essentially means "catch all" URL patterns. The form contains one field for the server URL, and one for the API token.
+TIP: Studying the file above, you will see the proxy mapping to `/.*`, which essentially means "catch all" URL patterns.The form contains one field for the server URL, and one for the API token.
 +
 . **Redeploy the Enonic app** to activate the changes:
 +
