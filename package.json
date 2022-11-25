@@ -13,20 +13,20 @@
   "dependencies": {
     "@enonic/nextjs-adapter": "^0.11.0",
     "html-react-parser": "^3.0.4",
-    "next": "^13.0.3",
+    "next": "^13.0.4",
     "next-transpile-modules": "^10.0.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "unescape": "^1.0.1"
   },
   "devDependencies": {
-    "@types/next": "^9.0.0",
     "@types/node": "^18.11.8",
+    "@types/next": "^9.0.0",
     "@types/react": "18.0.25",
     "@types/react-dom": "^18.0.8",
-    "eslint": "8.26.0",
+    "eslint": "8.28.0",
     "eslint-config-next": "13.0.3",
     "prettier": "^2.7.1",
-    "typescript": "4.8.4"
+    "typescript": "4.9.3"
   }
 }
