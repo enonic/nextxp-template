@@ -1,5 +1,5 @@
 import Document, {DocumentContext, Head, Html, Main, NextScript} from 'next/document'
-import {PORTAL_COMPONENT_ATTRIBUTE} from '../_enonicAdapter/utils';
+import {PORTAL_COMPONENT_ATTRIBUTE} from '@enonic/nextjs-adapter';
 
 class MyDocument
     extends Document {

@@ -1,10 +1,17 @@
 import React from 'react';
-import {ContentApiBaseBody, Context, fetchContent, fetchGuillotine} from "../_enonicAdapter/guillotine/fetchContent";
-import MainView from "../_enonicAdapter/views/MainView";
-import {getContentApiUrl, IS_DEV_MODE, RENDER_MODE} from "../_enonicAdapter/utils";
+import {
+    ContentApiBaseBody,
+    Context,
+    fetchContent,
+    fetchGuillotine,
+    getContentApiUrl,
+    IS_DEV_MODE,
+    RENDER_MODE
+} from "@enonic/nextjs-adapter";
+import MainView from "@enonic/nextjs-adapter/views/MainView";
 
 // Register component mappings
-import "../_enonicAdapter/baseMappings";
+import "@enonic/nextjs-adapter/baseMappings";
 import "../components/_mappings";
 
 const query = `query($path: ID) {
@@ -66,6 +73,7 @@ export async function getStaticProps(context: Context) {
     return {
         notFound,
         props,
+        revalidate: 3600,   // In seconds, meaning every hour
     }
 }
 
