@@ -35,7 +35,8 @@ const ChildList = (props: PartProps) => {
 export default ChildList;
 
 export const getChildList = {
-    query: `query($path:ID!, $order:String){
+    query: function (path: string, context?: Context, config?: any): string {
+        return `query($path:ID!, $order:String){
               guillotine {
                 getSite {
                   displayName
@@ -49,7 +50,8 @@ export const getChildList = {
                   }
                 }
               }
-            }`,
+            }`
+    },
     variables: function (path: string, context?: Context, config?: any): VariablesGetterResult {
         return {
             path,
@@ -58,7 +60,7 @@ export const getChildList = {
     }
 };
 
-export async function childListProcessor(common: any, context?: Context): Promise<any> {
+export async function childListProcessor(common: any, context?: Context, config?: any): Promise<any> {
     common.modifiedBy = 'childListProcessor';
     return common;
 }

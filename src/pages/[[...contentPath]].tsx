@@ -79,11 +79,12 @@ export async function getStaticProps(context: Context) {
 
 function populateXPHeaders(context: Context) {
     const pd = context.previewData;
-    if (!pd?.headers) {
+    if (!pd) {
         return;
     }
     const req = context.req || {};
     req.headers = Object.assign(req.headers || {}, pd.headers);
+    context.params = Object.assign(context.params || {}, pd.params);
     context.req = req;
 }
 

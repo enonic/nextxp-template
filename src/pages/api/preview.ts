@@ -1,4 +1,5 @@
 import {COMPONENT_SUBPATH_HEADER, FROM_XP_PARAM, JSESSIONID_HEADER, RENDER_MODE_HEADER, XP_BASE_URL_HEADER} from '@enonic/nextjs-adapter';
+import {ParsedUrlQuery} from 'querystring';
 
 export default async function handler(req: any, res: any) {
     const {token, path} = req.query;
@@ -11,6 +12,7 @@ export default async function handler(req: any, res: any) {
     if (!path) {
         return res.status(400).json({message: 'Invalid path'});
     }
+    const reqParams = extractParams(req.query, ['token', 'path']);
 
     console.info(`Previewing [${path}]...`);
     // Enable Preview Mode by setting the cookies
@@ -19,6 +21,7 @@ export default async function handler(req: any, res: any) {
     // and data in lib-nextjs-proxy across requests
     res.setPreviewData({
         contentPath: path,
+        params: reqParams,
         headers: {
             [FROM_XP_PARAM]: req.headers[FROM_XP_PARAM],
             [RENDER_MODE_HEADER]: req.headers[RENDER_MODE_HEADER],
@@ -29,4 +32,14 @@ export default async function handler(req: any, res: any) {
     });
 
     res.redirect(path);
+}
+
+function extractParams(query: ParsedUrlQuery, omit: string[]) {
+    return Object.entries(query).reduce((prev: Record<string, string>, curr: any) => {
+        const [key, val] = curr;
+        if (omit.indexOf(key) < 0) {
+            prev[key] = val;
+        }
+        return prev;
+    }, {});
 }
