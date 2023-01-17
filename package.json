@@ -11,7 +11,7 @@
     "lint": "npx next lint"
   },
   "dependencies": {
-    "@enonic/nextjs-adapter": "^0.12.0",
+    "@enonic/nextjs-adapter": "^0.13.0",
     "html-react-parser": "^3.0.7",
     "next": "^13.1.2",
     "next-transpile-modules": "^10.0.0",
