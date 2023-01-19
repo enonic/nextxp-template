@@ -2,7 +2,7 @@ import type {AppProps} from 'next/app'
 import '../styles/globals.css'
 import React from 'react';
 import {FetchContentResult, RENDER_MODE, XP_REQUEST_TYPE} from '@enonic/nextjs-adapter';
-import StaticContent from '../../../nextjs-adapter/views/StaticContent';
+import StaticContent from '@enonic/nextjs-adapter/views/StaticContent';
 
 /**
  * Wraps all rendered components
