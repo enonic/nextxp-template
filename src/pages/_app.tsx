@@ -4,7 +4,7 @@ import Header from '../components/views/Header';
 import Footer from '../components/views/Footer';
 import {FetchContentResult, RENDER_MODE, XP_REQUEST_TYPE} from '@enonic/nextjs-adapter';
 import {getUrl} from '@enonic/nextjs-adapter/UrlProcessor';
-import StaticContent from '../../../nextjs-adapter/views/StaticContent';
+import StaticContent from '@enonic/nextjs-adapter/views/StaticContent';
 
 /**
  * Wraps all rendered components
