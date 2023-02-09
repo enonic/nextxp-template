@@ -16,7 +16,7 @@ const Person = (props: FetchContentResult) => {
                 {
                     photos.map((photo: any, i: number) => (
                         <img key={i}
-                             src={photo.imageUrl}
+                             src={getUrl(photo.imageUrl, meta)}
                              title={getTitle(photo, displayName)}
                              alt={getTitle(photo, displayName)}
                              width="500"
