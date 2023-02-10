@@ -16,7 +16,7 @@ const Header = ({title, logoUrl, meta}: HeaderProps) => {
         <div className={styles.wrapper}>
             {title && (
                 <h1>
-                    <a href={getUrl('', meta)}>{title}</a>
+                    <a href={getUrl('/', meta)}>{title}</a>
                 </h1>
             )}
             {logoUrl && (
