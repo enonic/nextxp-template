@@ -6,9 +6,11 @@ import {
     fetchGuillotine,
     getContentApiUrl,
     IS_DEV_MODE,
-    RENDER_MODE
+    RENDER_MODE,
+    XP_COMPONENT_TYPE
 } from "@enonic/nextjs-adapter";
 import MainView from '@enonic/nextjs-adapter/views/MainView';
+import {PageComponent, PageRegion, RegionTree} from '@enonic/nextjs-adapter/guillotine/getMetaData';
 
 // Register component mappings
 import "@enonic/nextjs-adapter/baseMappings";
@@ -26,6 +28,7 @@ const query = `query($path: ID) {
                         superType
                         name
                       }
+                      pageAsJson
                     }
                   }
                 }`;
@@ -51,14 +54,11 @@ export async function getStaticProps(context: Context) {
         throw error
     }
 
-    let canNotRender = false;
     // we can not set 418 for static paths,
     // but we can show 404 instead to be handled in CS
-    if (meta && !meta.canRender && meta.renderMode !== RENDER_MODE.EDIT) {
-        canNotRender = true;
-    }
+    const canNotRender = meta && !meta.canRender && meta.renderMode !== RENDER_MODE.EDIT;
 
-    let catchAllInNextProdMode = meta?.renderMode === RENDER_MODE.NEXT && !IS_DEV_MODE && meta?.catchAll;
+    const catchAllInNextProdMode = meta?.renderMode === RENDER_MODE.NEXT && !IS_DEV_MODE && meta?.catchAll;
 
     const props = {
         common,
@@ -106,6 +106,27 @@ export async function recursiveFetchChildren(contentApiUrl: string, path: string
     return doRecursiveFetch(contentApiUrl, path, maxLevel, filter);
 }
 
+function collectPageComponentUrls(regions: RegionTree, contentPath: string): Item[] {
+    let items: Item[] = [];
+    Object.values(regions).forEach((region: PageRegion) => {
+        region.components.forEach((comp: PageComponent) => {
+            if (comp.type !== XP_COMPONENT_TYPE.LAYOUT) {
+                items.push({
+                    params: {
+                        contentPath: `${contentPath}/_/component${comp.path}`.split('/')
+                    }
+                })
+            } else if (comp.regions) {
+                const subUrls = collectPageComponentUrls(comp.regions, contentPath);
+                if (subUrls.length) {
+                    items = items.concat(subUrls);
+                }
+            }
+        })
+    });
+    return items;
+}
+
 async function doRecursiveFetch(contentApiUrl: string, path: string, maxLevel: number = 0, filter?: (content: any) => boolean, paths?: Item[], currLevel: number = 1): Promise<Item[]> {
     const body: ContentApiBaseBody = {
         query,
@@ -115,16 +136,25 @@ async function doRecursiveFetch(contentApiUrl: string, path: string, maxLevel: n
     const result = await fetchGuillotine(contentApiUrl, body, path);
 
     return result?.guillotine?.getChildren.reduce(async (prevPromise: Promise<Item[]>, child: any) => {
-        const prev = await prevPromise;
+        let prev = await prevPromise;
         if (filter && !filter(child)) {
             return prev;
         }
 
+        const contentPath = child._path.replace(`/${child.site?._name}/`, '');
         prev.push({
             params: {
-                contentPath: child._path.replace(`/${child.site?._name}/`, '').split('/')
+                contentPath: contentPath.split('/')
             }
         });
+
+        // also push all the component urls
+        if (child.pageAsJson?.regions) {
+            const compUrls = collectPageComponentUrls(child.pageAsJson?.regions, contentPath);
+            if (compUrls.length) {
+                prev = prev.concat(compUrls);
+            }
+        }
 
         if ((maxLevel === 0 || currLevel < maxLevel) &&
             (child.contentType?.name === 'base:folder' || child.contentType?.superType === 'base:folder')) {
