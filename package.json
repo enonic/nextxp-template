@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@enonic/nextjs-adapter": "^0.13.0",
-    "html-react-parser": "^3.0.7",
+    "html-react-parser": "^3.0.9",
     "next": "^13.1.2",
     "next-transpile-modules": "^10.0.0",
     "react": "18.2.0",
