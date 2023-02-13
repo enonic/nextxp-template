@@ -19,9 +19,14 @@ function MyApp({Component, pageProps}: AppProps<FetchContentResult>) {
         const meta = pageProps.meta;
         if (meta.requestType === XP_REQUEST_TYPE.COMPONENT) {
             return <StaticContent condition={isEdit}>
-                <details data-single-component-output="true">
+                {meta.renderMode === RENDER_MODE.NEXT ?
+                    // don't wrap it in direct next access because we want to show 1 component on the page
                     <Component {...pageProps} />
-                </details>
+                    :
+                    <details data-single-component-output="true">
+                        <Component {...pageProps} />
+                    </details>
+                }
             </StaticContent>;
         } else if (!meta.canRender
             || (meta.catchAll && meta.renderMode === RENDER_MODE.EDIT)) {

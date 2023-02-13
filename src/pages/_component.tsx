@@ -6,7 +6,8 @@ import MainView from '@enonic/nextjs-adapter/views/MainView';
 import "@enonic/nextjs-adapter/baseMappings";
 import "../components/_mappings";
 
-//TODO: refactor this one to ONLY handle component requests
+// TODO: Components are now handled by [[...contentPath]].tsx
+//  Keeping for backwards compatibility
 export async function getServerSideProps(context: Context) {
     const path = context.query.contentPath || [];
     console.info(`Accessing dynamic component at: ${path}`);
