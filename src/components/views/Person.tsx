@@ -1,6 +1,5 @@
 import React from 'react'
-import {FetchContentResult} from '@enonic/nextjs-adapter';
-import {getUrl} from '@enonic/nextjs-adapter/UrlProcessor';
+import {FetchContentResult, getUrl} from '@enonic/nextjs-adapter';
 
 const Person = (props: FetchContentResult) => {
     const {displayName, data, parent} = props.data?.get as any;

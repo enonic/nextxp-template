@@ -1,8 +1,6 @@
 import React from 'react'
-import {APP_NAME_UNDERSCORED} from '@enonic/nextjs-adapter';
+import {APP_NAME_UNDERSCORED, getUrl, MetaData} from '@enonic/nextjs-adapter';
 import {PartProps} from '@enonic/nextjs-adapter/views/BasePart';
-import {getUrl} from '@enonic/nextjs-adapter/UrlProcessor';
-import {MetaData} from '@enonic/nextjs-adapter/guillotine/getMetaData';
 
 
 export const getMovie = `

@@ -109,7 +109,7 @@ Update `src/pages/_app.tsx`` with the following changes:
 ----
 import Header from '../components/views/Header';
 import Footer from '../components/views/Footer';
-import {getUrl} from '@enonic/nextjs-adapter/UrlProcessor';
+import {getUrl} from '@enonic/nextjs-adapter';
 ----
 +
 . And **replace this line**:

@@ -1,7 +1,5 @@
 import React from 'react'
-import {getUrl} from '@enonic/nextjs-adapter/UrlProcessor';
-import {Context} from '@enonic/nextjs-adapter';
-import {VariablesGetterResult} from '@enonic/nextjs-adapter/ComponentRegistry';
+import {Context, getUrl, VariablesGetterResult} from '@enonic/nextjs-adapter';
 import {PartProps} from '@enonic/nextjs-adapter/views/BasePart';
 
 const ChildList = (props: PartProps) => {

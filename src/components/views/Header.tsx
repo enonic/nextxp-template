@@ -1,7 +1,6 @@
 import React from 'react'
 import styles from './Header.module.css';
-import {MetaData} from '@enonic/nextjs-adapter/guillotine/getMetaData';
-import {getUrl} from '@enonic/nextjs-adapter/UrlProcessor';
+import {getUrl, MetaData} from '@enonic/nextjs-adapter';
 
 export interface HeaderProps {
     title: string;
