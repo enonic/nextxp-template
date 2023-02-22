@@ -133,7 +133,7 @@ async function doRecursiveFetch(contentApiUrl: string, path: string, maxLevel: n
         variables: {path}
     };
 
-    const result = await fetchGuillotine(contentApiUrl, body, path);
+    const result = await fetchGuillotine(contentApiUrl, body);
 
     return result?.guillotine?.getChildren.reduce(async (prevPromise: Promise<Item[]>, child: any) => {
         let prev = await prevPromise;
