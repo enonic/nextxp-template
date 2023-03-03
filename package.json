@@ -4,23 +4,24 @@
   "license": "Apache-2.0",
   "private": true,
   "scripts": {
-    "dev": "npx next dev",
+    "dev": "NODE_ENV=development node dist/server/server.js",
+    "start": "NODE_ENV=production node dist/server/server.js",
     "prod": "npm run build && npm run start",
-    "build": "npx next build",
-    "start": "npx next start -p 4242",
+    "build": "npm run client-build && npm run server-build",
+    "client-build": "npx next build",
+    "server-build": "tsc --build ./server/tsconfig.json",
     "lint": "npx next lint"
   },
   "dependencies": {
     "@enonic/nextjs-adapter": "^0.13.0",
     "html-react-parser": "^3.0.12",
-    "next": "^13.2.1",
+    "next": "^13.2.3",
     "next-transpile-modules": "^10.0.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "unescape": "^1.0.1"
   },
   "devDependencies": {
-    "@types/next": "^9.0.0",
     "@types/node": "^18.14.6",
     "@types/react": "18.0.28",
     "@types/react-dom": "^18.0.11",
