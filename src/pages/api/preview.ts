@@ -1,4 +1,4 @@
-import {COMPONENT_SUBPATH_HEADER, FROM_XP_PARAM, JSESSIONID_HEADER, RENDER_MODE_HEADER, XP_BASE_URL_HEADER} from '@enonic/nextjs-adapter';
+import {JSESSIONID_HEADER, RENDER_MODE_HEADER, XP_BASE_URL_HEADER} from '@enonic/nextjs-adapter';
 import {ParsedUrlQuery} from 'querystring';
 
 export default async function handler(req: any, res: any) {
@@ -23,9 +23,7 @@ export default async function handler(req: any, res: any) {
         contentPath: path,
         params: reqParams,
         headers: {
-            [FROM_XP_PARAM]: req.headers[FROM_XP_PARAM],
             [RENDER_MODE_HEADER]: req.headers[RENDER_MODE_HEADER],
-            [COMPONENT_SUBPATH_HEADER]: req.headers[COMPONENT_SUBPATH_HEADER],
             [XP_BASE_URL_HEADER]: req.headers[XP_BASE_URL_HEADER],
             [JSESSIONID_HEADER]: req.headers[JSESSIONID_HEADER]
         }
