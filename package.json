@@ -1,6 +1,6 @@
 {
   "name": "next-hmdb",
-  "version": "0.13.1",
+  "version": "1.0.0-RC1",
   "license": "Apache-2.0",
   "private": true,
   "scripts": {
