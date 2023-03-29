@@ -26,8 +26,7 @@ function MyApp({Component, pageProps}: AppProps<FetchContentResult>) {
                     </details>
                 }
             </StaticContent>;
-        } else if (!meta.canRender
-            || (meta.catchAll && meta.renderMode === RENDER_MODE.EDIT)) {
+        } else if (!meta.canRender) {
             // return empty page, status is set in [[...contentPath.tsx]]
             return null;
         }
