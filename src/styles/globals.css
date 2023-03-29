@@ -7,11 +7,17 @@ body {
 }
 
 * {
-  box-sizing: border-box;
+    box-sizing: border-box;
 }
 
 h1 {
-  font-size: 2em;
-  margin-block-start: 0.67em;
-  margin-block-end: 0.67em;
+    font-size: 2em;
+    margin-block-start: 0.67em;
+    margin-block-end: 0.67em;
+}
+
+hr {
+    border-color: darkgray;
+    border-style: solid;
+    border-bottom: 0 none;
 }
