@@ -32,7 +32,7 @@ export default async function handler(req: any, res: any) {
 }
 
 async function getRevalidatePaths(contentApiUrl: string) {
-    return recursiveFetchChildren(contentApiUrl, '\${site}/', 2);
+    return recursiveFetchChildren(contentApiUrl, '\${site}/', 3);
 }
 
 async function revalidatePath(res: any, path: string[] | string) {
