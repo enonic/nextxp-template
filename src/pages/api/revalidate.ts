@@ -2,7 +2,7 @@ import {recursiveFetchChildren} from "../[[...contentPath]]";
 import {getContentApiUrl} from "@enonic/nextjs-adapter";
 
 export default async function handler(req: any, res: any) {
-    const {token, path, revalidateAll} = req.query;
+    const {token, path} = req.query;
     // Check for secret to confirm this is a valid request
     if (token !== process.env.API_TOKEN) {
         // XP hijacks 401 to show login page, so send 407 instead
@@ -12,7 +12,7 @@ export default async function handler(req: any, res: any) {
     const contentApiUrl = getContentApiUrl({req});
 
     try {
-        if (revalidateAll) {
+        if (!path) {
             console.info('Started revalidating everything...');
             const paths = await getRevalidatePaths(contentApiUrl);
             const promises = paths.map(item => revalidatePath(res, item.params.contentPath));
