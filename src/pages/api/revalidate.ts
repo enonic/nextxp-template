@@ -1,7 +1,13 @@
 import {recursiveFetchChildren} from "../[[...contentPath]]";
-import {getContentApiUrl} from "@enonic/nextjs-adapter";
+import {getContentApiUrl} from '@enonic/nextjs-adapter';
+import {NextApiRequest, NextApiResponse} from 'next';
 
-export default async function handler(req: any, res: any) {
+interface ResponseData {
+    message: string
+}
+
+export default async function handler(req: NextApiRequest,
+                                      res: NextApiResponse<ResponseData>) {
     const {token, path} = req.query;
     // Check for secret to confirm this is a valid request
     if (token !== process.env.API_TOKEN) {
@@ -12,6 +18,8 @@ export default async function handler(req: any, res: any) {
     const contentApiUrl = getContentApiUrl({req});
 
     try {
+        // Return 200 immediately and do revalidate in background
+        res.status(200).json({message: 'Revalidation started'});
         if (!path) {
             console.info('Started revalidating everything...');
             const paths = await getRevalidatePaths(contentApiUrl);
@@ -22,12 +30,8 @@ export default async function handler(req: any, res: any) {
             await revalidatePath(res, path);
             console.info(`Revalidated [${path}]`);
         }
-        return res.json({revalidated: true});
     } catch (err) {
-        console.error(`Revalidating [${path}] error: ` + err);
-        // If there was an error, Next.js will continue
-        // to show the last successfully generated page
-        return res.status(500).json({revalidated: false, error: err});
+        console.error(`Revalidation [${path ?? 'everything'}] error: ` + err);
     }
 }
 
