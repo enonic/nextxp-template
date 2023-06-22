@@ -27,6 +27,22 @@ async function getEnonicHeaders() {
 
 const config = {
     reactStrictMode: true,
+    i18n: {
+        locales: ['en', 'no'],
+        defaultLocale: 'en',
+        domains: [
+            {
+                // Note: subdomains must be included in the domain value to be matched
+                // e.g. www.example.com should be used if that is the expected hostname
+                domain: 'example.com',
+                defaultLocale: 'en',
+            },
+            {
+                domain: 'example.no',
+                defaultLocale: 'no',
+            },
+        ]
+    },
     webpack: getEnonicWebpackConfig,
     headers: getEnonicHeaders,
 };
