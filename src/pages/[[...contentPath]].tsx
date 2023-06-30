@@ -3,18 +3,21 @@ import {
     ContentApiBaseBody,
     Context,
     fetchContent,
+    FetchContentResult,
     fetchGuillotine,
     getContentApiUrl,
+    getUrl,
     IS_DEV_MODE,
     RENDER_MODE,
     XP_COMPONENT_TYPE
 } from "@enonic/nextjs-adapter";
-import MainView from "@enonic/nextjs-adapter/views/MainView";
+import MainView from '@enonic/nextjs-adapter/views/MainView';
+import {PageComponent, PageRegion, RegionTree} from '@enonic/nextjs-adapter/guillotine/getMetaData';
 
 // Register component mappings
 import "@enonic/nextjs-adapter/baseMappings";
 import "../components/_mappings";
-import {PageComponent, PageRegion, RegionTree} from '@enonic/nextjs-adapter/guillotine/getMetaData';
+import {GetStaticPropsResult, Redirect} from 'next';
 
 const query = `query($path: ID) {
                   guillotine {
@@ -33,7 +36,7 @@ const query = `query($path: ID) {
                   }
                 }`;
 
-export async function getStaticProps(context: Context) {
+export async function getStaticProps(context: Context): Promise<GetStaticPropsResult<FetchContentResult>> {
     const path = context.params?.contentPath || [];
     console.info(`Accessing static page ${context.preview ? '(preview) ' : ''}at: ${path}`);
 
@@ -68,9 +71,25 @@ export async function getStaticProps(context: Context) {
         page,
     }
 
-    const notFound = (error && error.code === '404') || context.res?.statusCode === 404 || canNotRender || catchAllInNextProdMode || undefined;
+    let notFound = (error && error.code === '404') || context.res?.statusCode === 404 || canNotRender || catchAllInNextProdMode || undefined;
+    // We want to redirect shortcuts so they work with next
+    // Edit mode should be stopped so redirects don't trigger in content studio
+    let redirect: Redirect | undefined = undefined;
+
+    if (meta.type == "base:shortcut" &&
+        data?.get?.data?.target?.pageUrl &&
+        meta.renderMode === RENDER_MODE.NEXT) {
+        redirect = {
+            statusCode: 307,
+            destination: getUrl(data.get.data.target.pageUrl, meta)
+        };
+
+        // Cant have 404 and redirect at the same time
+        notFound = undefined;
+    }
 
     return {
+        redirect,
         notFound,
         props,
         revalidate: 3600,   // In seconds, meaning every hour
