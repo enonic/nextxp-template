@@ -1,5 +1,6 @@
 const withTM = require('next-transpile-modules')(['@enonic/nextjs-adapter']);
 const withEnonicCache = require('@enonic/nextjs-adapter/server').withEnonicCache;
+const i18nConfig = require('./i18n.config');
 
 function getEnonicWebpackConfig(config) {
     config.resolve.fallback = {
@@ -27,22 +28,7 @@ async function getEnonicHeaders() {
 
 const config = {
     reactStrictMode: true,
-    i18n: {
-        locales: ['en', 'no'],
-        defaultLocale: 'en',
-        domains: [
-            {
-                // Note: subdomains must be included in the domain value to be matched
-                // e.g. www.example.com should be used if that is the expected hostname
-                domain: 'example.com',
-                defaultLocale: 'en',
-            },
-            {
-                domain: 'example.no',
-                defaultLocale: 'no',
-            },
-        ]
-    },
+    i18n: i18nConfig.i18n,
     webpack: getEnonicWebpackConfig,
     headers: getEnonicHeaders,
 };

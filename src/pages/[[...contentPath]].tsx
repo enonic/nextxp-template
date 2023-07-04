@@ -18,6 +18,7 @@ import {PageComponent, PageRegion, RegionTree} from '@enonic/nextjs-adapter/guil
 import "@enonic/nextjs-adapter/baseMappings";
 import "../components/_mappings";
 import {GetStaticPropsResult, Redirect} from 'next';
+import * as i18nConfig from '../../i18n.config'
 
 const query = `query($path: ID) {
                   guillotine {
@@ -38,7 +39,7 @@ const query = `query($path: ID) {
 
 export async function getStaticProps(context: Context): Promise<GetStaticPropsResult<FetchContentResult>> {
     const path = context.params?.contentPath || [];
-    console.info(`Accessing static page ${context.preview ? '(preview) ' : ''}at: ${path}`);
+    console.info(`Accessing static page (locale=${context.locale}) ${context.preview ? '(preview) ' : ''}at: ${path}`);
 
     if (context.preview) {
         populateXPHeaders(context);
@@ -50,7 +51,7 @@ export async function getStaticProps(context: Context): Promise<GetStaticPropsRe
         meta,
         error = null,
         page = null,
-    } = await fetchContent(path, context);
+    } = await fetchContent(path, i18nConfig.projects, context);
 
     // HTTP 500
     if (error && error.code === '500') {
@@ -108,7 +109,7 @@ function populateXPHeaders(context: Context) {
 }
 
 export async function getStaticPaths() {
-    const contentApiUrl = getContentApiUrl();
+    const contentApiUrl = getContentApiUrl(i18nConfig.projects);
     const paths = await recursiveFetchChildren(contentApiUrl, '\${site}/', 4);
 
     return {
@@ -118,7 +119,8 @@ export async function getStaticPaths() {
 }
 
 interface Item {
-    params: { contentPath: string[] }
+    params: { contentPath: string[] },
+    locale?: string,
 }
 
 export async function recursiveFetchChildren(contentApiUrl: string, path: string, maxLevel: number = 3, filter: (content: any) => boolean = filterUnderscores): Promise<Item[]> {
@@ -161,11 +163,22 @@ async function doRecursiveFetch(contentApiUrl: string, path: string, maxLevel: n
         }
 
         const contentPath = child._path.replace(`/${child.site?._name}/`, '');
-        prev.push({
-            params: {
-                contentPath: contentPath.split('/')
+        if (i18nConfig?.i18n?.locales?.length) {
+            for (const locale of i18nConfig.i18n.locales) {
+                prev.push({
+                    params: {
+                        contentPath: contentPath.split('/')
+                    },
+                    locale
+                });
             }
-        });
+        } else {
+            prev.push({
+                params: {
+                    contentPath: contentPath.split('/')
+                }
+            })
+        }
 
         // also push all the component urls
         if (child.pageAsJson?.regions) {

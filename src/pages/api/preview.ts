@@ -1,7 +1,8 @@
 import {JSESSIONID_HEADER, PROJECT_ID_HEADER, RENDER_MODE_HEADER, XP_BASE_URL_HEADER} from '@enonic/nextjs-adapter';
 import {ParsedUrlQuery} from 'querystring';
+import {NextApiRequest, NextApiResponse} from 'next';
 
-export default async function handler(req: any, res: any) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     const {token, path} = req.query;
     if (token !== process.env.API_TOKEN) {
         // XP hijacks 401 to show login page, so send 407 instead
@@ -30,7 +31,7 @@ export default async function handler(req: any, res: any) {
         }
     });
 
-    res.redirect(path);
+    res.redirect(path as string);
 }
 
 function extractParams(query: ParsedUrlQuery, omit: string[]) {
