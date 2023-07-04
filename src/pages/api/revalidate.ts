@@ -1,6 +1,7 @@
 import {recursiveFetchChildren} from "../[[...contentPath]]";
 import {getContentApiUrl} from '@enonic/nextjs-adapter';
 import {NextApiRequest, NextApiResponse} from 'next';
+import {projects} from '../../../i18n.config'
 
 interface ResponseData {
     message: string
@@ -15,7 +16,7 @@ export default async function handler(req: NextApiRequest,
         return res.status(407).json({message: 'Invalid token'});
     }
 
-    const contentApiUrl = getContentApiUrl({req});
+    const contentApiUrl = getContentApiUrl(projects, {req});
 
     try {
         // Return 200 immediately and do revalidate in background
