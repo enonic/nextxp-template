@@ -1,7 +1,6 @@
 import React from 'react';
 import {Context, fetchContent, IS_DEV_MODE, RENDER_MODE} from '@enonic/nextjs-adapter';
 import Empty from '@enonic/nextjs-adapter/views/Empty';
-import {projects} from '../../i18n.config'
 
 // Register component mappings
 import "@enonic/nextjs-adapter/baseMappings";
@@ -15,7 +14,7 @@ export async function getServerSideProps(context: Context) {
     const {
         meta,
         error = null,
-    } = await fetchContent(path, projects, context);
+    } = await fetchContent(path, context);
 
     // HTTP 500
     if (error && error.code === '500') {

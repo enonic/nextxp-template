@@ -6,6 +6,7 @@ import {
     FetchContentResult,
     fetchGuillotine,
     getContentApiUrl,
+    getProjectsConfig,
     getUrl,
     IS_DEV_MODE,
     RENDER_MODE,
@@ -18,7 +19,6 @@ import {PageComponent, PageRegion, RegionTree} from '@enonic/nextjs-adapter/guil
 import "@enonic/nextjs-adapter/baseMappings";
 import "../components/_mappings";
 import {GetStaticPropsResult, Redirect} from 'next';
-import * as i18nConfig from '../../i18n.config'
 
 const query = `query($path: ID) {
                   guillotine {
@@ -51,7 +51,7 @@ export async function getStaticProps(context: Context): Promise<GetStaticPropsRe
         meta,
         error = null,
         page = null,
-    } = await fetchContent(path, i18nConfig.projects, context);
+    } = await fetchContent(path, context);
 
     // HTTP 500
     if (error && error.code === '500') {
@@ -109,7 +109,7 @@ function populateXPHeaders(context: Context) {
 }
 
 export async function getStaticPaths() {
-    const contentApiUrl = getContentApiUrl(i18nConfig.projects);
+    const contentApiUrl = getContentApiUrl();
     const paths = await recursiveFetchChildren(contentApiUrl, '\${site}/', 4);
 
     return {
@@ -163,22 +163,15 @@ async function doRecursiveFetch(contentApiUrl: string, path: string, maxLevel: n
         }
 
         const contentPath = child._path.replace(`/${child.site?._name}/`, '');
-        if (i18nConfig?.i18n?.locales?.length) {
-            for (const locale of i18nConfig.i18n.locales) {
-                prev.push({
-                    params: {
-                        contentPath: contentPath.split('/')
-                    },
-                    locale
-                });
-            }
-        } else {
+
+        Object.keys(getProjectsConfig()).forEach(locale => {
             prev.push({
                 params: {
                     contentPath: contentPath.split('/')
-                }
-            })
-        }
+                },
+                locale: locale === 'default' ? undefined : locale,
+            });
+        });
 
         // also push all the component urls
         if (child.pageAsJson?.regions) {

@@ -5,7 +5,6 @@ import MainView from "@enonic/nextjs-adapter/views/MainView";
 // Register component mappings
 import "@enonic/nextjs-adapter/baseMappings";
 import "../components/_mappings";
-import {projects} from '../../i18n.config'
 
 // TODO: Components are now handled by [[...contentPath]].tsx
 //  Keeping for backwards compatibility
@@ -19,7 +18,7 @@ export async function getServerSideProps(context: Context) {
         meta,
         error = null,
         page = null,
-    } = await fetchContent(path, projects, context);
+    } = await fetchContent(path, context);
 
     // HTTP 500
     if (error && error.code === '500') {
