@@ -1,5 +1,5 @@
 import {NextRequest, NextResponse} from 'next/server'
-import {getProjectsConfig, PROJECT_ID_HEADER, ProjectsConfig} from '@enonic/nextjs-adapter'
+import {getProjectLocale, PROJECT_ID_HEADER} from '@enonic/nextjs-adapter'
 
 const PUBLIC_ASSET = /\.(.*)$/
 
@@ -12,7 +12,7 @@ export async function middleware(req: NextRequest) {
         return
     }
 
-    const projectId = req.headers.get(PROJECT_ID_HEADER);
+    const projectId = req.headers.get(PROJECT_ID_HEADER) || undefined;
     const locale = getProjectLocale(projectId);
     if (locale && locale !== 'default' && req.nextUrl.locale !== locale) {
         const url = new URL(`/${locale}${req.nextUrl.pathname}${req.nextUrl.search}`, req.url);
@@ -27,16 +27,4 @@ export async function middleware(req: NextRequest) {
     }
 
     return NextResponse.next();
-}
-
-function getProjectLocale(projectId: string | null): string | undefined {
-    if (!projectId) {
-        return;
-    }
-
-    const projects: ProjectsConfig = getProjectsConfig();
-
-    return Object.keys(projects).find(l => {
-        return projects[l]?.toLowerCase() === projectId.toLowerCase();
-    });
 }
