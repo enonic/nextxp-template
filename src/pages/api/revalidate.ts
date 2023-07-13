@@ -1,5 +1,5 @@
-import {recursiveFetchChildren} from "../[[...contentPath]]";
-import {getContentApiUrl} from '@enonic/nextjs-adapter';
+import {recursiveFetchLocale} from "../[[...contentPath]]";
+import {getProjectLocale, PROJECT_ID_HEADER} from '@enonic/nextjs-adapter';
 import {NextApiRequest, NextApiResponse} from 'next';
 
 interface ResponseData {
@@ -15,14 +15,14 @@ export default async function handler(req: NextApiRequest,
         return res.status(407).json({message: 'Invalid token'});
     }
 
-    const contentApiUrl = getContentApiUrl({req});
-
     try {
         // Return 200 immediately and do revalidate in background
         res.status(200).json({message: 'Revalidation started'});
         if (!path) {
             console.info('Started revalidating everything...');
-            const paths = await getRevalidatePaths(contentApiUrl);
+            const projectId = req.headers[PROJECT_ID_HEADER] as string | undefined;
+            const locale = getProjectLocale(projectId);
+            const paths = await recursiveFetchLocale('\${site}/', locale, 3);
             const promises = paths.map(item => revalidatePath(res, item.params.contentPath));
             await Promise.all(promises);
             console.info(`Done revalidating everything`);
@@ -33,10 +33,6 @@ export default async function handler(req: NextApiRequest,
     } catch (err) {
         console.error(`Revalidation [${path ?? 'everything'}] error: ` + err);
     }
-}
-
-async function getRevalidatePaths(contentApiUrl: string) {
-    return recursiveFetchChildren(contentApiUrl, '\${site}/', 3);
 }
 
 async function revalidatePath(res: any, path: string[] | string) {

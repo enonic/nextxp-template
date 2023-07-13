@@ -109,9 +109,7 @@ function populateXPHeaders(context: Context) {
 }
 
 export async function getStaticPaths() {
-    const contentApiUrl = getContentApiUrl();
-    const paths = await recursiveFetchChildren(contentApiUrl, '\${site}/', 4);
-
+    const paths = await recursiveFetchAllLocales('\${site}/', 4);
     return {
         paths: paths,
         fallback: 'blocking',
@@ -123,11 +121,17 @@ interface Item {
     locale?: string,
 }
 
-export async function recursiveFetchChildren(contentApiUrl: string, path: string, maxLevel: number = 3, filter: (content: any) => boolean = filterUnderscores): Promise<Item[]> {
-    return doRecursiveFetch(contentApiUrl, path, maxLevel, filter);
+export async function recursiveFetchAllLocales(path: string, maxLevel: number = 3, filter: (content: any) => boolean = filterUnderscores): Promise<Item[]> {
+    const promises = Object.keys(getProjectsConfig()).map(locale => recursiveFetchLocale(path, locale, maxLevel, filter));
+    return (await Promise.all(promises)).reduce((all, localePaths) => all.concat(localePaths), []);
 }
 
-function collectPageComponentUrls(regions: RegionTree, contentPath: string): Item[] {
+export async function recursiveFetchLocale(path: string, locale: string, maxLevel: number = 3, filter: (content: any) => boolean = filterUnderscores): Promise<Item[]> {
+    const contentApiUrl = getContentApiUrl({locale});
+    return doRecursiveFetch(contentApiUrl, path, locale, maxLevel, filter);
+}
+
+function collectPageComponentUrls(regions: RegionTree, contentPath: string, locale: string): Item[] {
     let items: Item[] = [];
     Object.values(regions).forEach((region: PageRegion) => {
         region.components.forEach((comp: PageComponent) => {
@@ -135,10 +139,11 @@ function collectPageComponentUrls(regions: RegionTree, contentPath: string): Ite
                 items.push({
                     params: {
                         contentPath: `${contentPath}/_/component${comp.path}`.split('/')
-                    }
+                    },
+                    locale: normalizeLocale(locale),
                 })
             } else if (comp.regions) {
-                const subUrls = collectPageComponentUrls(comp.regions, contentPath);
+                const subUrls = collectPageComponentUrls(comp.regions, contentPath, locale);
                 if (subUrls.length) {
                     items = items.concat(subUrls);
                 }
@@ -148,7 +153,7 @@ function collectPageComponentUrls(regions: RegionTree, contentPath: string): Ite
     return items;
 }
 
-async function doRecursiveFetch(contentApiUrl: string, path: string, maxLevel: number = 0, filter?: (content: any) => boolean, paths?: Item[], currLevel: number = 1): Promise<Item[]> {
+async function doRecursiveFetch(contentApiUrl: string, path: string, locale: string, maxLevel: number = 0, filter?: (content: any) => boolean, paths?: Item[], currLevel: number = 1): Promise<Item[]> {
     const body: ContentApiBaseBody = {
         query,
         variables: {path}
@@ -163,35 +168,37 @@ async function doRecursiveFetch(contentApiUrl: string, path: string, maxLevel: n
         }
 
         const contentPath = child._path.replace(`/${child.site?._name}/`, '');
-
-        Object.keys(getProjectsConfig()).forEach(locale => {
-            prev.push({
-                params: {
-                    contentPath: contentPath.split('/')
-                },
-                locale: locale === 'default' ? undefined : locale,
-            });
+        prev.push({
+            params: {
+                contentPath: contentPath.split('/')
+            },
+            locale: normalizeLocale(locale),
         });
 
-        // also push all the component urls
+        // also push all the component urls for direct links to components (i.e. A/B systems)
         if (child.pageAsJson?.regions) {
-            const compUrls = collectPageComponentUrls(child.pageAsJson?.regions, contentPath);
+            const compUrls = collectPageComponentUrls(child.pageAsJson?.regions, contentPath, locale);
             if (compUrls.length) {
                 prev = prev.concat(compUrls);
             }
         }
 
         if ((maxLevel === 0 || currLevel < maxLevel) &&
-            (child.contentType?.name === 'base:folder' || child.contentType?.superType === 'base:folder')) {
+            (child.contentType?.name === 'base:folder' || child.contentType?.superType === 'base:folder' || child.hasChildren)) {
 
-            await doRecursiveFetch(contentApiUrl, child._path, maxLevel, filter, prev, currLevel + 1);
+            await doRecursiveFetch(contentApiUrl, child._path, locale, maxLevel, filter, prev, currLevel + 1);
         }
         return prev;
     }, paths || [{
         params: {
             contentPath: [''],
-        }
+        },
+        locale: normalizeLocale(locale),
     }]);
+}
+
+function normalizeLocale(locale: string): string | undefined {
+    return locale !== 'default' ? locale : undefined;
 }
 
 function filterUnderscores(child: any): boolean {
