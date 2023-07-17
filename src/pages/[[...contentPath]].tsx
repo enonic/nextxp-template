@@ -8,34 +8,28 @@ import {
     getContentApiUrl,
     getProjectsConfig,
     getUrl,
+    GuillotineResult,
     IS_DEV_MODE,
     RENDER_MODE,
-    XP_COMPONENT_TYPE
 } from "@enonic/nextjs-adapter";
 import MainView from '@enonic/nextjs-adapter/views/MainView';
-import {PageComponent, PageRegion, RegionTree} from '@enonic/nextjs-adapter/guillotine/getMetaData';
 
 // Register component mappings
 import "@enonic/nextjs-adapter/baseMappings";
 import "../components/_mappings";
 import {GetStaticPropsResult, Redirect} from 'next';
 
-const query = `query($path: ID) {
-                  guillotine {
-                    getChildren(key: $path) {
-                      _path
-                      _name
-                      site {
-                        _name
-                      }
-                      contentType {
-                        superType
-                        name
-                      }
-                      pageAsJson
-                    }
-                  }
-                }`;
+const query = `query ($count: Int = 100){
+  guillotine {
+    query(query: "type NOT LIKE 'media:*' AND type != 'base:folder' AND _path NOT LIKE '*/_*'", first: $count) {
+      _name
+      _path
+      site {
+        _name
+      }
+    }
+  }
+}`;
 
 export async function getStaticProps(context: Context): Promise<GetStaticPropsResult<FetchContentResult>> {
     const path = context.params?.contentPath || [];
@@ -109,7 +103,7 @@ function populateXPHeaders(context: Context) {
 }
 
 export async function getStaticPaths() {
-    const paths = await recursiveFetchAllLocales('\${site}/', 4);
+    const paths = await recursiveFetchAllLocalesContent('\${site}/');
     return {
         paths: paths,
         fallback: 'blocking',
@@ -121,88 +115,42 @@ interface Item {
     locale?: string,
 }
 
-export async function recursiveFetchAllLocales(path: string, maxLevel: number = 3, filter: (content: any) => boolean = filterUnderscores): Promise<Item[]> {
-    const promises = Object.keys(getProjectsConfig()).map(locale => recursiveFetchLocale(path, locale, maxLevel, filter));
-    return (await Promise.all(promises)).reduce((all, localePaths) => all.concat(localePaths), []);
-}
-
-export async function recursiveFetchLocale(path: string, locale: string, maxLevel: number = 3, filter: (content: any) => boolean = filterUnderscores): Promise<Item[]> {
-    const contentApiUrl = getContentApiUrl({locale});
-    return doRecursiveFetch(contentApiUrl, path, locale, maxLevel, filter);
-}
-
-function collectPageComponentUrls(regions: RegionTree, contentPath: string, locale: string): Item[] {
-    let items: Item[] = [];
-    Object.values(regions).forEach((region: PageRegion) => {
-        region.components.forEach((comp: PageComponent) => {
-            if (comp.type !== XP_COMPONENT_TYPE.LAYOUT) {
-                items.push({
-                    params: {
-                        contentPath: `${contentPath}/_/component${comp.path}`.split('/')
-                    },
-                    locale: normalizeLocale(locale),
-                })
-            } else if (comp.regions) {
-                const subUrls = collectPageComponentUrls(comp.regions, contentPath, locale);
-                if (subUrls.length) {
-                    items = items.concat(subUrls);
-                }
-            }
-        })
+export async function recursiveFetchAllLocalesContent(path: string, countPerLocale?: number, filter?: (content: any) => boolean): Promise<Item[]> {
+    const promises = Object.keys(getProjectsConfig()).map(locale => recursiveFetchLocaleContent(path, locale, countPerLocale, filter));
+    return Promise.all(promises).then(results => {
+        return results.reduce((all, localePaths) => all.concat(localePaths), []);
     });
-    return items;
 }
 
-async function doRecursiveFetch(contentApiUrl: string, path: string, locale: string, maxLevel: number = 0, filter?: (content: any) => boolean, paths?: Item[], currLevel: number = 1): Promise<Item[]> {
+export async function recursiveFetchLocaleContent(path: string, locale: string, count?: number, filter?: (content: any) => boolean): Promise<Item[]> {
+    const contentApiUrl = getContentApiUrl({locale});
     const body: ContentApiBaseBody = {
         query,
-        variables: {path}
+        variables: {
+            count
+        }
     };
-
-    const result = await fetchGuillotine(contentApiUrl, body);
-
-    return result?.guillotine?.getChildren.reduce(async (prevPromise: Promise<Item[]>, child: any) => {
-        let prev = await prevPromise;
-        if (filter && !filter(child)) {
-            return prev;
-        }
-
-        const contentPath = child._path.replace(`/${child.site?._name}/`, '');
-        prev.push({
-            params: {
-                contentPath: contentPath.split('/')
-            },
-            locale: normalizeLocale(locale),
-        });
-
-        // also push all the component urls for direct links to components (i.e. A/B systems)
-        if (child.pageAsJson?.regions) {
-            const compUrls = collectPageComponentUrls(child.pageAsJson?.regions, contentPath, locale);
-            if (compUrls.length) {
-                prev = prev.concat(compUrls);
+    return fetchGuillotine(contentApiUrl, body).then((results: GuillotineResult) => {
+        return results.guillotine.query.reduce((prev: Item[], child: any) => {
+            if (filter && !filter(child)) {
+                return prev;
             }
-        }
-
-        if ((maxLevel === 0 || currLevel < maxLevel) &&
-            (child.contentType?.name === 'base:folder' || child.contentType?.superType === 'base:folder' || child.hasChildren)) {
-
-            await doRecursiveFetch(contentApiUrl, child._path, locale, maxLevel, filter, prev, currLevel + 1);
-        }
-        return prev;
-    }, paths || [{
-        params: {
-            contentPath: [''],
-        },
-        locale: normalizeLocale(locale),
-    }]);
+            const regexp = new RegExp(`/${child.site?._name}/?`)
+            const contentPath = child._path.replace(regexp, '');
+            console.info('adding[' + locale + ']', contentPath);
+            prev.push({
+                params: {
+                    contentPath: contentPath.split('/')
+                },
+                locale: normalizeLocale(locale),
+            });
+            return prev;
+        }, []);
+    });
 }
 
 function normalizeLocale(locale: string): string | undefined {
     return locale !== 'default' ? locale : undefined;
-}
-
-function filterUnderscores(child: any): boolean {
-    return child._name && !child._name.startsWith("_");
 }
 
 export default MainView;
