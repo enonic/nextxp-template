@@ -10,7 +10,7 @@ export default async function handler(req: NextApiRequest,
                                       res: NextApiResponse<ResponseData>) {
     const {token, path} = req.query;
     // Check for secret to confirm this is a valid request
-    if (token !== process.env.API_TOKEN) {
+    if (token !== process.env.ENONIC_API_TOKEN) {
         // XP hijacks 401 to show login page, so send 407 instead
         return res.status(407).json({message: 'Invalid token'});
     }
