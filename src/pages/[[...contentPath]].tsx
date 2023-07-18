@@ -137,7 +137,6 @@ export async function recursiveFetchLocaleContent(path: string, locale: string, 
             }
             const regexp = new RegExp(`/${child.site?._name}/?`)
             const contentPath = child._path.replace(regexp, '');
-            console.info('adding[' + locale + ']', contentPath);
             prev.push({
                 params: {
                     contentPath: contentPath.split('/')
