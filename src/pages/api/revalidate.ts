@@ -1,13 +1,11 @@
-import {recursiveFetchLocaleContent} from "../[[...contentPath]]";
-import {getProjectLocale, PROJECT_ID_HEADER} from '@enonic/nextjs-adapter';
+import {ContentPathItem, fetchContentPathsForLocale, getLocaleProjectConfigById, PROJECT_ID_HEADER} from '@enonic/nextjs-adapter';
 import {NextApiRequest, NextApiResponse} from 'next';
 
 interface ResponseData {
     message: string
 }
 
-export default async function handler(req: NextApiRequest,
-                                      res: NextApiResponse<ResponseData>) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>) {
     const {token, path} = req.query;
     // Check for secret to confirm this is a valid request
     if (token !== process.env.ENONIC_API_TOKEN) {
@@ -21,9 +19,17 @@ export default async function handler(req: NextApiRequest,
         if (!path) {
             console.info('Started revalidating everything...');
             const projectId = req.headers[PROJECT_ID_HEADER] as string | undefined;
-            const locale = getProjectLocale(projectId);
-            const paths = await recursiveFetchLocaleContent('\${site}/', locale);
-            const promises = paths.map(item => revalidatePath(res, item.params.contentPath));
+            const config = getLocaleProjectConfigById(projectId);
+            const paths = await fetchContentPathsForLocale('\${site}/', config);
+            const promises = paths.map((item: ContentPathItem) => {
+                const cp = item.params.contentPath;
+                if (cp[0] === "") {
+                    cp[0] = config.locale;
+                } else {
+                    cp.unshift(config.locale);
+                }
+                return revalidatePath(res, cp);
+            });
             await Promise.all(promises);
             console.info(`Done revalidating everything`);
         } else {
