@@ -7,6 +7,7 @@ export async function middleware(req: NextRequest) {
     if (
         req.nextUrl.pathname.startsWith('/_next') ||
         req.nextUrl.pathname.includes('/api/') ||
+        req.nextUrl.pathname.startsWith('/_/enonic') ||
         PUBLIC_ASSET.test(req.nextUrl.pathname)
     ) {
         return
