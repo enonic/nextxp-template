@@ -13,22 +13,22 @@
     "lint": "npx next lint"
   },
   "dependencies": {
-    "@enonic/nextjs-adapter": "^1.0.2",
+    "@enonic/nextjs-adapter": "^2.0.0-B3",
     "cross-env": "^7.0.3",
-    "html-react-parser": "^3.0.15",
-    "next": "^13.2.4",
-    "next-transpile-modules": "^10.0.0",
+    "html-react-parser": "^4.2.1",
+    "next": "13.4.12",
+    "next-transpile-modules": "^10.0.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "unescape": "^1.0.1"
   },
   "devDependencies": {
-    "@types/node": "^18.15.5",
-    "@types/react": "18.0.31",
-    "@types/react-dom": "^18.0.11",
-    "eslint": "8.37.0",
-    "eslint-config-next": "13.2.4",
-    "prettier": "^2.8.7",
-    "typescript": "5.0.2"
+    "@types/node": "^20.5.1",
+    "@types/react": "18.2.20",
+    "@types/react-dom": "^18.2.6",
+    "eslint": "8.46.0",
+    "eslint-config-next": "13.4.15",
+    "prettier": "^3.0.2",
+    "typescript": "5.1.6"
   }
 }
