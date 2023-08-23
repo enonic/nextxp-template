@@ -5,7 +5,8 @@ interface ResponseData {
     message: string
 }
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>) {
+export default async function handler(req: NextApiRequest,
+                                      res: NextApiResponse<ResponseData>) {
     const {token, path} = req.query;
     // Check for secret to confirm this is a valid request
     if (token !== process.env.ENONIC_API_TOKEN) {
