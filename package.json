@@ -13,7 +13,7 @@
     "lint": "npx next lint"
   },
   "dependencies": {
-    "@enonic/nextjs-adapter": "^2.0.0-B3",
+    "@enonic/nextjs-adapter": "2.0.0",
     "cross-env": "^7.0.3",
     "html-react-parser": "^4.2.1",
     "next": "13.4.12",
