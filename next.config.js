@@ -26,6 +26,10 @@ async function getEnonicHeaders() {
 }
 
 const config = {
+    i18n: {
+        locales: ['en'],
+        defaultLocale: 'en',
+    },
     reactStrictMode: true,
     webpack: getEnonicWebpackConfig,
     headers: getEnonicHeaders,
