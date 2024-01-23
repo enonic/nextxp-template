@@ -1,6 +1,7 @@
+import {getUrl, MetaData} from "@enonic/nextjs-adapter";
+import Link from 'next/link';
 import React from 'react'
 import styles from './Header.module.css';
-import {getUrl, MetaData} from "@enonic/nextjs-adapter";
 
 export interface HeaderProps {
     title: string;
@@ -15,7 +16,7 @@ const Header = ({title, logoUrl, meta}: HeaderProps) => {
         <div className={styles.wrapper}>
             {title && (
                 <h1>
-                    <a href={getUrl('/', meta)}>{title}</a>
+                    <Link href={getUrl('/', meta)}>{title}</Link>
                 </h1>
             )}
             {logoUrl && (
