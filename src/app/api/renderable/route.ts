@@ -1,6 +1,7 @@
 import {fetchContent, IS_DEV_MODE, RENDER_MODE} from '@enonic/nextjs-adapter';
 
 // Register component mappings
+import '../../../components/_mappings';
 import {NextRequest} from 'next/server';
 import {validatePath, validateToken} from '../../../utils';
 
