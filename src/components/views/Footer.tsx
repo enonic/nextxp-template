@@ -1,4 +1,3 @@
-import {I18n} from '@enonic/nextjs-adapter';
 import Link from 'next/link';
 import React from 'react';
 
@@ -11,10 +10,9 @@ const Footer = () => (
         <br/>
         <hr/>
         <br/>
-        {`© ${new Date().getFullYear()}, `}
-        {` ${I18n.localize('built-with')} `}
+        {`© ${new Date().getFullYear()}, Built with `}
         <Link href="https://nextjs.org">Next.js</Link>
-        {` ${I18n.localize('powered-by')} `}
+        {` Powered by `}
         <Link href="https://enonic.com">Enonic XP</Link>
     </footer>
 );

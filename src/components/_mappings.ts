@@ -1,8 +1,7 @@
-import {CATCH_ALL, ComponentRegistry} from '@enonic/nextjs-adapter';
-import PropsView from '@enonic/nextjs-adapter/views/PropsView';
+import {CATCH_ALL, ComponentRegistry} from '@enonic/nextjs-adapter/ComponentRegistry';
 import {commonQuery, commonVariables} from './queries/common';
+import PropsView from './views/Props';
 
-import "@enonic/nextjs-adapter/baseMappings";
 
 // You can set common query for all views here
 ComponentRegistry.setCommonQuery([commonQuery, commonVariables]);

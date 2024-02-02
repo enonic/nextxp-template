@@ -1,39 +1,33 @@
-import {getRequestLocaleInfo} from '@enonic/nextjs-adapter'
 import {NextRequest, NextResponse} from 'next/server'
+import {getLocaleProjectConfigById, PROJECT_ID_HEADER} from '@enonic/nextjs-adapter'
+import {addBasePath} from 'next/dist/client/add-base-path';
 
+const PUBLIC_ASSET = /\.(.*)$/
 
-export function middleware(req: NextRequest) {
-
-    const pathname = req.nextUrl.pathname;
-    const {locale, locales} = getRequestLocaleInfo({
-        contentPath: pathname,
-        headers: req.headers
-    });
-
-    const pathPart = pathname.split('/')[1];    // pathname always starts with a slash, followed by locale
-    const pathHasLocale = locales.indexOf(pathPart) >= 0
-
-    if (pathHasLocale) {
-        // locale is already in the path, no need to redirect
-        return;
-    } else if (!locale) {
-        // no locale found in path or headers, return 404
-        console.debug(`Middleware returning 404 for '${pathname}': no locale found`);
-        return new NextResponse(null, {
-            status: 404,
-        });
+export async function middleware(req: NextRequest) {
+    if (
+        req.nextUrl.pathname.startsWith('/_next') ||
+        req.nextUrl.pathname.includes('/api/') ||
+        req.nextUrl.pathname.startsWith('/_/enonic') ||
+        PUBLIC_ASSET.test(req.nextUrl.pathname)
+    ) {
+        return
     }
 
-    req.nextUrl.pathname = `/${locale}${pathname}`
+    const projectId = req.headers.get(PROJECT_ID_HEADER) || undefined;
+    const locale = getLocaleProjectConfigById(projectId)?.locale;
 
-    console.debug(`Middleware redirecting '${pathname}' to '${req.nextUrl.pathname}'`);
+    if (locale && locale !== 'default' && req.nextUrl.locale !== locale) {
+        const baseUrl = addBasePath(`/${locale}${req.nextUrl.pathname}${req.nextUrl.search}`);
+        const url = new URL(baseUrl, req.url);
+        console.info(`Project "${projectId}" needs "${locale}" locale, was "${req.nextUrl.locale}"; redirecting to: ${url}`);
 
-    return NextResponse.rewrite(req.nextUrl, {
-        request: req,
-    });
+        const response = NextResponse.redirect(url);
+        response.headers.set('Accept-Language', locale);
+        response.cookies.set('NEXT_LOCALE', locale);
+
+        return response;
+    }
+
+    return NextResponse.next();
 }
-
-export const config = {
-    // NB: should contain all files and folders in the /public folder
-    matcher: ["/((?!robots.txt|sitemap.xml|manifest.json|api/|images/|fonts/|_next/webpack-hmr|_next/static|_next/image|assets|favicon.ico|sw.js).*)",],
-};
