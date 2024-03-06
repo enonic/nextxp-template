@@ -1,4 +1,5 @@
-import {fetchContent, IS_DEV_MODE, RENDER_MODE} from '@enonic/nextjs-adapter';
+import {IS_DEV_MODE, RENDER_MODE} from '@enonic/nextjs-adapter';
+import {fetchContent} from '@enonic/nextjs-adapter/server';
 
 // Register component mappings
 import '../../../components/_mappings';
