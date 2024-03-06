@@ -1,4 +1,5 @@
-import {fetchContent, fetchContentPathsForAllLocales, FetchContentResult, validateData} from "@enonic/nextjs-adapter";
+import {FetchContentResult, validateData} from "@enonic/nextjs-adapter";
+import {fetchContent, fetchContentPathsForAllLocales} from "@enonic/nextjs-adapter/server";
 import MainView from '@enonic/nextjs-adapter/views/MainView';
 
 import "../../../components/_mappings";

@@ -1,5 +1,6 @@
-import {fetchContent, getAsset, I18n, RENDER_MODE, XP_REQUEST_TYPE} from '@enonic/nextjs-adapter';
+import {getAsset, I18n, RENDER_MODE, XP_REQUEST_TYPE} from '@enonic/nextjs-adapter';
 import {LocaleContextProvider} from '@enonic/nextjs-adapter/client';
+import {fetchContent} from '@enonic/nextjs-adapter/server';
 import StaticContent from '@enonic/nextjs-adapter/views/StaticContent';
 import {ReactNode} from 'react';
 
