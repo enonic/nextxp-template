@@ -7,15 +7,12 @@ import {Metadata} from 'next';
 import {draftMode} from 'next/headers';
 import React from 'react';
 
-export const dynamic = 'auto'
-export const dynamicParams = true  // show 404 for missing in cache pages
-export const revalidate = 3600  // The revalidate option is only available when using the Node.js Runtime.
-// This means using the revalidate option with runtime = 'edge' will not work.
-export const fetchCache = 'auto'
-export const runtime = 'nodejs'
-export const preferredRegion = 'auto'
+// NB. Using this option with default value bails out static generation !!!
+// export const dynamic = 'auto'
 
-// export const maxDuration = 5
+// The revalidate option is only available when using the Node.js Runtime.
+// This means using the revalidate option with runtime = 'edge' will not work.
+export const revalidate = 3600
 
 export type PageProps = {
     locale: string,
