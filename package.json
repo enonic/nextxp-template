@@ -11,10 +11,10 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@enonic/nextjs-adapter": "^3.0.0-RC1",
+    "@enonic/nextjs-adapter": "^3.0.0-RC3",
     "cross-env": "^7.0.3",
     "html-react-parser": "^5.0.3",
-    "next": "^14.0.3",
+    "next": "^14.1.4",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "unescape": "^1.0.1"
