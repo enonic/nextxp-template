@@ -3,6 +3,8 @@ updates:
   - package-ecosystem: "npm"
     directory: "/"
     target-branch: "next"
+    ignore:
+      - dependency-name: "next"
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 10
