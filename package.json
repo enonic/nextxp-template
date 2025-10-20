@@ -13,7 +13,7 @@
   "dependencies": {
     "@enonic/nextjs-adapter": "^3.3.0",
     "cross-env": "^10.1.0",
-    "html-react-parser": "^5.1.18",
+    "html-react-parser": "^5.2.7",
     "next": "14.2.32",
     "react": "18.3.1",
     "react-dom": "18.3.1",
