@@ -9,13 +9,17 @@ import '../../../styles/globals.css';
 import {PageProps} from './page';
 
 type LayoutProps = {
-    params: PageProps
+    params: Promise<PageProps>
     children: ReactNode
 }
 
 export default async function PageLayout({params, children}: LayoutProps) {
 
-    const {meta} = await fetchContent(params);
+    const resolvedParams = await params;
+    const {meta} = await fetchContent({
+        ...resolvedParams,
+        contentPath: resolvedParams.contentPath || []
+    });
 
     const isEdit = meta?.renderMode === RENDER_MODE.EDIT;
 
@@ -28,14 +32,14 @@ export default async function PageLayout({params, children}: LayoutProps) {
             <details data-single-component-output="true">{children}</details>
 
         return (
-            <LocaleContextProvider locale={params.locale}>
+            <LocaleContextProvider locale={resolvedParams.locale}>
                 <StaticContent condition={isEdit}>{content}</StaticContent>
             </LocaleContextProvider>
         );
     }
 
     return (
-        <LocaleContextProvider locale={params.locale}>
+        <LocaleContextProvider locale={resolvedParams.locale}>
             <StaticContent condition={isEdit}>
                 <main>{children}</main>
             </StaticContent>

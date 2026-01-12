@@ -9,7 +9,7 @@ function getEnonicWebpackConfig(config, {buildId, dev, isServer, defaultLoaders,
     }
     config.resolve.alias = {
         ...config.resolve.alias,
-        "@phrases": path.resolve(__dirname, "./src/phrases"),
+        "@phrases": path.resolve(__dirname, "src", "phrases")
     }
     return config;
 }
@@ -34,6 +34,11 @@ const config = {
     trailingSlash: false,
     transpilePackages: ['@enonic/nextjs-adapter'],
     webpack: getEnonicWebpackConfig,
+    turbopack: {
+        resolveAlias: {
+            "@phrases": path.resolve(__dirname, "src", "phrases")
+        }
+    },
     headers: getEnonicHeaders,
 };
 

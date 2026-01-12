@@ -7,14 +7,15 @@ import '../../styles/globals.css';
 import {PageProps} from './[[...contentPath]]/page';
 
 type LayoutProps = {
-    params: PageProps
+    params: Promise<PageProps>
     children: ReactNode
 }
 
 export default async function LocaleLayout({params, children}: LayoutProps) {
 
     // we only have locale in the params on the [locale] level
-    await I18n.setLocale(params.locale);
+    const resolvedParams = await params;
+    await I18n.setLocale(resolvedParams.locale);
 
     const bodyAttrs: { [key: string]: string } = {
         className: "edit",

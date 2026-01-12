@@ -6,23 +6,24 @@
   "scripts": {
     "dev": "next dev",
     "prod": "npm run build && npm run start",
-    "start": "next start -p 4242",
+    "start": "next start",
+    "prebuild": "npm run lint",
     "build": "next build",
-    "lint": "next lint"
+    "lint": "npx eslint"
   },
   "dependencies": {
-    "@enonic/nextjs-adapter": "^3.3.0",
+    "@enonic/nextjs-adapter": "^4.0.0",
     "cross-env": "^10.1.0",
     "html-react-parser": "^5.2.11",
-    "next": "14.2.32",
-    "react": "18.3.1",
-    "react-dom": "18.3.1",
+    "next": "^16.0.10",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
     "unescape": "^1.0.1"
   },
   "devDependencies": {
     "@types/node": "^25.0.3",
-    "@types/react": "18.3.11",
-    "@types/react-dom": "^18.3.1",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
     "@typescript-eslint/parser": "^8.52.0",
     "eslint": "^9.39.2",
     "eslint-config-next": "^16.1.1",

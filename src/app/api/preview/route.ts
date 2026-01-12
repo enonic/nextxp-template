@@ -11,7 +11,7 @@ export function GET(req: NextRequest) {
     return processRequest(req);
 }
 
-function processRequest(req: NextRequest) {
+async function processRequest(req: NextRequest) {
     const params = req.nextUrl.searchParams;
 
     const token = params.get('token');
@@ -28,7 +28,7 @@ function processRequest(req: NextRequest) {
 
     console.info(`Previewing [${path}]...`);
 
-    draftMode().enable();
+    (await draftMode()).enable();
 
     redirect(!path?.length ? '/' : path);
 }
