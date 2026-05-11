@@ -2,7 +2,6 @@
 
 import {RENDER_MODE} from '@enonic/nextjs-adapter';
 
-import '@enonic/page-editor/styles.css';
 import {useLayoutEffect} from 'react';
 
 const PageEditorScript = function ({mode}: { mode: RENDER_MODE }) {
@@ -14,6 +13,12 @@ const PageEditorScript = function ({mode}: { mode: RENDER_MODE }) {
                 PageEditor.init(mode === RENDER_MODE.EDIT);
                 console.info(`Page editor started in ${mode} mode.`);
             }
+
+            PageEditor.on(EditorEvents.ComponentLoadRequest, (event => {
+                    const data = event.getData();
+                    console.log('Component load request', data);
+                })
+            );
         })
     })
     return null;
