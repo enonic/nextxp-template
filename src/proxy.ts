@@ -1,5 +1,11 @@
 import {NextRequest, NextResponse} from 'next/server'
-import {getRequestLocaleInfo, decryptParams, PROJECT_ID_HEADER, JSESSIONID_HEADER} from '@enonic/nextjs-adapter'
+import {
+    getRequestLocaleInfo,
+    decryptParams,
+    getLocaleMappingByProjectId,
+    PROJECT_ID_HEADER,
+    JSESSIONID_HEADER
+} from '@enonic/nextjs-adapter'
 
 export function proxy(request: NextRequest): NextResponse {
     const {searchParams, pathname} = request.nextUrl;
@@ -35,7 +41,13 @@ export function proxy(request: NextRequest): NextResponse {
     }
 
     addParamsToHeaders(request, params);
-    const addedLanguage = addLanguageToPath(request);
+
+    // Content Studio requests come in as /<siteName>/content/path with no locale.
+    // Use the project's mapping to both strip the site name and add the locale, so they
+    // stay consistent and the result matches the site-relative, locale-prefixed routes.
+    const mapping = getLocaleMappingByProjectId(params.xpProject);
+    const removedSite = removeSiteName(request, mapping?.site);
+    const addedLanguage = addLanguageToPath(request, mapping?.locale);
 
     // It's a valid request from Content Studio, so we want to enable draft mode for it
     const hasDraftCookie = request.cookies.has('__prerender_bypass');
@@ -55,7 +67,7 @@ export function proxy(request: NextRequest): NextResponse {
     const cleanUrl = request.nextUrl.clone();
     cleanUrl.searchParams.delete('xp');
 
-    if (addedLanguage) {
+    if (addedLanguage || removedSite) {
         console.debug(`Middleware at '${pathname}': rewriting to '${cleanUrl.pathname}'...`);
         return NextResponse.rewrite(cleanUrl, {request});
     }
@@ -80,12 +92,29 @@ function addParamsToHeaders(request: NextRequest, params: Record<string, string>
     }
 }
 
-function addLanguageToPath(req: NextRequest): boolean {
+function removeSiteName(req: NextRequest, site?: string): boolean {
+    if (!site || site === '/') {
+        return false;
+    }
+
     const pathname = req.nextUrl.pathname;
-    const {locale, locales} = getRequestLocaleInfo({
+    if (pathname === site || pathname.startsWith(`${site}/`)) {
+        req.nextUrl.pathname = pathname.substring(site.length) || '/';
+        console.debug(`Middleware at '${pathname}': stripped site name '${site}' -> '${req.nextUrl.pathname}'`);
+        return true;
+    }
+
+    return false;
+}
+
+function addLanguageToPath(req: NextRequest, explicitLocale?: string): boolean {
+    const pathname = req.nextUrl.pathname;
+    const {locale: detectedLocale, locales} = getRequestLocaleInfo({
         contentPath: pathname,
         headers: req.headers
     });
+    // Prefer the explicit (project-derived) locale so it stays consistent with site-name removal.
+    const locale = explicitLocale || detectedLocale;
 
     const pathPart = pathname.split('/')[1];    // pathname always starts with a slash, followed by locale
     const pathHasLocale = locales.indexOf(pathPart) >= 0
